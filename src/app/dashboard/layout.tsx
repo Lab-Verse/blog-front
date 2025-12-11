@@ -10,7 +10,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
-import { useGetUserProfileQuery } from '../redux/api/users/usersApi'
+import { useGetUserByIdQuery } from '../redux/api/users/usersApi'
 import { cookies } from '../redux/utils/cookies'
 
 import { jwtDecode } from 'jwt-decode'
@@ -38,13 +38,13 @@ const userNavigation = [
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState('')
-  const { data: userProfile, isLoading, isError } = useGetUserProfileQuery(userId, { skip: !userId })
+  const { data: user, isLoading, isError } = useGetUserByIdQuery(userId, { skip: !userId })
 
-  const profilePic = userProfile?.profile_picture && userProfile.profile_picture !== 'default-avatar.png' 
-    ? userProfile.profile_picture 
-    : 'src\\images\\musicWave.png';
+  const profilePic = user?.avatar && user.avatar !== 'default-avatar.png' 
+    ? user.avatar 
+    : '/images/musicWave.png';
 
-  console.log('User Profile:', userProfile)
+  console.log('User:', user)
   // Get the access token from cookies
   const accessToken = cookies.getAccessToken()
 
@@ -61,9 +61,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   const isActive = (href: string) => pathname === href
   const pageTitle = navigation.find((item) => isActive(item.href))?.name ?? 'Dashboard'
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>
+  // }
 
   // if (isError) {
   //   return <div>Error fetching profile: {isError?.message || 'Unknown error'}</div>
@@ -188,7 +188,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             </div>
           </header>
           <main>
-            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">{children}</div>
+            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+              {children}
+            </div>
           </main>
         </div>
       </div>
