@@ -39,7 +39,6 @@ export const postsApi = baseApi.injectEndpoints({
               ...result.map(({ id }) => ({ type: 'Post' as const, id })),
             ]
           : [{ type: 'Post', id: 'LIST' }],
-      pollingInterval: 5000, // Poll every 5 seconds for real-time updates
     }),
 
     getPostById: builder.query<Post, string>({

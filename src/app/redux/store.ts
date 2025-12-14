@@ -16,7 +16,7 @@ import usersReducer from './slices/users/usersSlice'
 import viewsReducer from './slices/views/viewsSlice'
 
 
-import { authApi } from './api/auth/authApi';
+import { baseApi } from './api/baseApi';
 
 
 export const store = configureStore({
@@ -37,10 +37,10 @@ export const store = configureStore({
     users: usersReducer,
     views: viewsReducer,
 
-     [authApi.reducerPath]: authApi.reducer,
+     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware),
+    getDefaultMiddleware().concat(baseApi.middleware),
   devTools: process.env.NODE_ENV !== 'production',
 })
 
