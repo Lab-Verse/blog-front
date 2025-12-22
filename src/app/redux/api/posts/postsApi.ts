@@ -20,7 +20,7 @@ export const postsApi = baseApi.injectEndpoints({
         const params = new URLSearchParams();
         if (filters?.categoryId) params.append('categoryId', filters.categoryId);
         if (filters?.userId) params.append('userId', filters.userId);
-        
+
         return {
           url: `/posts${params.toString() ? `?${params.toString()}` : ''}`,
           method: 'GET',
@@ -35,9 +35,9 @@ export const postsApi = baseApi.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              { type: 'Post', id: 'LIST' },
-              ...result.map(({ id }) => ({ type: 'Post' as const, id })),
-            ]
+            { type: 'Post', id: 'LIST' },
+            ...result.map(({ id }) => ({ type: 'Post' as const, id })),
+          ]
           : [{ type: 'Post', id: 'LIST' }],
     }),
 
@@ -136,6 +136,131 @@ export const postsApi = baseApi.injectEndpoints({
         { type: 'PostReactions', id: postId },
       ],
     }),
+
+    // ---------- User Posts with Filters ----------
+    getUserPosts: builder.query<Post[], { userId: string; filters?: Partial<import('../../types/posts/postTypes').UserPostsFilters> }>({
+      query: ({ userId, filters }) => {
+        const params = new URLSearchParams();
+        if (filters?.status) params.append('status', filters.status);
+        if (filters?.categoryId) params.append('categoryId', filters.categoryId);
+        if (filters?.search) params.append('search', filters.search);
+        if (filters?.startDate) params.append('startDate', filters.startDate);
+        if (filters?.endDate) params.append('endDate', filters.endDate);
+        if (filters?.sortBy) params.append('sortBy', filters.sortBy);
+        if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder);
+        if (filters?.page) params.append('page', filters.page.toString());
+        if (filters?.limit) params.append('limit', filters.limit.toString());
+
+        return {
+          url: `/posts?userId=${userId}${params.toString() ? `&${params.toString()}` : ''}`,
+          method: 'GET',
+        };
+      },
+      transformResponse: (res: unknown) => extractArrayFromResponse<Post>(res),
+      providesTags: (result, _error, { userId }) =>
+        result
+          ? [
+            { type: 'UserPosts', id: userId },
+            ...result.map(({ id }) => ({ type: 'Post' as const, id })),
+          ]
+          : [{ type: 'UserPosts', id: userId }],
+    }),
+
+    // ---------- Bulk Operations ----------
+    bulkDeletePosts: builder.mutation<void, string[]>({
+      async queryFn(ids, _api, _extraOptions, fetchWithBQ) {
+        try {
+          const deletePromises = ids.map(id =>
+            fetchWithBQ({ url: `/posts/${id}`, method: 'DELETE' })
+          );
+
+          const results = await Promise.all(deletePromises);
+
+          const hasError = results.some(result => result.error);
+          if (hasError) {
+            return {
+              error: {
+                status: 'CUSTOM_ERROR',
+                error: 'Some posts failed to delete'
+              }
+            };
+          }
+
+          return { data: undefined };
+        } catch (error) {
+          return {
+            error: {
+              status: 'CUSTOM_ERROR',
+              error: String(error)
+            }
+          };
+        }
+      },
+      invalidatesTags: [
+        { type: 'Post', id: 'LIST' },
+        { type: 'UserPosts', id: 'LIST' },
+      ],
+    }),
+
+    bulkUpdatePostStatus: builder.mutation<void, { ids: string[]; status: import('../../types/posts/postTypes').PostStatus }>({
+      async queryFn({ ids, status }, _api, _extraOptions, fetchWithBQ) {
+        try {
+          const updatePromises = ids.map(id =>
+            fetchWithBQ({
+              url: `/posts/${id}`,
+              method: 'PATCH',
+              body: { status }
+            })
+          );
+
+          const results = await Promise.all(updatePromises);
+
+          const hasError = results.some(result => result.error);
+          if (hasError) {
+            return {
+              error: {
+                status: 'CUSTOM_ERROR',
+                error: 'Some posts failed to update'
+              }
+            };
+          }
+
+          return { data: undefined };
+        } catch (error) {
+          return {
+            error: {
+              status: 'CUSTOM_ERROR',
+              error: String(error)
+            }
+          };
+        }
+      },
+      invalidatesTags: [
+        { type: 'Post', id: 'LIST' },
+        { type: 'UserPosts', id: 'LIST' },
+      ],
+    }),
+
+    // ---------- Dashboard Stats ----------
+    getPostStats: builder.query<import('../../types/posts/postTypes').PostStats, string>({
+      query: (userId) => ({ url: `/posts/stats?userId=${userId}`, method: 'GET' }),
+      transformResponse: (res: ApiEnvelope<import('../../types/posts/postTypes').PostStats>) =>
+        res.data ?? {
+          totalPosts: 0,
+          totalViews: 0,
+          totalLikes: 0,
+          totalComments: 0,
+          publishedPosts: 0,
+          draftPosts: 0,
+          archivedPosts: 0,
+          avgViewsPerPost: 0,
+          avgLikesPerPost: 0,
+          avgCommentsPerPost: 0,
+        },
+      providesTags: (_result, _error, userId) => [
+        { type: 'UserPosts', id: `stats-${userId}` },
+      ],
+    }),
   }),
   overrideExisting: true,
 });
@@ -150,4 +275,8 @@ export const {
   useGetPostMediaQuery,
   useGetPostTagsQuery,
   useGetPostReactionsQuery,
+  useGetUserPostsQuery,
+  useBulkDeletePostsMutation,
+  useBulkUpdatePostStatusMutation,
+  useGetPostStatsQuery,
 } = postsApi;

@@ -15,22 +15,22 @@ export const mediaApi = baseApi.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              { type: 'Media', id: 'LIST' },
-              ...result.map(({ id }) => ({ type: 'Media' as const, id })),
-            ]
+            { type: 'Media', id: 'LIST' },
+            ...result.map(({ id }) => ({ type: 'Media' as const, id })),
+          ]
           : [{ type: 'Media', id: 'LIST' }],
     }),
 
     getMediaById: builder.query<Media, string>({
       query: (id) => ({ url: `/media/${id}`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Media>) => 
+      transformResponse: (res: ApiEnvelope<Media>) =>
         res.data ?? ({} as Media),
       providesTags: (_result, _error, id) => [{ type: 'Media', id }],
     }),
 
     createMedia: builder.mutation<Media, CreateMediaDto>({
       query: (body) => ({ url: '/media', method: 'POST', body }),
-      transformResponse: (res: ApiEnvelope<Media>) => 
+      transformResponse: (res: ApiEnvelope<Media>) =>
         res.data ?? ({} as Media),
       invalidatesTags: [{ type: 'Media', id: 'LIST' }],
     }),
@@ -41,7 +41,7 @@ export const mediaApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-      transformResponse: (res: ApiEnvelope<Media>) => 
+      transformResponse: (res: ApiEnvelope<Media>) =>
         res.data ?? ({} as Media),
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Media', id },
@@ -59,17 +59,17 @@ export const mediaApi = baseApi.injectEndpoints({
 
     // ---------- Media by User ----------
     getMediaByUser: builder.query<Media[], string>({
-      query: (userId) => ({ 
-        url: `/media/user/${userId}`, 
-        method: 'GET' 
+      query: (userId) => ({
+        url: `/media/user/${userId}`,
+        method: 'GET'
       }),
       transformResponse: (res: ApiEnvelope<Media[]>) => res.data ?? [],
       providesTags: (result, _error, userId) =>
         result
           ? [
-              { type: 'MediaByUser', id: userId },
-              ...result.map(({ id }) => ({ type: 'Media' as const, id })),
-            ]
+            { type: 'MediaByUser', id: userId },
+            ...result.map(({ id }) => ({ type: 'Media' as const, id })),
+          ]
           : [{ type: 'MediaByUser', id: userId }],
     }),
 
@@ -82,7 +82,7 @@ export const mediaApi = baseApi.injectEndpoints({
       }),
       transformResponse: (res: unknown): Media => {
         console.log('[MediaAPI] Raw upload response:', res);
-        
+
         if (typeof res === 'object' && res !== null) {
           if ('data' in res && res.data) {
             return res.data as Media;
@@ -91,11 +91,38 @@ export const mediaApi = baseApi.injectEndpoints({
             return res as Media;
           }
         }
-        
+
         console.error('[MediaAPI] Unexpected response format:', res);
         return {} as Media;
       },
       invalidatesTags: [{ type: 'Media', id: 'LIST' }],
+    }),
+
+    // ---------- Filtered Media ----------
+    getFilteredMedia: builder.query<Media[], Partial<import('../../types/media/mediaTypes').MediaFilter> | void>({
+      query: (filters) => {
+        const params = new URLSearchParams();
+        if (filters?.mediaType) params.append('mediaType', filters.mediaType);
+        if (filters?.mimeType) params.append('mimeType', filters.mimeType);
+        if (filters?.minSize !== undefined) params.append('minSize', filters.minSize.toString());
+        if (filters?.maxSize !== undefined) params.append('maxSize', filters.maxSize.toString());
+        if (filters?.startDate) params.append('startDate', filters.startDate);
+        if (filters?.endDate) params.append('endDate', filters.endDate);
+        if (filters?.userId) params.append('userId', filters.userId);
+
+        return {
+          url: `/media${params.toString() ? `?${params.toString()}` : ''}`,
+          method: 'GET',
+        };
+      },
+      transformResponse: (res: ApiEnvelope<Media[]>) => res.data ?? [],
+      providesTags: (result) =>
+        result
+          ? [
+            { type: 'Media', id: 'LIST' },
+            ...result.map(({ id }) => ({ type: 'Media' as const, id })),
+          ]
+          : [{ type: 'Media', id: 'LIST' }],
     }),
 
     // ---------- Bulk Operations ----------
@@ -105,26 +132,26 @@ export const mediaApi = baseApi.injectEndpoints({
           const deletePromises = ids.map(id =>
             fetchWithBQ({ url: `/media/${id}`, method: 'DELETE' })
           );
-          
+
           const results = await Promise.all(deletePromises);
-          
+
           const hasError = results.some(result => result.error);
           if (hasError) {
-            return { 
-              error: { 
-                status: 'CUSTOM_ERROR', 
-                error: 'Some media items failed to delete' 
-              } 
+            return {
+              error: {
+                status: 'CUSTOM_ERROR',
+                error: 'Some media items failed to delete'
+              }
             };
           }
-          
+
           return { data: undefined };
         } catch (error) {
-          return { 
-            error: { 
-              status: 'CUSTOM_ERROR', 
-              error: String(error) 
-            } 
+          return {
+            error: {
+              status: 'CUSTOM_ERROR',
+              error: String(error)
+            }
           };
         }
       },
@@ -142,5 +169,6 @@ export const {
   useDeleteMediaMutation,
   useGetMediaByUserQuery,
   useUploadMediaMutation,
+  useGetFilteredMediaQuery,
   useBulkDeleteMediaMutation,
 } = mediaApi;

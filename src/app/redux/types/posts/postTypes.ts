@@ -92,6 +92,41 @@ export interface PostFilters {
   userId?: string;
 }
 
+// Dashboard Filters
+export interface UserPostsFilters {
+  userId?: string;
+  status?: PostStatus;
+  categoryId?: string;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+  sortBy?: 'recent' | 'popular' | 'title' | 'views';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+}
+
+// Bulk Operations
+export interface BulkPostDto {
+  ids: string[];
+  action: 'delete' | 'publish' | 'unpublish' | 'archive';
+  status?: PostStatus;
+}
+
+// Dashboard Stats
+export interface PostStats {
+  totalPosts: number;
+  totalViews: number;
+  totalLikes: number;
+  totalComments: number;
+  publishedPosts: number;
+  draftPosts: number;
+  archivedPosts: number;
+  avgViewsPerPost: number;
+  avgLikesPerPost: number;
+  avgCommentsPerPost: number;
+}
+
 // API Response Types
 export interface PostsApiResponse {
   data: Post[];

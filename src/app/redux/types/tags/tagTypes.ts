@@ -55,3 +55,11 @@ export interface PopularTag {
   tag: Tag;
   rank: number;
 }
+
+// Filters
+export interface TagFilters {
+  search?: string;
+  minPostCount?: number;
+  sortBy?: 'name' | 'posts_count' | 'created_at';
+  sortOrder?: 'asc' | 'desc';
+}
