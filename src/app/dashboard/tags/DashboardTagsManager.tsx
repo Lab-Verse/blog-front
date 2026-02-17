@@ -129,14 +129,15 @@ const DashboardTagsManager: React.FC = () => {
         )
     }
 
-    if (error) return (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
-            <p className="text-red-800 dark:text-red-200">Failed to load tags. Please try again.</p>
-        </div>
-    )
-}
+    if (error) {
+        return (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                <p className="text-red-800 dark:text-red-200">Failed to load tags. Please try again.</p>
+            </div>
+        )
+    }
 
-return (
+    return (
     <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <Input
@@ -245,7 +246,7 @@ return (
             <div className="p-6">
                 <h3 className="text-lg font-semibold mb-4">Delete Tag</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    Are you sure you want to delete "{selectedTag?.name}"? This action cannot be undone.
+                    Are you sure you want to delete &quot;{selectedTag?.name}&quot;? This action cannot be undone.
                 </p>
                 <div className="flex gap-3 justify-end">
                     <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>

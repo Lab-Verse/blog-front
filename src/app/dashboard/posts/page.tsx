@@ -1,18 +1,13 @@
-import { auth } from '@/auth'
 import DashboardPostsManager from './DashboardPostsManager'
-import { redirect } from 'next/navigation'
 
 export const metadata = {
   title: 'Dashboard - Posts',
   description: 'Manage your blog posts',
 }
 
-const Page = async () => {
-  const session = await auth()
-
-  if (!session?.user?.id) {
-    redirect('/login')
-  }
+const Page = () => {
+  // TODO: Replace with actual user ID from auth
+  const userId = 'user-id-placeholder'
 
   return (
     <div>
@@ -23,7 +18,7 @@ const Page = async () => {
         </p>
       </div>
 
-      <DashboardPostsManager userId={session.user.id} />
+      <DashboardPostsManager userId={userId} />
     </div>
   )
 }

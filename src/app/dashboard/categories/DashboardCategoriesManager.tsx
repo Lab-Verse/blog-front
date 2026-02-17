@@ -230,7 +230,7 @@ const DashboardCategoriesManager: React.FC = () => {
                 <div className="p-6">
                     <h3 className="text-lg font-semibold mb-4">Delete Category</h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-6">
-                        Are you sure you want to delete "{selectedCategory?.name}"? This action cannot be undone.
+                        Are you sure you want to delete &quot;{selectedCategory?.name}&quot;? This action cannot be undone.
                     </p>
                     <div className="flex gap-3 justify-end">
                         <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
