@@ -344,18 +344,12 @@ export async function fetchTagPosts(tagId: string): Promise<ApiPost[]> {
 // Users / Authors
 // ========================
 
-/** Fetch all users (for author listings) - public endpoint not available, use posts authors */
+/** Fetch all users (for author listings) - now public endpoint */
 export async function fetchAuthors(): Promise<ApiUser[]> {
   try {
-    // Since GET /users requires JWT, we extract unique authors from posts
-    const posts = await fetchPosts()
-    const authorMap = new Map<string, ApiUser>()
-    for (const post of posts) {
-      if (post.user && !authorMap.has(post.user.id)) {
-        authorMap.set(post.user.id, post.user)
-      }
-    }
-    return Array.from(authorMap.values())
+    const data = await serverFetch<ApiUser[]>('/users?limit=100')
+    const result = Array.isArray(data) ? data : (data as any)?.items || []
+    return result
   } catch {
     return []
   }
@@ -409,18 +403,35 @@ export async function fetchUserProfile(
 // Search
 // ========================
 
-/** Find an author by username from published posts */
+/** Find an author by username using the API */
 export async function fetchAuthorByUsername(username: string): Promise<{
   user: ApiUser | null
   posts: ApiPost[]
 } | null> {
   try {
-    const allPosts = await fetchPosts()
-    const authorPosts = allPosts.filter(
-      (p) => p.user?.username?.toLowerCase() === username.toLowerCase()
-    )
-    if (authorPosts.length === 0) return null
-    return { user: authorPosts[0].user!, posts: authorPosts }
+    // Use the dedicated username endpoint
+    const url = `${API_URL}/users/username/${encodeURIComponent(username)}`
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      next: { revalidate: 120, tags: [`author-${username}`] },
+    })
+    if (!res.ok) return null
+    const user = await res.json()
+    if (!user || !user.id) return null
+
+    // Fetch their posts
+    const postsUrl = `${API_URL}/posts?user=${user.id}`
+    const postsRes = await fetch(postsUrl, {
+      headers: { 'Content-Type': 'application/json' },
+      next: { revalidate: 60, tags: [`author-posts-${user.id}`] },
+    })
+    let posts: ApiPost[] = []
+    if (postsRes.ok) {
+      const postsData = await postsRes.json()
+      posts = Array.isArray(postsData) ? postsData : (postsData?.items || [])
+    }
+
+    return { user, posts }
   } catch {
     return null
   }

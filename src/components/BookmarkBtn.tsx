@@ -1,12 +1,13 @@
 'use client'
 
-import { useToggleBookmarkMutation } from '@/app/redux/api/bookmarks/bookmarksApi'
+import { useGetBookmarksByUserQuery, useToggleBookmarkMutation } from '@/app/redux/api/bookmarks/bookmarksApi'
 import { cookies } from '@/app/redux/utils/cookies'
 import { Bookmark02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import clsx from 'clsx'
 import { jwtDecode } from 'jwt-decode'
-import { FC, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { FC, useMemo } from 'react'
 
 interface Props {
   className?: string
@@ -15,35 +16,42 @@ interface Props {
 }
 
 const BookmarkBtn: FC<Props> = ({ className, bookmarked, postId }) => {
-  const [isBookmarked, setIsBookmarked] = useState(bookmarked)
+  const router = useRouter()
+  const token = cookies.getAccessToken()
+  const userId = useMemo(() => {
+    if (!token) return ''
+    try {
+      const decoded: any = jwtDecode(token)
+      return decoded?.sub || ''
+    } catch { return '' }
+  }, [token])
+
+  const { data: bookmarks } = useGetBookmarksByUserQuery(userId, { skip: !userId })
   const [toggleBookmark] = useToggleBookmarkMutation()
 
+  const existingBookmark = useMemo(() => {
+    if (!bookmarks || !postId) return undefined
+    return bookmarks.find((b: any) => b.post_id === postId)
+  }, [bookmarks, postId])
+
+  const isBookmarked = existingBookmark ? true : (bookmarked ?? false)
+
   const handleBookmark = async () => {
-    if (!postId) {
-      setIsBookmarked(!isBookmarked)
+    if (!postId) return
+
+    if (!token || !userId) {
+      router.push('/login')
       return
     }
 
     try {
-      const token = cookies.getAccessToken()
-      if (!token) {
-        setIsBookmarked(!isBookmarked)
-        return
-      }
-      const decoded: any = jwtDecode(token)
-      const userId = decoded?.sub
-      if (!userId) {
-        setIsBookmarked(!isBookmarked)
-        return
-      }
-
-      setIsBookmarked(!isBookmarked)
       await toggleBookmark({
         userId,
         postId,
+        bookmarkId: existingBookmark?.id,
       }).unwrap()
     } catch {
-      setIsBookmarked(isBookmarked)
+      // Error handled by RTK Query
     }
   }
 

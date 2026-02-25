@@ -1,13 +1,35 @@
+'use client'
+
+import { cookies } from '@/app/redux/utils/cookies'
+import { jwtDecode } from 'jwt-decode'
+import { useRouter } from 'next/navigation'
+import { useEffect, useMemo } from 'react'
 import DashboardProfileEditor from './DashboardProfileEditor'
 
-export const metadata = {
-  title: 'Dashboard - Edit Profile',
-  description: 'Edit your profile information',
-}
-
 const Page = () => {
-  // TODO: Replace with actual user ID from auth
-  const userId = 'user-id-placeholder'
+  const router = useRouter()
+  const token = cookies.getAccessToken()
+  const userId = useMemo(() => {
+    if (!token) return ''
+    try {
+      const decoded: any = jwtDecode(token)
+      return decoded?.sub || ''
+    } catch { return '' }
+  }, [token])
+
+  useEffect(() => {
+    if (!token) {
+      router.push('/login')
+    }
+  }, [token, router])
+
+  if (!userId) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    )
+  }
 
   return (
     <div>

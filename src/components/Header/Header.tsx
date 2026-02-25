@@ -1,14 +1,12 @@
-import { getNavMegaMenu } from '@/data/navigation'
+import { getSplitNavigation } from '@/data/navigation'
 import { getAllPosts } from '@/data/posts'
-import { Button } from '@/shared/Button'
 import Logo from '@/shared/Logo'
-import { PlusIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { FC } from 'react'
-import AvatarDropdown from './AvatarDropdown'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
-import MegaMenuPopover from './MegaMenuPopover'
-import NotifyDropdown from './NotifyDropdown'
+import HeaderAuthButtons from './HeaderAuthButtons'
+import Navigation from './Navigation/Navigation'
+import MoreDropdown from './MoreDropdown'
 import SearchModal from './SearchModal'
 
 interface HeaderProps {
@@ -17,7 +15,7 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = async ({ bottomBorder, className }) => {
-  const megamenu = await getNavMegaMenu()
+  const { visible, overflow } = await getSplitNavigation()
   const featuredPosts = (await getAllPosts()).slice(0, 2)
 
   return (
@@ -30,25 +28,28 @@ const Header: FC<HeaderProps> = async ({ bottomBorder, className }) => {
             !bottomBorder && 'has-[.header-popover-full-panel]:border-b'
           )}
         >
-          <div className="flex items-center gap-x-4 sm:gap-x-5 lg:gap-x-7">
+          {/* Left: Logo + Search */}
+          <div className="flex items-center gap-x-3 sm:gap-x-4">
             <Logo />
-            <div className="h-8 border-l"></div>
-            <div className="max-w-xs md:w-60 xl:w-72">
+            <div className="h-8 border-l hidden sm:block"></div>
+            <div className="max-w-xs hidden sm:block md:w-48 xl:w-60">
               <SearchModal type="type2" />
             </div>
           </div>
 
-          <div className="ms-auto flex items-center justify-end gap-x-0.5">
-            <MegaMenuPopover megamenu={megamenu} featuredPosts={featuredPosts} className="hidden lg:block" />
-            <div className="ms-6 me-3 hidden h-8 border-l lg:block" />
-            <div className="hidden sm:block">
-              <Button className="h-10 px-3!" href={'/submission'} plain>
-                <PlusIcon className="size-5!" />
-                Create
-              </Button>
+          {/* Center: Navigation links (desktop only) */}
+          <div className="hidden lg:flex items-center overflow-hidden">
+            <Navigation menu={visible} featuredPosts={featuredPosts} />
+            {overflow.length > 0 && <MoreDropdown items={overflow} />}
+          </div>
+
+          {/* Right: Auth buttons + Hamburger */}
+          <div className="ms-auto flex items-center justify-end gap-x-1">
+            {/* Mobile search */}
+            <div className="sm:hidden">
+              <SearchModal type="type2" />
             </div>
-            <NotifyDropdown className="me-3" />
-            <AvatarDropdown />
+            <HeaderAuthButtons />
             <div className="ms-2.5 flex lg:hidden">
               <HamburgerBtnMenu />
             </div>

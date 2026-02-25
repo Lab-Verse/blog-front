@@ -28,6 +28,7 @@ import { useState } from 'react'
 
 const PageHeader = ({ author, className }: { author: TAuthor; className?: string }) => {
   const { name, description, cover, avatar, handle } = author
+  const authorId = (author as any).id
 
   return (
     <div className={clsx('w-full', className)}>
@@ -61,17 +62,19 @@ const PageHeader = ({ author, className }: { author: TAuthor; className?: string
                 <VerifyIcon iconClass="size-6 lg:size-7" />
               </div>
               <p className="text-sm/6 text-neutral-600 dark:text-neutral-400">{description}</p>
-              <Link href="#" className="flex items-center gap-x-2 text-xs text-neutral-500 dark:text-neutral-400">
-                <GlobeAltIcon className="size-4" />
-                <span className="font-medium text-neutral-700 dark:text-neutral-300">https://example.com/me</span>
-              </Link>
+              {(author as any).website && (author as any).website !== '#' && (
+                <a href={(author as any).website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-x-2 text-xs text-neutral-500 dark:text-neutral-400">
+                  <GlobeAltIcon className="size-4" />
+                  <span className="font-medium text-neutral-700 dark:text-neutral-300">{(author as any).website}</span>
+                </a>
+              )}
               <SocialsList />
             </div>
           </div>
 
           {/* ACTIONS */}
           <div className="flex gap-x-2">
-            <FollowButton className="py-[calc(--spacing(2)-1px)]!" />
+            <FollowButton className="py-[calc(--spacing(2)-1px)]!" authorId={authorId} />
             <ShareDropdown handle={handle} />
             <ActionDropdown handle={handle} author={author} />
           </div>

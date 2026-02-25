@@ -29,12 +29,12 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ userId }) => {
     }
 
     const statCards = [
-        { label: 'Total Posts', value: stats.totalPosts, color: 'blue', link: '/dashboard/posts' },
-        { label: 'Published', value: stats.publishedPosts, color: 'green', link: '/dashboard/posts' },
-        { label: 'Drafts', value: stats.draftPosts, color: 'yellow', link: '/dashboard/posts' },
-        { label: 'Total Views', value: stats.totalViews.toLocaleString(), color: 'indigo', link: null },
-        { label: 'Total Likes', value: stats.totalLikes.toLocaleString(), color: 'rose', link: null },
-        { label: 'Total Comments', value: stats.totalComments.toLocaleString(), color: 'teal', link: null },
+        { label: 'Total Posts', value: stats.totalPosts, link: '/dashboard/posts', borderClass: 'border-blue-200 dark:border-blue-800', bgClass: 'bg-blue-50 dark:bg-blue-900/20' },
+        { label: 'Published', value: stats.publishedPosts, link: '/dashboard/posts', borderClass: 'border-green-200 dark:border-green-800', bgClass: 'bg-green-50 dark:bg-green-900/20' },
+        { label: 'Drafts', value: stats.draftPosts, link: '/dashboard/posts', borderClass: 'border-yellow-200 dark:border-yellow-800', bgClass: 'bg-yellow-50 dark:bg-yellow-900/20' },
+        { label: 'Total Views', value: stats.totalViews.toLocaleString(), link: null, borderClass: 'border-indigo-200 dark:border-indigo-800', bgClass: 'bg-indigo-50 dark:bg-indigo-900/20' },
+        { label: 'Total Likes', value: stats.totalLikes.toLocaleString(), link: null, borderClass: 'border-rose-200 dark:border-rose-800', bgClass: 'bg-rose-50 dark:bg-rose-900/20' },
+        { label: 'Total Comments', value: stats.totalComments.toLocaleString(), link: null, borderClass: 'border-teal-200 dark:border-teal-800', bgClass: 'bg-teal-50 dark:bg-teal-900/20' },
     ]
 
     return (
@@ -44,7 +44,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ userId }) => {
                 {statCards.map((stat) => (
                     <div
                         key={stat.label}
-                        className={`rounded-lg border border-${stat.color}-200 bg-${stat.color}-50 p-6 dark:border-${stat.color}-800 dark:bg-${stat.color}-900/20`}
+                        className={`rounded-lg border ${stat.borderClass} ${stat.bgClass} p-6`}
                     >
                         <div className="flex items-center justify-between">
                             <div>

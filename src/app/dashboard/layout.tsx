@@ -3,13 +3,13 @@
 import NotifyDropdown from '@/components/Header/NotifyDropdown'
 import Logo from '@/shared/Logo'
 import { Divider } from '@/shared/divider'
-import { Dropdown, DropdownButton, DropdownMenu } from '@/shared/dropdown'
+import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/shared/dropdown'
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { ReactNode, useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useGetUserByIdQuery } from '../redux/api/users/usersApi'
 import { cookies } from '../redux/utils/cookies'
 
@@ -30,32 +30,33 @@ const navigation = [
   { name: 'Billing', href: '/dashboard/billing-address' },
   { name: 'Submit post', href: '/submission' },
 ]
-const userNavigation = [
-  { name: 'Your Profile', href: '/dashboard/posts' },
-  { name: 'Settings', href: '/dashboard/edit-profile' },
-  { name: 'Sign out', href: '#' },
-]
 
 export default function Layout({ children }: { children: ReactNode }) {
+  const router = useRouter()
   const [userId, setUserId] = useState('')
-  const { data: user, isLoading, isError } = useGetUserByIdQuery(userId, { skip: !userId })
+  const { data: user } = useGetUserByIdQuery(userId, { skip: !userId })
 
   const profilePic = user?.avatar && user.avatar !== 'default-avatar.png' 
     ? user.avatar 
     : '/images/musicWave.png';
 
-  console.log('User:', user)
-  // Get the access token from cookies
   const accessToken = cookies.getAccessToken()
 
   useEffect(() => {
-    // If access token exists, decode and extract userId
     if (accessToken) {
-      const decoded: any = jwtDecode(accessToken)
-      console.log('Decoded JWT:', decoded)
-      setUserId(decoded?.sub || null) // Assuming userId is stored as `sub`
+      try {
+        const decoded: any = jwtDecode(accessToken)
+        setUserId(decoded?.sub || '')
+      } catch {
+        setUserId('')
+      }
     }
   }, [accessToken])
+
+  const handleSignOut = () => {
+    cookies.clearAuthTokens()
+    router.push('/login')
+  }
 
   const pathname = usePathname()
   const isActive = (href: string) => pathname === href
@@ -106,11 +107,9 @@ export default function Layout({ children }: { children: ReactNode }) {
                     <Avatar alt="avatar" src={profilePic} className="size-8" width={32} height={32} sizes="32px" />
                   </DropdownButton>
                   <DropdownMenu>
-                    {/* {userProfile?Navigation.map((item) => (
-                      <DropdownItem key={item.name} href={item.href}>
-                        {item.name}
-                      </DropdownItem>
-                    ))} */}
+                    <DropdownItem href="/dashboard/posts">Your Profile</DropdownItem>
+                    <DropdownItem href="/dashboard/edit-profile">Settings</DropdownItem>
+                    <DropdownItem onClick={handleSignOut}>Sign out</DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>
@@ -150,11 +149,11 @@ export default function Layout({ children }: { children: ReactNode }) {
             <div className="border-t border-neutral-200 pt-4 pb-3 dark:border-neutral-700">
               <div className="flex items-center px-4">
                 <div className="shrink-0">
-                  {/* <Avatar src={userProfile?.imageUrl} className="size-10" width={40} height={40} sizes="40px" /> */}
+                  <Avatar src={profilePic} className="size-10" width={40} height={40} sizes="40px" />
                 </div>
                 <div className="ms-3">
-                  {/* <div className="text-base font-medium">{userProfile?.name}</div> */}
-                  {/* <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{userProfile?.email}</div> */}
+                  <div className="text-base font-medium">{user?.display_name || user?.username || 'User'}</div>
+                  <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{user?.email || ''}</div>
                 </div>
                 <button
                   type="button"
@@ -166,16 +165,27 @@ export default function Layout({ children }: { children: ReactNode }) {
                 </button>
               </div>
               <div className="mt-3 space-y-1">
-                {userNavigation.map((item) => (
-                  <DisclosureButton
-                    key={item.name}
-                    as={Link}
-                    href={item.href}
-                    className="block px-4 py-2 text-base font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
-                  >
-                    {item.name}
-                  </DisclosureButton>
-                ))}
+                <DisclosureButton
+                  as={Link}
+                  href="/dashboard/posts"
+                  className="block px-4 py-2 text-base font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                >
+                  Your Profile
+                </DisclosureButton>
+                <DisclosureButton
+                  as={Link}
+                  href="/dashboard/edit-profile"
+                  className="block px-4 py-2 text-base font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                >
+                  Settings
+                </DisclosureButton>
+                <DisclosureButton
+                  as="button"
+                  onClick={handleSignOut}
+                  className="block w-full text-left px-4 py-2 text-base font-medium text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-200"
+                >
+                  Sign out
+                </DisclosureButton>
               </div>
             </div>
           </DisclosurePanel>

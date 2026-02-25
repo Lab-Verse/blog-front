@@ -1,6 +1,12 @@
 import { fetchCategories, buildCategoryTree, type ApiCategory } from '@/utils/serverApi'
 
 /**
+ * Maximum number of visible nav items before overflow into "More" dropdown.
+ * Includes "Home" link. E.g. 8 means Home + 7 categories shown inline.
+ */
+const MAX_VISIBLE_NAV = 8
+
+/**
  * Build navigation dynamically from API categories.
  * Parent categories become top-level nav items.
  * Their children appear in mega-menu / dropdown format.
@@ -14,6 +20,20 @@ export async function getNavigation(): Promise<TNavigationItem[]> {
     // Fallback navigation if API is unavailable
     return getFallbackNavigation()
   }
+}
+
+/**
+ * Returns { visible, overflow } split of navigation items.
+ * `visible` items show inline; `overflow` go inside a "More" dropdown.
+ */
+export async function getSplitNavigation(): Promise<{
+  visible: TNavigationItem[]
+  overflow: TNavigationItem[]
+}> {
+  const nav = await getNavigation()
+  const visible = nav.slice(0, MAX_VISIBLE_NAV)
+  const overflow = nav.slice(MAX_VISIBLE_NAV)
+  return { visible, overflow }
 }
 
 function buildNavigationFromCategories(
@@ -30,7 +50,7 @@ function buildNavigationFromCategories(
   const standaloneCats = tree.filter((c) => !c.children || c.children.length === 0)
 
   // Add parent categories with mega-menu showing sub-categories
-  for (const parent of parentCats.slice(0, 4)) {
+  for (const parent of parentCats) {
     const megaChildren: TNavigationItem[] = []
 
     // Split subcategories into columns of up to 7
@@ -59,17 +79,14 @@ function buildNavigationFromCategories(
     })
   }
 
-  // Add standalone categories as simple nav links (up to 3)
-  for (const cat of standaloneCats.slice(0, 3)) {
+  // Add standalone categories as simple nav links
+  for (const cat of standaloneCats) {
     nav.push({
       id: String(cat.id),
       href: `/category/${cat.slug}`,
       name: cat.name,
     })
   }
-
-  // Search link
-  nav.push({ id: 'search', href: '/search', name: 'Search' })
 
   return nav
 }

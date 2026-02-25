@@ -1,15 +1,13 @@
-import { getNavigation } from '@/data/navigation'
+import { getSplitNavigation } from '@/data/navigation'
 import { fetchPosts } from '@/utils/serverApi'
 import { transformPosts } from '@/utils/dataTransformers'
-import { Button } from '@/shared/Button'
 import Logo from '@/shared/Logo'
-import { PlusIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { FC } from 'react'
-import AvatarDropdown from './AvatarDropdown'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
+import HeaderAuthButtons from './HeaderAuthButtons'
+import MoreDropdown from './MoreDropdown'
 import Navigation from './Navigation/Navigation'
-import NotifyDropdown from './NotifyDropdown'
 import SearchModal from './SearchModal'
 
 interface Props {
@@ -18,7 +16,7 @@ interface Props {
 }
 
 const Header2: FC<Props> = async ({ bottomBorder, className }) => {
-  const navigationMenu = await getNavigation()
+  const { visible, overflow } = await getSplitNavigation()
 
   let featuredPosts: any[] = []
   try {
@@ -38,27 +36,24 @@ const Header2: FC<Props> = async ({ bottomBorder, className }) => {
       )}
     >
       <div className="container flex h-20 justify-between">
-        <div className="flex flex-1 items-center gap-x-4 sm:gap-x-5 lg:gap-x-7">
+        <div className="flex items-center gap-x-3 sm:gap-x-4">
           <Logo />
-          <div className="h-8 border-l"></div>
-          <div className="-ms-1.5">
+          <div className="h-8 border-l hidden sm:block"></div>
+          <div className="-ms-1.5 hidden sm:block">
             <SearchModal type="type1" />
           </div>
         </div>
 
-        <div className="mx-4 hidden flex-2 justify-center lg:flex">
-          <Navigation menu={navigationMenu} featuredPosts={featuredPosts} />
+        <div className="mx-4 hidden flex-2 justify-center lg:flex items-center overflow-hidden">
+          <Navigation menu={visible} featuredPosts={featuredPosts} />
+          {overflow.length > 0 && <MoreDropdown items={overflow} />}
         </div>
 
-        <div className="flex flex-1 items-center justify-end gap-x-0.5">
-          <div className="hidden sm:block">
-            <Button className="h-10 px-3!" href={'/submission'} plain>
-              <PlusIcon className="size-5!" />
-              Create
-            </Button>
+        <div className="flex items-center justify-end gap-x-1">
+          <div className="sm:hidden">
+            <SearchModal type="type1" />
           </div>
-          <NotifyDropdown className="me-3" />
-          <AvatarDropdown />
+          <HeaderAuthButtons />
           <div className="ms-2 flex lg:hidden">
             <HamburgerBtnMenu />
           </div>

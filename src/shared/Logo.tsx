@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
@@ -7,17 +8,24 @@ interface Props {
   size?: string
 }
 
-const Logo: React.FC<Props> = ({ className, size = 'size-12 sm:size-14' }) => {
+const Logo: React.FC<Props> = ({ className, size }) => {
   return (
     <Link
       href="/"
       className={clsx(
-        'inline-flex shrink-0 items-center justify-center rounded-xl bg-indigo-600 font-bold text-white',
+        'inline-flex shrink-0 items-center',
         className,
         size,
       )}
     >
-      <span className="text-lg sm:text-xl">TWA</span>
+      <Image
+        src="/images/twa-logo.svg"
+        alt="TWA - The World Ambassador"
+        width={120}
+        height={50}
+        className="h-10 w-auto sm:h-12"
+        priority
+      />
     </Link>
   )
 }

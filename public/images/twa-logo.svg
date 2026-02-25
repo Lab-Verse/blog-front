@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 50" width="120" height="50">
+  <!-- TWA Logo - The World Ambassador -->
+  <rect x="2" y="5" width="42" height="40" rx="8" fill="#1e2a4a"/>
+  <text x="23" y="33" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-weight="bold" fill="white" letter-spacing="1">TWA</text>
+  <!-- Cyan orbit arc -->
+  <ellipse cx="42" cy="25" rx="22" ry="28" fill="none" stroke="#00e5cc" stroke-width="2.5" stroke-dasharray="60 120" transform="rotate(-25, 42, 25)"/>
+</svg>
