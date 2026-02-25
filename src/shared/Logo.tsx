@@ -21,7 +21,7 @@ const Logo: React.FC<Props> = ({ className, size }) => {
       <Image
         src="/images/twa-logo.svg"
         alt="TWA - The World Ambassador"
-        width={120}
+        width={66}
         height={50}
         className="h-10 w-auto sm:h-12"
         priority

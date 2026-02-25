@@ -1,4 +1,4 @@
-import { getNavigation } from '@/data/navigation'
+import { getSplitNavigation } from '@/data/navigation'
 import { fetchPosts } from '@/utils/serverApi'
 import { transformPosts } from '@/utils/dataTransformers'
 import Logo from '@/shared/Logo'
@@ -7,6 +7,7 @@ import { FC } from 'react'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import HeaderAuthButtons from './HeaderAuthButtons'
 import Navigation from './Navigation/Navigation'
+import MoreDropdown from './MoreDropdown'
 
 interface Props {
   bottomBorder?: boolean
@@ -14,7 +15,7 @@ interface Props {
 }
 
 const Header2: FC<Props> = async ({ bottomBorder, className }) => {
-  const navItems = await getNavigation()
+  const { visible, overflow } = await getSplitNavigation()
 
   let featuredPosts: any[] = []
   try {
@@ -37,7 +38,8 @@ const Header2: FC<Props> = async ({ bottomBorder, className }) => {
         <Logo />
 
         <nav className="hidden lg:flex flex-1 items-center justify-center">
-          <Navigation menu={navItems} featuredPosts={featuredPosts} />
+          <Navigation menu={visible} featuredPosts={featuredPosts} />
+          {overflow.length > 0 && <MoreDropdown items={overflow} />}
         </nav>
 
         <div className="ms-auto flex items-center justify-end gap-x-1 lg:ms-0">

@@ -4,7 +4,6 @@ import { fetchCategories, buildCategoryTree, type ApiCategory } from '@/utils/se
  * Build navigation dynamically from API categories.
  * Parent categories become top-level nav items.
  * Their children appear in mega-menu / dropdown format.
- * All parent categories are shown — no overflow/truncation.
  */
 export async function getNavigation(): Promise<TNavigationItem[]> {
   try {
@@ -17,14 +16,26 @@ export async function getNavigation(): Promise<TNavigationItem[]> {
   }
 }
 
+/**
+ * Returns { visible, overflow } split of navigation items.
+ * `visible` = parent categories with children (shown inline with mega-menus)
+ * `overflow` = standalone categories without children (shown in "More" dropdown)
+ */
+export async function getSplitNavigation(): Promise<{
+  visible: TNavigationItem[]
+  overflow: TNavigationItem[]
+}> {
+  const nav = await getNavigation()
+  const visible = nav.filter((item) => item.type === 'mega-menu')
+  const overflow = nav.filter((item) => !item.type)
+  return { visible, overflow }
+}
+
 function buildNavigationFromCategories(
   tree: (ApiCategory & { children?: ApiCategory[] })[],
   allCategories: ApiCategory[]
 ): TNavigationItem[] {
   const nav: TNavigationItem[] = []
-
-  // Home link
-  nav.push({ id: 'home', href: '/', name: 'Home' })
 
   // Parent categories with subcategories as mega-menu, plain categories as links
   const parentCats = tree.filter((c) => c.children && c.children.length > 0)
@@ -74,7 +85,6 @@ function buildNavigationFromCategories(
 
 function getFallbackNavigation(): TNavigationItem[] {
   return [
-    { id: 'home', href: '/', name: 'Home' },
     { id: 'search', href: '/search', name: 'Search' },
   ]
 }

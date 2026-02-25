@@ -1,4 +1,4 @@
-import { getNavigation } from '@/data/navigation'
+import { getSplitNavigation } from '@/data/navigation'
 import { getAllPosts } from '@/data/posts'
 import Logo from '@/shared/Logo'
 import clsx from 'clsx'
@@ -6,6 +6,7 @@ import { FC } from 'react'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import HeaderAuthButtons from './HeaderAuthButtons'
 import Navigation from './Navigation/Navigation'
+import MoreDropdown from './MoreDropdown'
 
 interface HeaderProps {
   bottomBorder?: boolean
@@ -13,7 +14,7 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = async ({ bottomBorder, className }) => {
-  const navItems = await getNavigation()
+  const { visible, overflow } = await getSplitNavigation()
   const featuredPosts = (await getAllPosts()).slice(0, 2)
 
   return (
@@ -29,9 +30,10 @@ const Header: FC<HeaderProps> = async ({ bottomBorder, className }) => {
           {/* Logo */}
           <Logo />
 
-          {/* Navigation links (desktop only) - all parent categories */}
+          {/* Navigation links (desktop only) */}
           <nav className="hidden lg:flex flex-1 items-center justify-center">
-            <Navigation menu={navItems} featuredPosts={featuredPosts} />
+            <Navigation menu={visible} featuredPosts={featuredPosts} />
+            {overflow.length > 0 && <MoreDropdown items={overflow} />}
           </nav>
 
           {/* Right: Auth buttons + Hamburger */}
