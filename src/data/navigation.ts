@@ -1,15 +1,10 @@
 import { fetchCategories, buildCategoryTree, type ApiCategory } from '@/utils/serverApi'
 
 /**
- * Maximum number of visible nav items before overflow into "More" dropdown.
- * Includes "Home" link. E.g. 8 means Home + 7 categories shown inline.
- */
-const MAX_VISIBLE_NAV = 8
-
-/**
  * Build navigation dynamically from API categories.
  * Parent categories become top-level nav items.
  * Their children appear in mega-menu / dropdown format.
+ * All parent categories are shown — no overflow/truncation.
  */
 export async function getNavigation(): Promise<TNavigationItem[]> {
   try {
@@ -20,20 +15,6 @@ export async function getNavigation(): Promise<TNavigationItem[]> {
     // Fallback navigation if API is unavailable
     return getFallbackNavigation()
   }
-}
-
-/**
- * Returns { visible, overflow } split of navigation items.
- * `visible` items show inline; `overflow` go inside a "More" dropdown.
- */
-export async function getSplitNavigation(): Promise<{
-  visible: TNavigationItem[]
-  overflow: TNavigationItem[]
-}> {
-  const nav = await getNavigation()
-  const visible = nav.slice(0, MAX_VISIBLE_NAV)
-  const overflow = nav.slice(MAX_VISIBLE_NAV)
-  return { visible, overflow }
 }
 
 function buildNavigationFromCategories(

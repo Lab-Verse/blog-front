@@ -1,4 +1,4 @@
-import { getSplitNavigation } from '@/data/navigation'
+import { getNavigation } from '@/data/navigation'
 import { fetchPosts } from '@/utils/serverApi'
 import { transformPosts } from '@/utils/dataTransformers'
 import Logo from '@/shared/Logo'
@@ -6,9 +6,7 @@ import clsx from 'clsx'
 import { FC } from 'react'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import HeaderAuthButtons from './HeaderAuthButtons'
-import MoreDropdown from './MoreDropdown'
 import Navigation from './Navigation/Navigation'
-import SearchModal from './SearchModal'
 
 interface Props {
   bottomBorder?: boolean
@@ -16,7 +14,7 @@ interface Props {
 }
 
 const Header2: FC<Props> = async ({ bottomBorder, className }) => {
-  const { visible, overflow } = await getSplitNavigation()
+  const navItems = await getNavigation()
 
   let featuredPosts: any[] = []
   try {
@@ -35,24 +33,14 @@ const Header2: FC<Props> = async ({ bottomBorder, className }) => {
         className
       )}
     >
-      <div className="container flex h-20 justify-between">
-        <div className="flex items-center gap-x-3 sm:gap-x-4">
-          <Logo />
-          <div className="h-8 border-l hidden sm:block"></div>
-          <div className="-ms-1.5 hidden sm:block">
-            <SearchModal type="type1" />
-          </div>
-        </div>
+      <div className="container flex h-20 items-center gap-x-3">
+        <Logo />
 
-        <div className="mx-4 hidden flex-2 justify-center lg:flex items-center overflow-hidden">
-          <Navigation menu={visible} featuredPosts={featuredPosts} />
-          {overflow.length > 0 && <MoreDropdown items={overflow} />}
-        </div>
+        <nav className="hidden lg:flex flex-1 items-center justify-center">
+          <Navigation menu={navItems} featuredPosts={featuredPosts} />
+        </nav>
 
-        <div className="flex items-center justify-end gap-x-1">
-          <div className="sm:hidden">
-            <SearchModal type="type1" />
-          </div>
+        <div className="ms-auto flex items-center justify-end gap-x-1 lg:ms-0">
           <HeaderAuthButtons />
           <div className="ms-2 flex lg:hidden">
             <HamburgerBtnMenu />
