@@ -19,6 +19,24 @@ const nextConfig = {
         hostname: 'images.pexels.com',
         pathname: '/**',
       },
+      // Cloudflare R2 storage (backend uploads)
+      {
+        protocol: 'https',
+        hostname: '*.r2.cloudflarestorage.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.r2.dev',
+        pathname: '/**',
+      },
+      // Local API server
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/**',
+      },
     ],
   },
 }

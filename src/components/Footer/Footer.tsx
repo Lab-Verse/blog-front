@@ -1,4 +1,5 @@
 import { CustomLink } from '@/data/types'
+import { fetchCategories } from '@/utils/serverApi'
 import Logo from '@/shared/Logo'
 import SocialsList1 from '@/shared/SocialsList1'
 import React from 'react'
@@ -9,54 +10,63 @@ export interface WidgetFooterMenu {
   menus: CustomLink[]
 }
 
-const widgetMenus: WidgetFooterMenu[] = [
-  {
-    id: '5',
-    title: 'Getting started',
-    menus: [
-      { href: '/', label: 'Installation' },
-      { href: '/', label: 'Release Notes' },
-      { href: '/', label: 'Upgrade Guide' },
-      { href: '/', label: 'Browser Support' },
-      { href: '/', label: 'Editor Support' },
-    ],
-  },
+const staticMenus: WidgetFooterMenu[] = [
   {
     id: '1',
-    title: 'Explore',
+    title: 'Quick Links',
     menus: [
-      { href: '/', label: 'Design features' },
-      { href: '/', label: 'Prototyping' },
-      { href: '/', label: 'Design systems' },
-      { href: '/', label: 'Pricing' },
-      { href: '/', label: 'Customers' },
+      { href: '/', label: 'Home' },
+      { href: '/search', label: 'Search' },
+      { href: '/about', label: 'About Us' },
+      { href: '/contact', label: 'Contact' },
     ],
   },
   {
     id: '2',
-    title: 'Resources',
+    title: 'Account',
     menus: [
-      { href: '/', label: 'Best practices' },
-      { href: '/', label: 'Support' },
-      { href: '/', label: 'Developers' },
-      { href: '/', label: 'Learn design' },
-      { href: '/', label: "What's new" },
+      { href: '/login', label: 'Login' },
+      { href: '/signup', label: 'Sign Up' },
+      { href: '/dashboard', label: 'Dashboard' },
+      { href: '/dashboard/posts', label: 'My Posts' },
+      { href: '/submission', label: 'Write a Post' },
     ],
   },
   {
-    id: '4',
-    title: 'Community',
+    id: '3',
+    title: 'Legal',
     menus: [
-      { href: '/', label: 'Discussion Forums' },
-      { href: '/', label: 'Code of Conduct' },
-      { href: '/', label: 'Community Resources' },
-      { href: '/', label: 'Contributing' },
-      { href: '/', label: 'Concurrent Mode' },
+      { href: '/privacy-policy', label: 'Privacy Policy' },
+      { href: '/terms-of-service', label: 'Terms of Service' },
+      { href: '/cookie-policy', label: 'Cookie Policy' },
     ],
   },
 ]
 
-const Footer: React.FC = () => {
+const Footer: React.FC = async () => {
+  let categoryMenus: WidgetFooterMenu[] = []
+  try {
+    const categories = await fetchCategories()
+    const topCategories = categories
+      .filter((c) => !c.parent_id)
+      .slice(0, 6)
+    if (topCategories.length > 0) {
+      categoryMenus = [
+        {
+          id: 'cats',
+          title: 'Categories',
+          menus: topCategories.map((c) => ({
+            href: `/category/${c.slug}`,
+            label: c.name,
+          })),
+        },
+      ]
+    }
+  } catch {
+    // Categories unavailable, skip
+  }
+
+  const widgetMenus = [...categoryMenus, ...staticMenus]
   const renderWidgetMenuItem = (menu: WidgetFooterMenu, index: number) => {
     return (
       <div key={index} className="text-sm">

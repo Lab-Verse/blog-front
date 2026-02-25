@@ -1,159 +1,166 @@
 import BackgroundSection from '@/components/BackgroundSection'
 import SectionAds from '@/components/SectionAds'
 import SectionBecomeAnAuthor from '@/components/SectionBecomeAnAuthor'
-import SectionGridAuthorBox from '@/components/SectionGridAuthorBox'
-import SectionGridPosts from '@/components/SectionGridPosts'
-import SectionLargeSlider from '@/components/SectionLargeSlider'
-import SectionMagazine1 from '@/components/SectionMagazine1'
 import SectionMagazine2 from '@/components/SectionMagazine2'
-import SectionMagazine7 from '@/components/SectionMagazine7'
 import SectionMagazine8 from '@/components/SectionMagazine8'
 import SectionMagazine9 from '@/components/SectionMagazine9'
+import SectionMagazine10 from '@/components/SectionMagazine10'
 import SectionPostsWithWidgets from '@/components/SectionPostsWithWidgets'
 import SectionSliderNewAuthors from '@/components/SectionSliderNewAuthors'
-import SectionSliderNewCategories from '@/components/SectionSliderNewCategories'
 import SectionSliderPosts from '@/components/SectionSliderPosts'
-import SectionSubscribe2 from '@/components/SectionSubscribe2'
-import SectionVideos from '@/components/SectionVideos'
-import { getAuthors } from '@/data/authors'
-import { getCategories } from '@/data/categories'
-import { getAllPosts, getPostsAudio, getPostsGallery, getPostsVideo } from '@/data/posts'
+import { fetchPosts, fetchCategories, fetchCategoryPosts, fetchAuthors, buildCategoryTree } from '@/utils/serverApi'
+import { transformPosts, transformCategories, transformAuthors, transformCategoriesWithPosts } from '@/utils/dataTransformers'
+import { Divider } from '@/shared/divider'
 import { Metadata } from 'next'
+import JsonLd from '@/components/seo/JsonLd'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Home',
-  description: 'Home page of the application showcasing various sections and posts.',
+  description: 'Your go-to source for the latest news, in-depth articles, and expert insights on technology, travel, sports, finance, and more.',
 }
 
 const Page = async () => {
-  const posts = await getAllPosts()
-  const audioPosts = await getPostsAudio()
-  const videoPosts = await getPostsVideo()
-  const galleryPosts = await getPostsGallery()
-  const authors = await getAuthors()
-  const categories = await getCategories()
+  // Fetch data from API
+  const [apiPosts, apiCategories] = await Promise.all([
+    fetchPosts(),
+    fetchCategories(),
+  ])
+
+  // Transform API data to theme format
+  const posts = transformPosts(apiPosts)
+  const categories = transformCategories(apiCategories)
+
+  // Extract unique authors from posts
+  const authorMap = new Map<string, (typeof posts)[0]['author']>()
+  for (const post of posts) {
+    if (post.author && !authorMap.has(post.author.id)) {
+      authorMap.set(post.author.id, post.author)
+    }
+  }
+  const authors = Array.from(authorMap.values()).map((a) => ({
+    id: a.id,
+    name: a.name,
+    handle: a.handle,
+    career: '',
+    description: '',
+    count: posts.filter((p) => p.author.id === a.id).length,
+    joinedDate: '',
+    reviewCount: 0,
+    rating: 0,
+    avatar: a.avatar,
+    cover: { src: '/images/placeholder.png', alt: a.name, width: 1920, height: 1080 },
+  }))
+
+  // Fetch posts by specific categories for the hero section
+  const categoryTree = buildCategoryTree(apiCategories)
+  const categoriesWithPosts: Array<{
+    name: string
+    posts: typeof posts
+  }> = []
+
+  // Get up to 3 categories with their posts for sections
+  for (const cat of apiCategories.slice(0, 3)) {
+    const catPosts = await fetchCategoryPosts(cat.id)
+    categoriesWithPosts.push({
+      name: cat.name,
+      posts: transformPosts(catPosts),
+    })
+  }
+
+  // Build categories with posts for widgets
+  const categoryPostsMap = new Map<string, typeof apiPosts>()
+  for (const cat of apiCategories.slice(0, 7)) {
+    const catPosts = await fetchCategoryPosts(cat.id)
+    categoryPostsMap.set(cat.id, catPosts)
+  }
+  const categoriesForWidgets = transformCategoriesWithPosts(
+    apiCategories.slice(0, 7),
+    categoryPostsMap
+  )
 
   return (
-    <div className="relative pb-28 lg:pb-32">
-      <div className="relative container space-y-28 lg:space-y-32">
-        <SectionLargeSlider
-          heading="Editor's pick"
-          subHeading="The most outstanding articles"
-          className="pt-10 lg:pt-20"
-          posts={audioPosts.slice(3, 8)}
-        />
+    <div className="relative container space-y-28 pb-28 lg:space-y-32 lg:pb-32">
+      {/* JSON-LD Structured Data for Homepage */}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog',
+          url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001',
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'}/search?s={search_term_string}`,
+            'query-input': 'required name=search_term_string',
+          },
+        }}
+      />
 
-        <div className="relative py-16 lg:py-20">
-          <BackgroundSection />
-          <SectionSliderNewAuthors
-            heading="Newest authors"
-            subHeading="The latest articles from our authors"
-            authors={authors.slice(0, 10)}
-          />
-        </div>
+      {/* Hero Grid Section - Country/Category based news */}
+      <SectionMagazine10 posts={posts.slice(0, 8)} />
 
-        <SectionSliderNewCategories
-          heading="Explore categories"
-          subHeading="Explore the categories"
-          categories={categories.slice(0, 10)}
-          categoryCardType="card4"
-        />
+      {/* POPULAR News */}
+      <SectionMagazine9
+        heading="POPULAR News"
+        subHeading="Explore the most popular categories"
+        posts={posts.slice(0, 18)}
+      />
 
-        <div className="relative py-16 lg:py-20">
-          <BackgroundSection />
-          <SectionSliderPosts
-            postCardName="card10V2"
-            heading="Explore latest articles"
-            subHeading="Click on the icon to enjoy the music"
-            posts={posts.slice(0, 6)}
-          />
-        </div>
+      {/* Latest Audio NEWS */}
+      <SectionMagazine8
+        posts={posts.filter((p) => p.postType === 'audio').slice(0, 6).length > 0
+          ? posts.filter((p) => p.postType === 'audio').slice(0, 6)
+          : posts.slice(0, 6)}
+        heading="Latest audio NEWS"
+        dimHeading="Over 1000+ audio articles"
+      />
 
-        <SectionMagazine1
-          heading="Most viewed articles"
-          subHeading="Explore the most viewed articles"
-          posts={posts.slice(0, 6)}
-        />
+      <SectionAds />
 
-        <SectionAds />
-
-        <SectionMagazine7
-          posts={galleryPosts}
-          heading="The gallery posts"
-          dimHeading="The best way to showcase your work"
-        />
-      </div>
-
-      <div className="my-28 bg-neutral-100 py-28 lg:py-32 dark:bg-neutral-900">
-        <div className="relative container">
-          <SectionGridPosts
-            headingIsCenter
-            postCardName="card11"
-            heading="Explore latest video articles"
-            subHeading="Hover over the card for a video preview"
-            posts={videoPosts.slice(0, 8)}
-            gridClass="md:grid-cols-2 lg:grid-cols-4"
-          />
-        </div>
-      </div>
-
-      <div className="container space-y-28 lg:space-y-32">
-        <SectionMagazine8
-          posts={audioPosts.slice(0, 6)}
-          heading="Stream live audio"
-          dimHeading="Click on the icon to enjoy the music"
-        />
-
-        <div className="relative py-16 lg:py-20">
-          <BackgroundSection />
-          <SectionMagazine9
-            posts={audioPosts.slice(0, 9)}
-            heading="Stream live audio"
-            dimHeading="Click on the icon to enjoy the music"
-          />
-        </div>
-
-        <SectionGridAuthorBox
+      {/* Top Elite Authors */}
+      <div className="relative py-16 lg:py-20">
+        <BackgroundSection />
+        <SectionSliderNewAuthors
+          heading="Top elite authors"
+          subHeading="Discover our elite writers"
           authors={authors.slice(0, 10)}
-          heading="Top 10 authors of the month"
-          subHeading="Discover the most popular authors of the month"
-        />
-
-        <div className="relative py-16 lg:py-20">
-          <BackgroundSection />
-          <SectionBecomeAnAuthor />
-        </div>
-
-        <SectionMagazine2 heading="Most viewed articles" posts={posts.slice(0, 5)} />
-
-        <div className="relative py-16">
-          <BackgroundSection />
-          <SectionSliderPosts
-            postCardName="card11"
-            heading="Best articles of the month"
-            subHeading="Over 1118+ articles "
-            posts={posts.slice(0, 14)}
-          />
-        </div>
-
-        <SectionSubscribe2 className="pt-8" />
-
-        <SectionVideos
-          className="py-16 lg:py-20"
-          heading="🎬 The Videos"
-          subHeading="Check out our hottest videos. View more videos and discover new perspectives on just about any topic."
-        />
-
-        <SectionPostsWithWidgets
-          posts={posts.slice(0, 6)}
-          heading="Latest articles 🎈"
-          subHeading="Check out our latest articles"
-          widgetCategories={categories.slice(0, 5)}
-          widgetAuthors={authors.slice(0, 3)}
-          widgetTags={categories.slice(0, 6)}
-          widgetPosts={posts.slice(0, 4)}
         />
       </div>
+
+      {/* Travel Section */}
+      <div className="relative py-16 lg:py-20">
+        <BackgroundSection />
+        <SectionSliderPosts
+          postCardName="card10V2"
+          heading="Travel"
+          subHeading="Click on the icon to enjoy the music"
+          posts={posts.slice(0, 8)}
+        />
+      </div>
+
+      {/* Sports / World News Section */}
+      <SectionMagazine2
+        heading="World News"
+        subHeading="Explore the newest articles"
+        posts={posts.slice(0, 7)}
+      />
+
+      <Divider />
+
+      <SectionBecomeAnAuthor />
+
+      <SectionPostsWithWidgets
+        heading="Latest articles"
+        subHeading="Explore the most popular categories"
+        posts={posts.slice(0, 8)}
+        postCardName="card4"
+        gridClass="sm:grid-cols-2"
+        widgetAuthors={authors.slice(0, 4)}
+        widgetCategories={categoriesForWidgets.slice(0, 7)}
+        widgetTags={categoriesForWidgets.slice(0, 6)}
+        widgetPosts={posts.slice(0, 4)}
+      />
     </div>
   )
 }

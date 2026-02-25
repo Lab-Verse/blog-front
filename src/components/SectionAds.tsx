@@ -1,20 +1,25 @@
-import imgAdsDef from '@/images/ads.png'
-import { Link } from '@/shared/link'
+import AdBanner from '@/components/ads/AdBanner'
 import clsx from 'clsx'
-import Image, { StaticImageData } from 'next/image'
 import { FC } from 'react'
 
 interface Props {
   className?: string
-  imgAds?: string | StaticImageData
+  slot?: string
 }
 
-const SectionAds: FC<Props> = ({ className, imgAds = imgAdsDef }) => {
+const SectionAds: FC<Props> = ({ className, slot }) => {
   return (
-    <Link href="/" className={clsx('section-ads mx-auto block text-center', className)}>
-      <span className="text-xs text-neutral-500">- Advertisement -</span>
-      <Image className="mx-auto rounded-3xl" src={imgAds} alt="ads" sizes="(max-width: 1400px) 100vw, 90vw" />
-    </Link>
+    <div className={clsx('section-ads mx-auto text-center', className)}>
+      <span className="mb-2 block text-xs text-neutral-500">
+        - Advertisement -
+      </span>
+      <AdBanner
+        slot={slot}
+        format="horizontal"
+        responsive
+        className="min-h-[90px]"
+      />
+    </div>
   )
 }
 

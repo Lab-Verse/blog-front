@@ -19,7 +19,7 @@ export const authApi = baseApi.injectEndpoints({
     }),
 
     login: b.mutation<ApiEnvelope<LoginData>, LoginDto>({
-      query: (body) => ({ url: "/auth/login", method: "POST", body }),
+      query: (body) => ({ url: "/auth/front-login", method: "POST", body }),
       async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
           const { data } = await queryFulfilled;

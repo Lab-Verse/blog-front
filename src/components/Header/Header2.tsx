@@ -1,5 +1,6 @@
 import { getNavigation } from '@/data/navigation'
-import { getAllPosts } from '@/data/posts'
+import { fetchPosts } from '@/utils/serverApi'
+import { transformPosts } from '@/utils/dataTransformers'
 import { Button } from '@/shared/Button'
 import Logo from '@/shared/Logo'
 import { PlusIcon } from '@heroicons/react/24/outline'
@@ -18,7 +19,14 @@ interface Props {
 
 const Header2: FC<Props> = async ({ bottomBorder, className }) => {
   const navigationMenu = await getNavigation()
-  const featuredPosts = (await getAllPosts()).slice(0, 2)
+
+  let featuredPosts: any[] = []
+  try {
+    const apiPosts = await fetchPosts({ limit: 2, sortBy: 'views_count', sortOrder: 'DESC' })
+    featuredPosts = transformPosts(apiPosts)
+  } catch {
+    featuredPosts = []
+  }
 
   return (
     <div

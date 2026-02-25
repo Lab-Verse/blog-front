@@ -4,37 +4,62 @@ import ModalCategories from '@/components/ModalCategories'
 import ModalTags from '@/components/ModalTags'
 import PaginationWrapper from '@/components/PaginationWrapper'
 import Card11 from '@/components/PostCards/Card11'
-import { getCategories, getTagByHandle, getTags } from '@/data/categories'
+import {
+  fetchTagBySlug,
+  fetchTagPosts,
+  fetchCategories,
+  fetchTags,
+} from '@/utils/serverApi'
+import {
+  transformTag,
+  transformCategories,
+  transformTags,
+  transformPosts,
+} from '@/utils/dataTransformers'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
+
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params
-  const tag = await getTagByHandle(handle)
+  const apiTag = await fetchTagBySlug(handle)
 
-  if (!tag) {
-    return {
-      title: 'Tag not found',
-      description: 'Tag not found',
-    }
+  if (!apiTag) {
+    return { title: 'Tag not found', description: 'Tag not found' }
   }
 
+  const description = `Posts tagged with ${apiTag.name}`
   return {
-    title: tag?.name,
-    description: tag?.description,
+    title: apiTag.name,
+    description,
+    openGraph: {
+      title: apiTag.name,
+      description,
+      type: 'website',
+      url: `${SITE_URL}/tag/${apiTag.slug}`,
+    },
+    twitter: { card: 'summary', title: apiTag.name, description },
+    alternates: { canonical: `${SITE_URL}/tag/${apiTag.slug}` },
   }
 }
 
 const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
   const { handle } = await params
-  const tag = await getTagByHandle(handle)
-  const posts = tag.posts || []
-  const categories = await getCategories()
-  const tags = await getTags()
+  const apiTag = await fetchTagBySlug(handle)
 
-  if (!tag) {
-    return notFound()
-  }
+  if (!apiTag) return notFound()
+
+  const [apiPosts, apiCategories, apiTags] = await Promise.all([
+    fetchTagPosts(apiTag.id),
+    fetchCategories(),
+    fetchTags(),
+  ])
+
+  const tag = transformTag(apiTag, apiPosts)
+  const posts = transformPosts(apiPosts)
+  const categories = transformCategories(apiCategories)
+  const tags = transformTags(apiTags)
 
   const filterOptions = [
     { name: 'Most recent', value: 'most-recent' },

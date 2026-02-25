@@ -4,7 +4,8 @@ import CardAuthorBox2 from '@/components/CardAuthorBoxs/CardAuthorBox2'
 import CardCategory2 from '@/components/CategoryCards/CardCategory2'
 import PaginationWrapper from '@/components/PaginationWrapper'
 import Card11 from '@/components/PostCards/Card11'
-import { getSearchResults } from '@/data/search'
+import { searchAll } from '@/utils/serverApi'
+import { transformPosts, transformCategories, transformTags, transformAuthors } from '@/utils/dataTransformers'
 import { ButtonCircle } from '@/shared/Button'
 import Input from '@/shared/Input'
 import Tag from '@/shared/Tag'
@@ -78,10 +79,14 @@ const PageSearch = async ({
     searchTab = filterTabs[0].value // default tab is posts
   }
 
-  const { posts, categories, tags, authors, totalResults, recommendedSearches } = await getSearchResults(
-    searchQuery || '',
-    searchTab as 'posts' | 'categories' | 'tags' | 'authors'
-  )
+  const searchResults = await searchAll(searchQuery || '')
+
+  const posts = transformPosts(searchResults.posts)
+  const categories = transformCategories(searchResults.categories)
+  const tags = transformTags(searchResults.tags)
+  const authors = transformAuthors(searchResults.authors)
+  const totalResults = searchResults.totalResults
+  const recommendedSearches = ['Technology', 'Travel', 'Food', 'Health', 'Science']
 
   const renderLoopItems = () => {
     switch (searchTab) {

@@ -75,6 +75,7 @@ export const baseApi = createApi({
     "UserNotifications",
     "Post",
     "PostComments",
+    "Comment",
     "PostMedia",
     "PostTags",
     "PostReactions",
