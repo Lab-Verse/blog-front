@@ -2,15 +2,50 @@ import { ApplicationLayout } from '@/app/(app)/application-layout'
 import BackgroundSection from '@/components/BackgroundSection'
 import SectionSliderNewAuthors from '@/components/SectionSliderNewAuthors'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
-import { getAuthors } from '@/data/authors'
+import { fetchAuthors } from '@/utils/serverApi'
 import { ReactNode } from 'react'
+
+const defaultAvatar = {
+  src: '/images/placeholder.png',
+  alt: 'Avatar',
+  width: 128,
+  height: 128,
+}
 
 interface Props {
   children: ReactNode
 }
 
 const Layout: React.FC<Props> = async ({ children }) => {
-  const authors = await getAuthors()
+  let authors: any[] = []
+  try {
+    const apiAuthors = await fetchAuthors()
+    authors = apiAuthors.slice(0, 10).map((user: any) => ({
+      id: user.id,
+      name: user.display_name || user.username || 'Author',
+      handle: user.username || 'unknown',
+      career: user.profile?.bio || '',
+      description: user.profile?.bio || '',
+      count: 0,
+      joinedDate: user.created_at || '',
+      reviewCount: 0,
+      rating: 0,
+      avatar: {
+        src: user.avatar || user.profile?.profile_picture_url || defaultAvatar.src,
+        alt: user.display_name || user.username || 'Avatar',
+        width: 128,
+        height: 128,
+      },
+      cover: {
+        src: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?w=1920&q=80',
+        alt: 'Cover',
+        width: 1920,
+        height: 1080,
+      },
+    }))
+  } catch {
+    authors = []
+  }
 
   return (
     <ApplicationLayout>

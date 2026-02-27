@@ -1,5 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
+  experimental: {
+    optimizePackageImports: [
+      '@heroicons/react',
+      '@headlessui/react',
+      '@hugeicons/react',
+      '@hugeicons/core-free-icons',
+      'framer-motion',
+      '@tiptap/react',
+      '@tiptap/starter-kit',
+      'react-aria',
+      'react-stately',
+    ],
+  },
   images: {
     unoptimized: true, // Use unoptimized images to avoid _next/image proxy 404s on production
     minimumCacheTTL: 2678400 * 6, // 3 months

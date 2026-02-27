@@ -4,13 +4,16 @@ import { Badge } from '@/shared/Badge'
 import { Divider } from '@/shared/divider'
 import clsx from 'clsx'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { FC } from 'react'
-import AudioPlayerButton from './AudioPlayerButton'
-import GalleryImages from './GalleryImages'
 import SingleMeta from './SingleMeta'
 import { SingleMetaAction } from './SingleMetaAction'
 import SingleTitle from './SingleTitle'
-import VideoPlayer from './VideoPlayer'
+
+// Dynamic imports for media-type-specific components (only loaded when needed)
+const AudioPlayerButton = dynamic(() => import('./AudioPlayerButton'))
+const GalleryImages = dynamic(() => import('./GalleryImages'))
+const VideoPlayer = dynamic(() => import('./VideoPlayer'))
 
 interface Props {
   className?: string
@@ -197,7 +200,7 @@ const HeaderAudio = ({ className, post }: Omit<Props, 'defaultStyle'>) => {
 const HeaderVideo = ({ className, post }: Omit<Props, 'defaultStyle'>) => {
   return (
     <div className={clsx('single-header-style-video', className)}>
-      <VideoPlayer videoUrl={post.videoUrl} />
+      <VideoPlayer videoUrl={post.videoUrl || ''} />
       <div className="container mt-10 pb-5">
         <TitleAndMeta post={post} />
       </div>
@@ -217,7 +220,7 @@ const HeaderGallery = ({ className, post }: Omit<Props, 'defaultStyle'>) => {
             <TitleAndMeta post={post} />
           </div>
         </div>
-        <GalleryImages images={post.galleryImgs} gridType="grid3" />
+        <GalleryImages images={post.galleryImgs || []} gridType="grid3" />
       </div>
     </>
   )

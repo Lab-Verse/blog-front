@@ -3,6 +3,7 @@ import ModalCategories from '@/components/ModalCategories'
 import ModalTags from '@/components/ModalTags'
 import PaginationWrapper from '@/components/PaginationWrapper'
 import Card11 from '@/components/PostCards/Card11'
+import JsonLd from '@/components/seo/JsonLd'
 import {
   fetchCategoryBySlug,
   fetchCategoryPosts,
@@ -71,6 +72,15 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
 
   return (
     <div className={`page-category-${handle}`}>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: category.name,
+          description: `Explore ${category.name} articles and news`,
+          url: `${SITE_URL}/category/${handle}`,
+        }}
+      />
       <PageHeader category={category} />
 
       <div className="container pt-10 lg:pt-20">

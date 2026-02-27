@@ -44,6 +44,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   return {
     title: `Search results for ${query}`,
     description: `Search results for ${query}`,
+    robots: { index: false, follow: true },
   }
 }
 

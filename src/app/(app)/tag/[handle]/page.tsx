@@ -4,6 +4,7 @@ import ModalCategories from '@/components/ModalCategories'
 import ModalTags from '@/components/ModalTags'
 import PaginationWrapper from '@/components/PaginationWrapper'
 import Card11 from '@/components/PostCards/Card11'
+import JsonLd from '@/components/seo/JsonLd'
 import {
   fetchTagBySlug,
   fetchTagPosts,
@@ -71,6 +72,15 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
 
   return (
     <div className={`page-tag-${handle}`}>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: tag.name,
+          description: `Posts tagged with ${tag.name}`,
+          url: `${SITE_URL}/tag/${handle}`,
+        }}
+      />
       {/* HEADER */}
       <PageHeader tag={tag} />
 

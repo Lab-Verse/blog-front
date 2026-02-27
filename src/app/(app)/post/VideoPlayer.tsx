@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player/lazy'
 
 const VideoPlayer = ({ videoUrl }: { videoUrl: string }) => {
   const [isRendered, setIsRendered] = useState(false)

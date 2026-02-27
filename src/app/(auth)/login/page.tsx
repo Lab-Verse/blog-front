@@ -53,6 +53,7 @@ const socials: {
 export const metadata: Metadata = {
   title: 'Login',
   description: 'Login to your account',
+  robots: { index: false, follow: false },
 }
 
 export const dynamic = 'force-dynamic'

@@ -3,8 +3,6 @@ import BackgroundSection from '@/components/BackgroundSection'
 import SectionGridCategoryBox from '@/components/SectionGridCategoryBox'
 import SectionSliderNewAuthors from '@/components/SectionSliderNewAuthors'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
-import { getAuthors } from '@/data/authors'
-import { getCategories } from '@/data/categories'
 import { fetchAuthors, fetchCategories } from '@/utils/serverApi'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import { ReactNode } from 'react'
@@ -29,13 +27,11 @@ const defaultAvatar = {
 }
 
 const Layout: React.FC<Props> = async ({ children }) => {
-  // Try to fetch real data, fall back to demo data
-  let categories: any[]
-  let authors: any[]
+  let categories: any[] = []
+  let authors: any[] = []
 
   try {
     const apiCategories = await fetchCategories()
-    // Transform API categories into TCategory shape expected by SectionGridCategoryBox
     categories = apiCategories.slice(0, 10).map((cat: any, i: number) => ({
       id: cat.id,
       name: cat.name,
@@ -56,12 +52,11 @@ const Layout: React.FC<Props> = async ({ children }) => {
       },
     }))
   } catch {
-    categories = (await getCategories()).slice(0, 10)
+    categories = []
   }
 
   try {
     const apiAuthors = await fetchAuthors()
-    // Transform API users into TAuthor shape expected by SectionSliderNewAuthors
     authors = apiAuthors.slice(0, 10).map((user: any) => ({
       id: user.id,
       name: user.display_name || user.username || 'Author',
@@ -81,7 +76,7 @@ const Layout: React.FC<Props> = async ({ children }) => {
       cover: { ...defaultCover },
     }))
   } catch {
-    authors = (await getAuthors()).slice(0, 10)
+    authors = []
   }
 
   return (

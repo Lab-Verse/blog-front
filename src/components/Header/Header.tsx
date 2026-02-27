@@ -1,5 +1,6 @@
 import { getSplitNavigation } from '@/data/navigation'
-import { getAllPosts } from '@/data/posts'
+import { fetchPosts } from '@/utils/serverApi'
+import { transformPosts } from '@/utils/dataTransformers'
 import Logo from '@/shared/Logo'
 import clsx from 'clsx'
 import { FC } from 'react'
@@ -15,7 +16,14 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = async ({ bottomBorder, className }) => {
   const { visible, overflow } = await getSplitNavigation()
-  const featuredPosts = (await getAllPosts()).slice(0, 2)
+
+  let featuredPosts: any[] = []
+  try {
+    const apiPosts = await fetchPosts({ limit: 2, sortBy: 'views_count', sortOrder: 'DESC' })
+    featuredPosts = transformPosts(apiPosts)
+  } catch {
+    featuredPosts = []
+  }
 
   return (
     <div className={clsx('relative z-20', className)}>

@@ -1,56 +1,64 @@
 import SectionHero from '@/components/SectionHero'
 import rightImg from '@/images/about-hero-right.png'
-import { Button } from '@/shared/Button'
-import Input from '@/shared/Input'
 import { Divider } from '@/shared/divider'
-import SectionFounder from './SectionFounder'
 import SectionStatistic from './SectionStatistic'
+import { Metadata } from 'next'
 
-const PageAbout = ({}) => {
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
+
+export const metadata: Metadata = {
+  title: `About Us`,
+  description: `Learn more about ${SITE_NAME} — our mission, values, and what drives us to deliver quality content.`,
+}
+
+const PageAbout = () => {
   return (
-    <div className={`nc-PageAbout relative`}>
-      <div className="relative container space-y-16 py-16 lg:space-y-28 lg:py-28">
+    <div className="nc-PageAbout relative">
+      <div className="container relative space-y-16 py-16 lg:space-y-28 lg:py-28">
         <SectionHero
           rightImg={rightImg}
-          heading="About us."
+          heading={`About ${SITE_NAME}`}
           btnText="Get in touch"
-          subHeading="We're impartial and independent, and every day we create distinctive, world-class programmes and content which inform, educate and entertain millions of people in the around the world."
+          btnHref="/contact"
+          subHeading={`${SITE_NAME} is a platform dedicated to sharing insightful articles, stories, and perspectives. We believe in the power of words to inform, inspire, and connect communities around the world.`}
         />
-        <Divider />
-        <SectionFounder />
-        <Divider />
-        <SectionStatistic />
 
-        <div className="py-16 sm:py-24 lg:py-32">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
-            <h2 className="max-w-xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl lg:col-span-7 lg:text-5xl">
-              Want product news and updates? Sign up for our newsletter.
-            </h2>
-            <form className="w-full max-w-md lg:col-span-5 lg:pt-2">
-              <div className="flex gap-x-4">
-                <label htmlFor="email-address" className="sr-only">
-                  Email address
-                </label>
-                <Input
-                  id="email-address"
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="Enter your email"
-                  autoComplete="email"
-                />
-                <Button type="submit">Subscribe</Button>
-              </div>
-              <p className="mt-4 text-sm/6">
-                We care about your data. Read our{' '}
-                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                  privacy&nbsp;policy
-                </a>
-                .
+        <Divider />
+
+        {/* Mission Section */}
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+            Our Mission
+          </h2>
+          <p className="mt-6 text-lg text-neutral-600 dark:text-neutral-400">
+            We strive to create a space where writers and readers come together to explore ideas,
+            share knowledge, and engage in meaningful conversations. Our goal is to make quality
+            content accessible to everyone.
+          </p>
+          <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="rounded-2xl border border-neutral-200 p-6 dark:border-neutral-700">
+              <h3 className="text-lg font-semibold">Quality Content</h3>
+              <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                Every article is crafted with care, ensuring accuracy and depth on topics that matter.
               </p>
-            </form>
+            </div>
+            <div className="rounded-2xl border border-neutral-200 p-6 dark:border-neutral-700">
+              <h3 className="text-lg font-semibold">Community Driven</h3>
+              <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                Our platform empowers writers to share their voice and readers to discover new perspectives.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-neutral-200 p-6 dark:border-neutral-700">
+              <h3 className="text-lg font-semibold">Open Platform</h3>
+              <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
+                Anyone can contribute, comment, and engage — because great ideas can come from anywhere.
+              </p>
+            </div>
           </div>
         </div>
+
+        <Divider />
+        <SectionStatistic />
       </div>
     </div>
   )

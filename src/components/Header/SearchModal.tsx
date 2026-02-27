@@ -1,6 +1,6 @@
 'use client'
 
-import { getAllPosts, TPost } from '@/data/posts'
+import { TPost } from '@/data/posts'
 import { Button } from '@/shared/Button'
 import ButtonCircle from '@/shared/ButtonCircle'
 import { Link } from '@/shared/link'
@@ -18,10 +18,9 @@ import { ArrowUpRightIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { FolderDetailsIcon, Search01Icon, Tag02Icon, UserSearchIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon, IconSvgElement } from '@hugeicons/react'
 import clsx from 'clsx'
-import _ from 'lodash'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { FC, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import CategoryBadgeList from '../CategoryBadgeList'
 import LocalDate from '../LocalDate'
 import PostTypeFeaturedIcon from '../PostTypeFeaturedIcon'
@@ -98,17 +97,69 @@ const SearchModal: FC<Props> = ({ type = 'type1' }) => {
   const [posts, setPosts] = useState<TPost[]>([])
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      // for demo purposes, we're fetching all posts
-      const posts = (await getAllPosts()).slice(0, 4)
-      setPosts(posts)
+    const fetchSearchPosts = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+        const res = await fetch(`${apiUrl}/posts?limit=4${query ? `&search=${encodeURIComponent(query)}` : ''}`)
+        if (!res.ok) { setPosts([]); return }
+        const data = await res.json()
+        const items = Array.isArray(data) ? data : (data?.data || [])
+        setPosts(items.slice(0, 4).map((p: any) => ({
+          id: p.id,
+          title: p.title || '',
+          handle: p.slug || p.id,
+          excerpt: p.excerpt || '',
+          date: p.created_at || '',
+          readingTime: p.reading_time || 2,
+          commentCount: p.comments_count || 0,
+          viewCount: p.views_count || 0,
+          bookmarkCount: 0,
+          bookmarked: false,
+          likeCount: p.reactions_count || 0,
+          liked: false,
+          postType: p.content_type || 'standard',
+          status: p.status || 'published',
+          featuredImage: {
+            src: p.featured_image_url || '/images/placeholder.png',
+            alt: p.title || '',
+            width: 1920,
+            height: 1080,
+          },
+          author: {
+            id: p.user?.id || '',
+            name: p.user?.display_name || p.user?.username || 'Author',
+            handle: p.user?.username || '',
+            avatar: {
+              src: p.user?.profile?.profile_picture_url || '/images/placeholder.png',
+              alt: p.user?.display_name || 'Author',
+              width: 128,
+              height: 128,
+            },
+          },
+          categories: (p.categories || []).map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            handle: c.slug,
+            color: 'blue',
+          })),
+        })))
+      } catch {
+        setPosts([])
+      }
     }
-    fetchPosts()
+    fetchSearchPosts()
   }, [query])
 
   const handleSetSearchValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value)
   }
+
+  // Native debounce replacing lodash _.debounce
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+  const handleSearchDebounced = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    debounceTimer.current = setTimeout(() => handleSetSearchValue(e), 200)
+  }, [])
 
   const buttonOpenModal2 = () => {
     return (
@@ -185,7 +236,7 @@ const SearchModal: FC<Props> = ({ type = 'type1' }) => {
                     autoFocus
                     className="h-12 w-full border-0 bg-transparent ps-11 pe-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm dark:text-gray-100 dark:placeholder:text-gray-300"
                     placeholder="Type to search..."
-                    onChange={_.debounce(handleSetSearchValue, 200)}
+                    onChange={handleSearchDebounced}
                     onBlur={() => setQuery('')}
                     data-autofocus
                   />

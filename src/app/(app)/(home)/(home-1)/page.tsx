@@ -1,24 +1,31 @@
 import BackgroundSection from '@/components/BackgroundSection'
 import SectionAds from '@/components/SectionAds'
-import SectionBecomeAnAuthor from '@/components/SectionBecomeAnAuthor'
 import SectionMagazine2 from '@/components/SectionMagazine2'
 import SectionMagazine8 from '@/components/SectionMagazine8'
 import SectionMagazine9 from '@/components/SectionMagazine9'
 import SectionMagazine10 from '@/components/SectionMagazine10'
-import SectionPostsWithWidgets from '@/components/SectionPostsWithWidgets'
-import SectionSliderNewAuthors from '@/components/SectionSliderNewAuthors'
-import SectionSliderPosts from '@/components/SectionSliderPosts'
 import { fetchPosts, fetchCategories, fetchCategoryPosts, fetchAuthors, buildCategoryTree } from '@/utils/serverApi'
 import { transformPosts, transformCategories, transformAuthors, transformCategoriesWithPosts } from '@/utils/dataTransformers'
 import { Divider } from '@/shared/divider'
 import { Metadata } from 'next'
 import JsonLd from '@/components/seo/JsonLd'
+import nextDynamic from 'next/dynamic'
+
+// Dynamic imports for below-the-fold sections (loaded on demand)
+const SectionBecomeAnAuthor = nextDynamic(() => import('@/components/SectionBecomeAnAuthor'))
+const SectionPostsWithWidgets = nextDynamic(() => import('@/components/SectionPostsWithWidgets'))
+const SectionSliderNewAuthors = nextDynamic(() => import('@/components/SectionSliderNewAuthors'))
+const SectionSliderPosts = nextDynamic(() => import('@/components/SectionSliderPosts'))
 
 export const dynamic = 'force-dynamic'
+
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
 
 export const metadata: Metadata = {
   title: 'Home',
   description: 'Your go-to source for the latest news, in-depth articles, and expert insights on technology, travel, sports, finance, and more.',
+  alternates: { canonical: SITE_URL },
 }
 
 const Page = async () => {

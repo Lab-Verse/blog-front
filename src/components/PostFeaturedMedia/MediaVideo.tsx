@@ -5,7 +5,7 @@ import SpinLoading from '@/shared/spin-loading'
 import { SpeakerWaveIcon, SpeakerXMarkIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { FC, useEffect, useRef, useState } from 'react'
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player/lazy'
 
 interface Props {
   videoUrl: string
