@@ -5,6 +5,10 @@ import Link from 'next/link'
 import { FC } from 'react'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import HeaderAuthButtons from './HeaderAuthButtons'
+import MoreDropdown from './MoreDropdown'
+
+/** Max visible nav links before overflow goes into "More" dropdown */
+const MAX_VISIBLE_NAV = 8
 
 interface Props {
   bottomBorder?: boolean
@@ -47,15 +51,25 @@ const Header2: FC<Props> = async ({ bottomBorder, className, activeCategory }) =
         )}
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex flex-1 items-center justify-center overflow-x-auto">
+        <nav className="hidden lg:flex flex-1 items-center justify-center">
           <ul className="flex items-center gap-x-1">
-            {isSubNavMode
-              ? /* Category page: show subcategories */
-                subNav.children.map((item) => (
-                  <NavLink key={item.id} item={item} isActive={item.href === `/category/${activeCategory}`} />
-                ))
-              : /* Homepage: show parent categories */
-                parentNav.map((item) => <NavLink key={item.id} item={item} />)}
+            {(() => {
+              const items = isSubNavMode ? subNav.children : parentNav
+              const visible = items.slice(0, MAX_VISIBLE_NAV)
+              const overflow = items.slice(MAX_VISIBLE_NAV)
+              return (
+                <>
+                  {visible.map((item) => (
+                    <NavLink
+                      key={item.id}
+                      item={item}
+                      isActive={!!isSubNavMode && item.href === `/category/${activeCategory}`}
+                    />
+                  ))}
+                  {overflow.length > 0 && <MoreDropdown items={overflow} />}
+                </>
+              )
+            })()}
           </ul>
         </nav>
 
