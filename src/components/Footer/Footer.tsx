@@ -146,7 +146,7 @@ const Footer: React.FC = async () => {
           {/* Logo + tagline + socials */}
           <div className="col-span-2 grid grid-cols-4 gap-5 md:col-span-4 lg:flex lg:flex-col lg:md:col-span-1">
             <div className="col-span-2 md:col-span-1">
-              <Logo size="size-10" />
+              <Logo />
             </div>
             <div className="col-span-2 md:col-span-3 lg:mt-2">
               <p className="text-sm text-neutral-500 dark:text-neutral-400">
