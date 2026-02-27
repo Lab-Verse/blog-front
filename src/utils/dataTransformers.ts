@@ -35,7 +35,49 @@ function makeImage(url?: string | null, alt?: string) {
 // Post Transformer
 // ========================
 
-/** Transform an API Post to the theme's TPost shape */
+/** Extract categories from a post — handles both legacy `category` and join-table `postCategories` */
+function extractCategories(post: ApiPost) {
+  // Prefer postCategories (join table) if available
+  const pc = (post as any).postCategories
+  if (Array.isArray(pc) && pc.length > 0) {
+    return pc
+      .filter((entry: any) => entry.category)
+      .map((entry: any) => ({
+        id: entry.category.id,
+        name: entry.category.name,
+        handle: entry.category.slug,
+        color: getCategoryColor(entry.category.name),
+      }))
+  }
+  // Fallback to legacy `category` field
+  if (post.category) {
+    return [{
+      id: post.category.id,
+      name: post.category.name,
+      handle: post.category.slug,
+      color: getCategoryColor(post.category.name),
+    }]
+  }
+  return []
+}
+
+/** Extract tags from a post — handles both direct `tags` and join-table `tags[].tag` */
+function extractTags(post: ApiPost) {
+  const rawTags = post.tags
+  if (!Array.isArray(rawTags) || rawTags.length === 0) return []
+  return rawTags.map((t: any) => {
+    // If it's a join-table entry with nested `tag`, unwrap it
+    const tag = t.tag || t
+    return {
+      id: tag.id || String(t),
+      name: tag.name || '',
+      handle: tag.slug || tag.handle || '',
+      color: getCategoryColor(tag.name || ''),
+    }
+  })
+}
+
+/** Transform an API Post to the theme's TPost shape (content omitted for list/card use) */
 export function transformPost(post: ApiPost) {
   const postType = detectPostType(post)
 
@@ -44,9 +86,9 @@ export function transformPost(post: ApiPost) {
     title: post.title,
     handle: post.slug,
     featuredImage: makeImage(post.featured_image, post.title),
-    excerpt: post.excerpt || post.description || stripHtml(post.content).slice(0, 200),
+    excerpt: post.excerpt || post.description || (post.content ? stripHtml(post.content).slice(0, 200) : ''),
     date: post.published_at || post.created_at,
-    readingTime: estimateReadingTime(post.content),
+    readingTime: estimateReadingTime(post.content || ''),
     commentCount: post.comments_count || 0,
     viewCount: post.views_count || 0,
     bookmarkCount: 0,
@@ -68,16 +110,7 @@ export function transformPost(post: ApiPost) {
           handle: 'unknown',
           avatar: makeImage(null, 'Unknown'),
         },
-    categories: post.category
-      ? [
-          {
-            id: post.category.id,
-            name: post.category.name,
-            handle: post.category.slug,
-            color: getCategoryColor(post.category.name),
-          },
-        ]
-      : [],
+    categories: extractCategories(post),
     // Audio/video specific fields
     ...(postType === 'audio' && { audioUrl: '' }),
     ...(postType === 'video' && { videoUrl: '' }),
@@ -101,12 +134,14 @@ export function transformPostDetail(
   return {
     ...base,
     content: post.content || '',
-    tags: (tags || post.tags || []).map((t: any) => ({
-      id: t.id || String(t),
-      name: t.name || '',
-      handle: t.slug || t.handle || '',
-      color: getCategoryColor(t.name || ''),
-    })),
+    tags: tags && tags.length > 0
+      ? tags.map((t: any) => ({
+          id: t.id || String(t),
+          name: t.name || '',
+          handle: t.slug || t.handle || '',
+          color: getCategoryColor(t.name || ''),
+        }))
+      : extractTags(post),
     // Enrich author with description from profile
     author: {
       ...base.author,

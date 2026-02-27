@@ -69,7 +69,7 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
 
   const [apiComments, allPosts, apiCategories, apiTags, apiAuthors] = await Promise.all([
     fetchPostComments(apiPost.id),
-    fetchPosts({ limit: 12 }),
+    fetchPosts({ limit: 12, sortBy: 'created_at', sortOrder: 'DESC' }),
     fetchCategories(),
     fetchTags(),
     fetchAuthors(),

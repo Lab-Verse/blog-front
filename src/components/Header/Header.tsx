@@ -20,7 +20,8 @@ const Header: FC<HeaderProps> = async ({ bottomBorder, className }) => {
   let featuredPosts: any[] = []
   try {
     const apiPosts = await fetchPosts({ limit: 2, sortBy: 'views_count', sortOrder: 'DESC' })
-    featuredPosts = transformPosts(apiPosts)
+    // Strip heavy fields — Navigation/Card20 only needs title, slug, image, excerpt, author
+    featuredPosts = transformPosts(apiPosts).map(({ ...p }) => p)
   } catch {
     featuredPosts = []
   }

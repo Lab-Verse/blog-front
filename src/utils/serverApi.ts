@@ -63,7 +63,7 @@ export interface ApiPost {
   id: string
   title: string
   slug: string
-  content: string
+  content?: string
   excerpt?: string
   description?: string
   user_id: string
@@ -157,7 +157,7 @@ export interface ApiComment {
   user?: ApiUser
 }
 
-/** Fetch all published posts, optionally filtered */
+/** Fetch published posts with pagination. Returns an array (extracts from paginated envelope). */
 export async function fetchPosts(filters?: {
   category?: string
   user?: string
@@ -178,30 +178,74 @@ export async function fetchPosts(filters?: {
   const query = params.toString() ? `?${params.toString()}` : ''
 
   try {
-    const result = await serverFetch<ApiPost[] | { data: ApiPost[] }>(`/posts${query}`, {
+    const result = await serverFetch<ApiPost[] | { data: ApiPost[]; total?: number }>(`/posts${query}`, {
       revalidate: 60,
       tags: ['posts'],
     })
-    // Handle both array and paginated response formats
-    if (Array.isArray(result)) return result
-    if (result && typeof result === 'object' && 'data' in result) return result.data
-    return []
+    // Handle both array and paginated { data, total } envelope formats
+    let posts: ApiPost[]
+    if (Array.isArray(result)) {
+      posts = result
+    } else if (result && typeof result === 'object' && 'data' in result) {
+      posts = result.data
+    } else {
+      posts = []
+    }
+    // Safety net: if the API ignores the limit param, enforce it client-side
+    if (filters?.limit && posts.length > filters.limit) {
+      posts = posts.slice(0, filters.limit)
+    }
+    return posts
   } catch {
     return []
   }
 }
 
-/** Fetch a single post by slug */
+/** Fetch posts and total count (paginated). Use when you need total for pagination UI. */
+export async function fetchPostsPaginated(filters?: {
+  category?: string
+  user?: string
+  limit?: number
+  page?: number
+  sortBy?: string
+  sortOrder?: 'ASC' | 'DESC'
+  search?: string
+}): Promise<{ posts: ApiPost[]; total: number }> {
+  const params = new URLSearchParams()
+  if (filters?.category) params.append('category', filters.category)
+  if (filters?.user) params.append('user', filters.user)
+  if (filters?.limit) params.append('limit', String(filters.limit))
+  if (filters?.page) params.append('page', String(filters.page))
+  if (filters?.sortBy) params.append('sortBy', filters.sortBy)
+  if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder)
+  if (filters?.search) params.append('search', filters.search)
+  const query = params.toString() ? `?${params.toString()}` : ''
+
+  try {
+    // serverFetch unwraps { data: T } envelopes, so the new { data, total } response
+    // gets its `data` unwrapped. We need the raw response for `total`.
+    const url = `${API_URL}/posts${query}`
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      next: { revalidate: 60, tags: ['posts'] },
+    })
+    if (!res.ok) return { posts: [], total: 0 }
+    const json = await res.json()
+    const posts = Array.isArray(json) ? json : (json?.data || [])
+    const total = json?.total ?? posts.length
+    return { posts, total }
+  } catch {
+    return { posts: [], total: 0 }
+  }
+}
+
+/** Fetch a single post by slug using the dedicated endpoint */
 export async function fetchPostBySlug(slug: string): Promise<ApiPost | null> {
   try {
-    // The API uses UUIDs for IDs, but we need to search by slug
-    // First try getting all posts and filter, or if API supports slug lookup
-    const result = await serverFetch<ApiPost[] | { data: ApiPost[] }>('/posts', {
+    return await serverFetch<ApiPost>(`/posts/slug/${encodeURIComponent(slug)}`, {
       revalidate: 60,
-      tags: ['posts'],
+      tags: ['posts', `post-slug-${slug}`],
     })
-    const posts = Array.isArray(result) ? result : (result && typeof result === 'object' && 'data' in result ? result.data : [])
-    return posts.find((p) => p.slug === slug) || null
   } catch {
     return null
   }
@@ -419,8 +463,8 @@ export async function fetchAuthorByUsername(username: string): Promise<{
     const user = await res.json()
     if (!user || !user.id) return null
 
-    // Fetch their posts
-    const postsUrl = `${API_URL}/posts?user=${user.id}`
+    // Fetch their posts using paginated endpoint
+    const postsUrl = `${API_URL}/posts?user=${user.id}&limit=50`
     const postsRes = await fetch(postsUrl, {
       headers: { 'Content-Type': 'application/json' },
       next: { revalidate: 60, tags: [`author-posts-${user.id}`] },
@@ -428,7 +472,7 @@ export async function fetchAuthorByUsername(username: string): Promise<{
     let posts: ApiPost[] = []
     if (postsRes.ok) {
       const postsData = await postsRes.json()
-      posts = Array.isArray(postsData) ? postsData : (postsData?.items || [])
+      posts = Array.isArray(postsData) ? postsData : (postsData?.data || postsData?.items || [])
     }
 
     return { user, posts }
@@ -445,23 +489,17 @@ export interface SearchResults {
   totalResults: number
 }
 
-/** Search across posts, categories, tags, and authors */
+/** Search across posts, categories, tags, and authors using backend search */
 export async function searchAll(query: string): Promise<SearchResults> {
   try {
-    const [allPosts, allCategories, allTags] = await Promise.all([
-      fetchPosts(),
+    // Use the dedicated search endpoint for posts (SQL ILIKE — efficient)
+    const [searchedPosts, allCategories, allTags] = await Promise.all([
+      fetchPosts({ search: query, limit: 50 }),
       fetchCategories(),
       fetchTags(),
     ])
 
     const q = query.toLowerCase()
-
-    const posts = allPosts.filter(
-      (p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.content?.toLowerCase().includes(q) ||
-        p.excerpt?.toLowerCase().includes(q)
-    )
 
     const categories = allCategories.filter((c) =>
       c.name.toLowerCase().includes(q)
@@ -469,24 +507,21 @@ export async function searchAll(query: string): Promise<SearchResults> {
 
     const tags = allTags.filter((t) => t.name.toLowerCase().includes(q))
 
+    // Extract unique authors from searched posts
     const authorMap = new Map<string, ApiUser>()
-    for (const post of allPosts) {
-      if (
-        post.user &&
-        (post.user.username?.toLowerCase().includes(q) ||
-          post.user.display_name?.toLowerCase().includes(q))
-      ) {
+    for (const post of searchedPosts) {
+      if (post.user) {
         authorMap.set(post.user.id, post.user)
       }
     }
     const authors = Array.from(authorMap.values())
 
     return {
-      posts,
+      posts: searchedPosts,
       categories,
       tags,
       authors,
-      totalResults: posts.length + categories.length + tags.length + authors.length,
+      totalResults: searchedPosts.length + categories.length + tags.length + authors.length,
     }
   } catch {
     return { posts: [], categories: [], tags: [], authors: [], totalResults: 0 }

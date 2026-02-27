@@ -1,4 +1,4 @@
-import { fetchPosts, fetchCategories, fetchTags, fetchAuthors } from '@/utils/serverApi'
+import { fetchPostsPaginated, fetchCategories, fetchTags, fetchAuthors } from '@/utils/serverApi'
 import { MetadataRoute } from 'next'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
@@ -16,16 +16,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/contact`, changeFrequency: 'monthly', priority: 0.5 },
   )
 
-  // Posts
+  // Posts — paginate in batches of 100 (backend caps at 100 per request)
   try {
-    const posts = await fetchPosts({ limit: 1000 })
-    for (const p of posts) {
-      entries.push({
-        url: `${SITE_URL}/post/${p.slug}`,
-        lastModified: p.updated_at ? new Date(p.updated_at) : new Date(p.created_at),
-        changeFrequency: 'weekly',
-        priority: 0.8,
-      })
+    let page = 1
+    let hasMore = true
+    while (hasMore) {
+      const { posts, total } = await fetchPostsPaginated({ limit: 100, page })
+      for (const p of posts) {
+        entries.push({
+          url: `${SITE_URL}/post/${p.slug}`,
+          lastModified: p.updated_at ? new Date(p.updated_at) : new Date(p.created_at),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+        })
+      }
+      hasMore = page * 100 < total
+      page++
+      // Safety: cap at 50 pages (5000 posts) to avoid infinite loops
+      if (page > 50) break
     }
   } catch {
     /* skip on error */

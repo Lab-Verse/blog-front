@@ -29,9 +29,9 @@ export const metadata: Metadata = {
 }
 
 const Page = async () => {
-  // Fetch data from API
+  // Fetch data from API — limit to what the page actually uses
   const [apiPosts, apiCategories] = await Promise.all([
-    fetchPosts(),
+    fetchPosts({ limit: 30 }),
     fetchCategories(),
   ])
 
