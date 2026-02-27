@@ -1,48 +1,65 @@
-import { getSplitNavigation } from '@/data/navigation'
-import { fetchPosts } from '@/utils/serverApi'
-import { transformPosts } from '@/utils/dataTransformers'
+import { getParentNavigation, getSubNavigation, TNavigationItem } from '@/data/navigation'
 import Logo from '@/shared/Logo'
 import clsx from 'clsx'
+import Link from 'next/link'
 import { FC } from 'react'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import HeaderAuthButtons from './HeaderAuthButtons'
-import Navigation from './Navigation/Navigation'
-import MoreDropdown from './MoreDropdown'
 
 interface Props {
   bottomBorder?: boolean
   className?: string
+  /** When set, renders CNN-style category header with subcategories */
+  activeCategory?: string
 }
 
-const Header2: FC<Props> = async ({ bottomBorder, className }) => {
-  const { visible, overflow } = await getSplitNavigation()
+const Header2: FC<Props> = async ({ bottomBorder, className, activeCategory }) => {
+  // If on a category page, load subcategories for that category
+  const subNav = activeCategory ? await getSubNavigation(activeCategory) : null
+  // Always load parent categories for homepage / fallback
+  const parentNav = await getParentNavigation()
 
-  let featuredPosts: any[] = []
-  try {
-    const apiPosts = await fetchPosts({ limit: 2, sortBy: 'views_count', sortOrder: 'DESC' })
-    // Strip heavy fields — Navigation/Card20 only needs title, slug, image, excerpt, author
-    featuredPosts = transformPosts(apiPosts).map(({ ...p }) => p)
-  } catch {
-    featuredPosts = []
-  }
+  const isSubNavMode = subNav && subNav.children.length > 0
 
   return (
     <div
       className={clsx(
         'header-2 relative z-20 border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900',
         bottomBorder && 'border-b',
-        !bottomBorder && 'has-[.header-popover-full-panel]:border-b',
         className
       )}
     >
-      <div className="container flex h-20 items-center gap-x-3">
+      <div className="container flex h-16 items-center gap-x-4">
+        {/* Logo — always visible */}
         <Logo />
 
-        <nav className="hidden lg:flex flex-1 items-center justify-center">
-          <Navigation menu={visible} featuredPosts={featuredPosts} />
-          {overflow.length > 0 && <MoreDropdown items={overflow} />}
+        {/* CNN-style: parent category label next to logo on category pages */}
+        {isSubNavMode && (
+          <>
+            <div className="hidden lg:block h-6 w-px bg-neutral-300 dark:bg-neutral-600" />
+            <Link
+              href={subNav.parent.href}
+              className="hidden lg:block text-sm font-bold uppercase tracking-wide text-red-600 dark:text-red-400 whitespace-nowrap"
+            >
+              {subNav.parent.name}
+            </Link>
+          </>
+        )}
+
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex flex-1 items-center justify-center overflow-x-auto">
+          <ul className="flex items-center gap-x-1">
+            {isSubNavMode
+              ? /* Category page: show subcategories */
+                subNav.children.map((item) => (
+                  <NavLink key={item.id} item={item} isActive={item.href === `/category/${activeCategory}`} />
+                ))
+              : /* Homepage: show parent categories */
+                parentNav.map((item) => <NavLink key={item.id} item={item} />)}
+          </ul>
         </nav>
 
+        {/* Right: Auth buttons + Hamburger */}
         <div className="ms-auto flex items-center justify-end gap-x-1 lg:ms-0">
           <HeaderAuthButtons />
           <div className="ms-2 flex lg:hidden">
@@ -51,6 +68,24 @@ const Header2: FC<Props> = async ({ bottomBorder, className }) => {
         </div>
       </div>
     </div>
+  )
+}
+
+function NavLink({ item, isActive }: { item: TNavigationItem; isActive?: boolean }) {
+  return (
+    <li>
+      <Link
+        href={item.href || '#'}
+        className={clsx(
+          'block rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors',
+          isActive
+            ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+            : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-200'
+        )}
+      >
+        {item.name}
+      </Link>
+    </li>
   )
 }
 

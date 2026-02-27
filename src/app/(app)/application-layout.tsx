@@ -10,6 +10,8 @@ interface Props {
   headerHasBorder?: boolean
   headerStyle?: 'header-1' | 'header-2'
   showBanner?: boolean
+  /** CNN-style: slug of the active category to show subcategories in header */
+  activeCategory?: string
 }
 
 const ApplicationLayout: React.FC<Props> = ({
@@ -17,13 +19,18 @@ const ApplicationLayout: React.FC<Props> = ({
   headerHasBorder,
   headerStyle = 'header-2',
   showBanner = false,
+  activeCategory,
 }) => {
   return (
     <>
       {/* header - Chose header style here / header 1 or header 2*/}
       {showBanner && <Banner />}
-      {headerStyle === 'header-2' && <Header2 bottomBorder={headerHasBorder} />}
-      {headerStyle === 'header-1' && <Header bottomBorder={headerHasBorder} />}
+      {headerStyle === 'header-2' && (
+        <Header2 bottomBorder={headerHasBorder} activeCategory={activeCategory} />
+      )}
+      {headerStyle === 'header-1' && (
+        <Header bottomBorder={headerHasBorder} activeCategory={activeCategory} />
+      )}
 
       {children}
 

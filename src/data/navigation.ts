@@ -1,108 +1,88 @@
 import { fetchCategories, buildCategoryTree, type ApiCategory } from '@/utils/serverApi'
 
+// ============ TYPE =============
+export type TNavigationItem = {
+  id: string
+  href: string
+  name: string
+  children?: TNavigationItem[]
+}
+
 /**
- * Build navigation dynamically from API categories.
- * Parent categories become top-level nav items.
- * Their children appear in mega-menu / dropdown format.
+ * CNN-style navigation — returns only parent categories as flat links.
+ * Used on the homepage header.
  */
-export async function getNavigation(): Promise<TNavigationItem[]> {
+export async function getParentNavigation(): Promise<TNavigationItem[]> {
   try {
     const categories = await fetchCategories()
     const tree = buildCategoryTree(categories)
-    return buildNavigationFromCategories(tree, categories)
+    return tree.map((cat) => ({
+      id: String(cat.id),
+      href: `/category/${cat.slug}`,
+      name: cat.name,
+      children: (cat.children || []).map((sub) => ({
+        id: String(sub.id),
+        href: `/category/${sub.slug}`,
+        name: sub.name,
+      })),
+    }))
   } catch {
-    // Fallback navigation if API is unavailable
-    return getFallbackNavigation()
+    return []
   }
 }
 
 /**
- * Returns { visible, overflow } split of navigation items.
- * `visible` = parent categories with children (shown inline with mega-menus)
- * `overflow` = standalone categories without children (shown in "More" dropdown)
+ * CNN-style sub-navigation — returns children of a given parent slug.
+ * Used on category pages to show subcategory links in the nav bar.
  */
-export async function getSplitNavigation(): Promise<{
-  visible: TNavigationItem[]
-  overflow: TNavigationItem[]
-}> {
-  const nav = await getNavigation()
-  const visible = nav.filter((item) => item.type === 'mega-menu')
-  const overflow = nav.filter((item) => !item.type)
-  return { visible, overflow }
-}
+export async function getSubNavigation(
+  parentSlug: string
+): Promise<{ parent: TNavigationItem; children: TNavigationItem[] } | null> {
+  try {
+    const categories = await fetchCategories()
+    const tree = buildCategoryTree(categories)
 
-function buildNavigationFromCategories(
-  tree: (ApiCategory & { children?: ApiCategory[] })[],
-  allCategories: ApiCategory[]
-): TNavigationItem[] {
-  const nav: TNavigationItem[] = []
-
-  // Parent categories with subcategories as mega-menu, plain categories as links
-  const parentCats = tree.filter((c) => c.children && c.children.length > 0)
-  const standaloneCats = tree.filter((c) => !c.children || c.children.length === 0)
-
-  // Add parent categories with mega-menu showing sub-categories
-  for (const parent of parentCats) {
-    const megaChildren: TNavigationItem[] = []
-
-    // Split subcategories into columns of up to 7
-    const subs = parent.children || []
-    const colSize = Math.ceil(subs.length / 4) || 7
-    for (let i = 0; i < Math.min(4, Math.ceil(subs.length / colSize)); i++) {
-      const chunk = subs.slice(i * colSize, (i + 1) * colSize)
-      megaChildren.push({
-        id: `${parent.id}-col-${i}`,
-        href: '#',
-        name: i === 0 ? parent.name : '',
-        children: chunk.map((sub) => ({
+    // Find the parent category that matches the slug (could be the parent itself or a child)
+    const parentCat = tree.find((cat) => cat.slug === parentSlug)
+    if (parentCat) {
+      return {
+        parent: {
+          id: String(parentCat.id),
+          href: `/category/${parentCat.slug}`,
+          name: parentCat.name,
+        },
+        children: (parentCat.children || []).map((sub) => ({
           id: String(sub.id),
           href: `/category/${sub.slug}`,
           name: sub.name,
         })),
-      })
+      }
     }
 
-    nav.push({
-      id: String(parent.id),
-      href: `/category/${parent.slug}`,
-      name: parent.name,
-      type: subs.length > 0 ? 'mega-menu' : undefined,
-      children: subs.length > 0 ? megaChildren : undefined,
-    })
+    // Check if slug is a subcategory — find its parent
+    for (const cat of tree) {
+      const child = (cat.children || []).find((sub) => sub.slug === parentSlug)
+      if (child) {
+        return {
+          parent: {
+            id: String(cat.id),
+            href: `/category/${cat.slug}`,
+            name: cat.name,
+          },
+          children: (cat.children || []).map((sub) => ({
+            id: String(sub.id),
+            href: `/category/${sub.slug}`,
+            name: sub.name,
+          })),
+        }
+      }
+    }
+
+    return null
+  } catch {
+    return null
   }
-
-  // Add standalone categories as simple nav links
-  for (const cat of standaloneCats) {
-    nav.push({
-      id: String(cat.id),
-      href: `/category/${cat.slug}`,
-      name: cat.name,
-    })
-  }
-
-  return nav
 }
-
-function getFallbackNavigation(): TNavigationItem[] {
-  return [
-    { id: 'search', href: '/search', name: 'Search' },
-  ]
-}
-
-export async function getNavMegaMenu(): Promise<TNavigationItem> {
-  const navigation = await getNavigation()
-  return navigation.find((item) => item.type === 'mega-menu') || {}
-}
-
-// ============ TYPE =============
-export type TNavigationItem = Partial<{
-  id: string
-  href: string
-  name: string
-  type?: 'dropdown' | 'mega-menu'
-  isNew?: boolean
-  children?: TNavigationItem[]
-}>
 
 
 

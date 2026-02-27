@@ -35,7 +35,7 @@ async function serverFetch<T>(
     const response = await fetch(url, fetchOptions)
 
     if (!response.ok) {
-      console.error(`[ServerAPI] Error ${response.status}: ${url}`)
+      console.warn(`[ServerAPI] ${response.status} ${response.statusText}: ${endpoint}`)
       throw new Error(`API Error: ${response.status} ${response.statusText}`)
     }
 
@@ -50,7 +50,14 @@ async function serverFetch<T>(
 
     return json as T
   } catch (error) {
-    console.error(`[ServerAPI] Failed to fetch ${url}:`, error)
+    // Suppress verbose stack traces for connection errors (e.g. backend not running during build)
+    const isConnError =
+      error instanceof TypeError && (error.message === 'fetch failed' || error.cause?.toString().includes('ECONNREFUSED'))
+    if (isConnError) {
+      console.warn(`[ServerAPI] Backend unavailable — skipped ${endpoint}`)
+    } else {
+      console.error(`[ServerAPI] Failed to fetch ${endpoint}:`, error)
+    }
     throw error
   }
 }

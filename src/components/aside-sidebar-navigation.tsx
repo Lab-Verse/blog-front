@@ -1,4 +1,4 @@
-import { getNavigation } from '@/data/navigation'
+import { getParentNavigation } from '@/data/navigation'
 import SidebarNavigation from './Header/Navigation/SidebarNavigation'
 import Aside from './aside'
 
@@ -7,7 +7,7 @@ interface Props {
 }
 
 const AsideSidebarNavigation = async ({ className }: Props) => {
-  const navigationMenu = await getNavigation()
+  const navigationMenu = await getParentNavigation()
 
   return (
     <Aside openFrom="right" type="sidebar-navigation" logoOnHeading contentMaxWidthClassName="max-w-md">

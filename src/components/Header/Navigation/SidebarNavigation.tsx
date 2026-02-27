@@ -1,7 +1,6 @@
 'use client'
 
 import { TNavigationItem } from '@/data/navigation'
-import ButtonPrimary from '@/shared/ButtonPrimary'
 import { Divider } from '@/shared/divider'
 import { Link } from '@/shared/link'
 import SocialsList from '@/shared/SocialsList'
@@ -21,57 +20,42 @@ interface Props {
 const SidebarNavigation: React.FC<Props> = ({ data }) => {
   const handleClose = useClose()
 
-  const _renderMenuChild = (
-    item: TNavigationItem,
-    itemClass = 'ps-3 text-neutral-900 dark:text-neutral-200 font-medium'
-  ) => {
-    return (
-      <ul className="nav-mobile-sub-menu ps-6 pb-1 text-base">
-        {item.children?.map((childMenu, index) => (
-          <Disclosure key={index} as="li">
-            <Link
-              href={childMenu.href || '#'}
-              onClick={handleClose}
-              className={`mt-0.5 flex rounded-lg pe-4 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800 ${itemClass}`}
-            >
-              <span className={`py-2.5 ${!childMenu.children ? 'block w-full' : ''}`}>{childMenu.name}</span>
-              {childMenu.children && (
-                <span className="flex grow items-center" onClick={(e) => e.preventDefault()}>
-                  <DisclosureButton as="span" className="flex grow justify-end">
-                    <ChevronDownIcon className="ms-2 h-4 w-4 text-neutral-500" aria-hidden="true" />
-                  </DisclosureButton>
-                </span>
-              )}
-            </Link>
-            {childMenu.children && (
-              <DisclosurePanel>
-                {_renderMenuChild(childMenu, 'ps-3 text-neutral-600 dark:text-neutral-400')}
-              </DisclosurePanel>
-            )}
-          </Disclosure>
-        ))}
-      </ul>
-    )
-  }
-
   const _renderItem = (menu: TNavigationItem, index: number) => {
+    const hasChildren = menu.children && menu.children.length > 0
+
     return (
       <Disclosure key={index} as="li" className="text-neutral-900 dark:text-white">
-        <DisclosureButton className="flex w-full cursor-pointer rounded-lg px-3 text-start text-sm font-medium tracking-wide uppercase hover:bg-neutral-100 dark:hover:bg-neutral-800">
+        <div className="flex w-full items-center rounded-lg px-3 text-start text-sm font-medium tracking-wide uppercase hover:bg-neutral-100 dark:hover:bg-neutral-800">
           <Link
             href={menu.href || '#'}
-            className={clsx(!menu.children?.length && 'flex-1', 'block py-2.5')}
+            className={clsx(!hasChildren && 'flex-1', 'block py-2.5')}
             onClick={handleClose}
           >
             {menu.name}
           </Link>
-          {menu.children?.length && (
-            <div className="flex flex-1 justify-end">
-              <ChevronDownIcon className="ms-2 h-4 w-4 self-center text-neutral-500" aria-hidden="true" />
-            </div>
+          {hasChildren && (
+            <DisclosureButton className="flex flex-1 cursor-pointer justify-end py-2.5">
+              <ChevronDownIcon className="ms-2 h-4 w-4 text-neutral-500" aria-hidden="true" />
+            </DisclosureButton>
           )}
-        </DisclosureButton>
-        {menu.children && <DisclosurePanel>{_renderMenuChild(menu)}</DisclosurePanel>}
+        </div>
+        {hasChildren && (
+          <DisclosurePanel>
+            <ul className="ps-6 pb-1 text-base">
+              {menu.children!.map((child, childIndex) => (
+                <li key={childIndex}>
+                  <Link
+                    href={child.href || '#'}
+                    onClick={handleClose}
+                    className="mt-0.5 flex rounded-lg px-3 py-2 text-sm font-normal text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                  >
+                    {child.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </DisclosurePanel>
+        )}
       </Disclosure>
     )
   }
@@ -113,16 +97,7 @@ const SidebarNavigation: React.FC<Props> = ({ data }) => {
       <ul className="flex flex-col gap-y-1 px-2 py-6">{data?.map(_renderItem)}</ul>
       <Divider className="mb-6" />
 
-      {/* FOR OUR DEMO */}
-      <div className="flex items-center justify-between gap-x-2.5 py-6">
-        <ButtonPrimary
-          href="https://themeforest.net/item/ncmaz-blog-news-magazine-nextjs-template/44412092"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Buy this template
-        </ButtonPrimary>
-
+      <div className="flex items-center justify-end py-6">
         <SwitchDarkMode />
       </div>
     </div>
