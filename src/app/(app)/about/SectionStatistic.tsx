@@ -1,23 +1,46 @@
-import { fetchPosts, fetchCategories, fetchAuthors } from '@/utils/serverApi'
+'use client'
 
-export default async function SectionStatistic() {
-  // Fetch real counts from API
-  let postCount = 0
-  let categoryCount = 0
-  let authorCount = 0
+import { useEffect, useState } from 'react'
 
-  try {
-    const [postsData, categoriesData, authorsData] = await Promise.all([
-      fetchPosts({ limit: 1 }),
-      fetchCategories(),
-      fetchAuthors(),
-    ])
-    postCount = Array.isArray(postsData) ? postsData.length : 0
-    categoryCount = Array.isArray(categoriesData) ? categoriesData.length : 0
-    authorCount = Array.isArray(authorsData) ? authorsData.length : 0
-  } catch {
-    // Gracefully handle API failures
-  }
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+
+export default function SectionStatistic() {
+  const [stats, setStats] = useState({ posts: 0, categories: 0, authors: 0 })
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        // Fetch only lightweight endpoints — avoids the ~15 MB /posts response
+        const [catRes, authorRes] = await Promise.all([
+          fetch(`${API_URL}/categories`),
+          fetch(`${API_URL}/users?limit=100`),
+        ])
+
+        const categories = await catRes.json()
+        const authors = await authorRes.json()
+
+        const catArr = Array.isArray(categories)
+          ? categories
+          : categories?.items ?? []
+        const authorArr = Array.isArray(authors) ? authors : authors?.items ?? []
+
+        // Derive total post count from categories.posts_count (avoids huge /posts call)
+        const totalPosts = catArr.reduce(
+          (sum: number, c: { posts_count?: number }) => sum + (c.posts_count ?? 0),
+          0,
+        )
+
+        setStats({
+          posts: totalPosts,
+          categories: catArr.length,
+          authors: authorArr.length,
+        })
+      } catch {
+        // Silently fail — stats stay at 0
+      }
+    }
+    loadStats()
+  }, [])
 
   return (
     <div>
@@ -33,7 +56,7 @@ export default async function SectionStatistic() {
       <div className="mx-auto mt-16 flex max-w-2xl flex-col gap-8 lg:mx-0 lg:mt-20 lg:max-w-none lg:flex-row lg:items-end">
         <div className="flex flex-col-reverse justify-between gap-x-16 gap-y-8 rounded-2xl bg-neutral-50 p-8 sm:w-3/4 sm:max-w-md sm:flex-row-reverse sm:items-end lg:w-72 lg:max-w-none lg:flex-none lg:flex-col lg:items-start dark:bg-neutral-800">
           <p className="flex-none text-3xl font-bold tracking-tight">
-            {postCount.toLocaleString()}+
+            {stats.posts > 0 ? `${stats.posts.toLocaleString()}+` : '—'}
           </p>
           <div className="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
             <p className="text-lg font-semibold tracking-tight">Published Articles</p>
@@ -44,7 +67,7 @@ export default async function SectionStatistic() {
         </div>
         <div className="flex flex-col-reverse justify-between gap-x-16 gap-y-8 rounded-2xl bg-neutral-900 p-8 sm:flex-row-reverse sm:items-end lg:w-full lg:max-w-sm lg:flex-auto lg:flex-col lg:items-start lg:gap-y-44 dark:bg-neutral-700">
           <p className="flex-none text-3xl font-bold tracking-tight text-white">
-            {categoryCount.toLocaleString()}+
+            {stats.categories > 0 ? `${stats.categories.toLocaleString()}+` : '—'}
           </p>
           <div className="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
             <p className="text-lg font-semibold tracking-tight text-white">Content Categories</p>
@@ -55,7 +78,7 @@ export default async function SectionStatistic() {
         </div>
         <div className="flex flex-col-reverse justify-between gap-x-16 gap-y-8 rounded-2xl bg-primary-600 p-8 sm:w-11/12 sm:max-w-xl sm:flex-row-reverse sm:items-end lg:w-full lg:max-w-none lg:flex-auto lg:flex-col lg:items-start lg:gap-y-28">
           <p className="flex-none text-3xl font-bold tracking-tight text-white">
-            {authorCount.toLocaleString()}+
+            {stats.authors > 0 ? `${stats.authors.toLocaleString()}+` : '—'}
           </p>
           <div className="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
             <p className="text-lg font-semibold tracking-tight text-white">Contributing Authors</p>
