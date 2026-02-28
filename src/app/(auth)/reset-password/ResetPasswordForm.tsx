@@ -25,12 +25,12 @@ const ResetPasswordForm = () => {
     setError('')
 
     if (!token) {
-      setError('Invalid or missing reset token. Please request a new password reset link.')
+      setError('Invalid or missing reset token. Please request a new reset link.')
       return
     }
 
     if (!password || !confirmPassword) {
-      setError('Please fill in all fields.')
+      setError('Please fill in both password fields.')
       return
     }
 
@@ -69,9 +69,9 @@ const ResetPasswordForm = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Password Reset Successfully!</h2>
+            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Password Reset!</h2>
             <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-              Your password has been updated. You can now log in with your new password.
+              Your password has been reset successfully. You can now log in with your new password.
             </p>
           </div>
           <Link href="/login" className="inline-block font-medium text-primary-600 underline hover:text-primary-700 dark:text-primary-400">
@@ -124,10 +124,10 @@ const ResetPasswordForm = () => {
             <Label className="text-neutral-800 dark:text-neutral-200">New Password</Label>
             <Input
               type="password"
-              placeholder="Minimum 8 characters"
               className="mt-1"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="At least 8 characters"
             />
           </Field>
 
@@ -135,10 +135,10 @@ const ResetPasswordForm = () => {
             <Label className="text-neutral-800 dark:text-neutral-200">Confirm Password</Label>
             <Input
               type="password"
-              placeholder="Repeat your password"
               className="mt-1"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Re-enter your new password"
             />
           </Field>
 

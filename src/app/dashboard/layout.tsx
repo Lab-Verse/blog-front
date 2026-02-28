@@ -55,7 +55,13 @@ export default function Layout({ children }: { children: ReactNode }) {
     }
   }, [accessToken])
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    const refreshToken = cookies.getRefreshToken()
+    try {
+      await logoutMutation(refreshToken ? { refreshToken } : undefined).unwrap()
+    } catch {
+      // Even if backend logout fails, still clear local state
+    }
     cookies.clearAuthTokens()
     router.push('/login')
   }

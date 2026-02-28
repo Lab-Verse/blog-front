@@ -1,10 +1,10 @@
-import ResetPasswordForm from '@/components/ResetPasswordForm'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
+import ResetPasswordForm from './ResetPasswordForm'
 
 export const metadata: Metadata = {
   title: 'Reset Password',
-  description: 'Set your new password',
+  description: 'Set a new password for your account',
   robots: { index: false, follow: false },
 }
 
