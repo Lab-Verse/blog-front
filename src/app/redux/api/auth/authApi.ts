@@ -53,8 +53,12 @@ export const authApi = baseApi.injectEndpoints({
       },
     }),
 
-    logout: b.mutation<ApiEnvelope<{ ok: true }>, void>({
-      query: () => ({ url: "/auth/logout", method: "POST" }),
+    logout: b.mutation<ApiEnvelope<{ ok: true }>, { refreshToken?: string } | void>({
+      query: (body) => ({
+        url: "/auth/logout",
+        method: "POST",
+        body: body || {},
+      }),
       async onQueryStarted(_, { dispatch }) {
         dispatch(logout());
       },

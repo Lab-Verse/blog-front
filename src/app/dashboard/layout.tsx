@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useGetUserByIdQuery } from '../redux/api/users/usersApi'
+import { useLogoutMutation } from '../redux/api/auth/authApi'
 import { cookies } from '../redux/utils/cookies'
 
 import { jwtDecode } from 'jwt-decode'
@@ -35,6 +36,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const [userId, setUserId] = useState('')
   const { data: user } = useGetUserByIdQuery(userId, { skip: !userId })
+  const [logoutMutation] = useLogoutMutation()
 
   const profilePic = user?.avatar && user.avatar !== 'default-avatar.png' 
     ? user.avatar 

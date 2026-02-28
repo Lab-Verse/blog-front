@@ -1,13 +1,30 @@
+'use client'
+
+import { cookies } from '@/app/redux/utils/cookies'
+import { jwtDecode } from 'jwt-decode'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import DashboardMediaLibrary from './DashboardMediaLibrary'
 
-export const metadata = {
-    title: 'Dashboard - Media',
-    description: 'Manage your media library',
-}
-
 const Page = () => {
-    // TODO: Replace with actual user ID from auth
-    const userId = 'user-id-placeholder'
+    const [userId, setUserId] = useState<string>('')
+    const router = useRouter()
+
+    useEffect(() => {
+        const token = cookies.getAccessToken()
+        if (!token) {
+            router.push('/login')
+            return
+        }
+        try {
+            const decoded: any = jwtDecode(token)
+            setUserId(decoded?.sub || '')
+        } catch {
+            router.push('/login')
+        }
+    }, [router])
+
+    if (!userId) return null
 
     return (
         <div>
