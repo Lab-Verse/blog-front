@@ -1,6 +1,6 @@
 import { getParentNavigation, getSubNavigation, TNavigationItem } from '@/data/navigation'
-import Logo from '@/shared/Logo'
 import clsx from 'clsx'
+import Image from 'next/image'
 import Link from 'next/link'
 import { FC } from 'react'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
@@ -33,7 +33,16 @@ const Header: FC<HeaderProps> = async ({ bottomBorder, className, activeCategory
           )}
         >
           {/* Logo */}
-          <Logo />
+          <Link href="/" className="inline-flex shrink-0 items-center">
+            <Image
+              src="/images/twa-logo.svg"
+              alt="TWA - The World Ambassador"
+              width={200}
+              height={60}
+              className="h-8 w-auto sm:h-10 dark:invert"
+              priority
+            />
+          </Link>
 
           {/* CNN-style: parent category label */}
           {isSubNavMode && (
