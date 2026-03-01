@@ -254,6 +254,14 @@ export function transformAuthor(
       displayName
     ),
     cover: makeImage(null, displayName),
+    website: profile?.website_url,
+    socialLinks: {
+      twitter: profile?.twitter_url || undefined,
+      facebook: profile?.facebook_url || undefined,
+      instagram: profile?.instagram_url || undefined,
+      linkedin: profile?.linkedin_url || undefined,
+      youtube: profile?.youtube_url || undefined,
+    },
   }
 }
 

@@ -6,6 +6,7 @@ import PaginationWrapper from '@/components/PaginationWrapper'
 import Card11 from '@/components/PostCards/Card11'
 import { searchAll } from '@/utils/serverApi'
 import { transformPosts, transformCategories, transformTags, transformAuthors } from '@/utils/dataTransformers'
+import { mapSortBy } from '@/utils/sortMapping'
 import { ButtonCircle } from '@/shared/Button'
 import Input from '@/shared/Input'
 import Tag from '@/shared/Tag'
@@ -20,6 +21,7 @@ import { getTranslations } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
+const POSTS_PER_PAGE = 12
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
@@ -72,6 +74,8 @@ const PageSearch = async ({
 
   let searchQuery = (await searchParams)['s']
   let searchTab = (await searchParams)['tab']
+  const pageStr = (await searchParams)['page']
+  const sortByParam = (await searchParams)['sort-by']
   // example: /search?s=text1&s=text2 => searchQuery = 'text1'
   if (Array.isArray(searchQuery)) {
     searchQuery = searchQuery[0]
@@ -87,13 +91,22 @@ const PageSearch = async ({
     searchTab = filterTabs[0].value // default tab is posts
   }
 
-  const searchResults = await searchAll(searchQuery || '')
+  const page = Math.max(Number(Array.isArray(pageStr) ? pageStr[0] : pageStr) || 1, 1)
+  const { sortBy, sortOrder } = mapSortBy(Array.isArray(sortByParam) ? sortByParam[0] : sortByParam)
+
+  const searchResults = await searchAll(searchQuery || '', {
+    page,
+    limit: POSTS_PER_PAGE,
+    sortBy,
+    sortOrder,
+  })
 
   const posts = transformPosts(searchResults.posts)
   const categories = transformCategories(searchResults.categories)
   const tags = transformTags(searchResults.tags)
   const authors = transformAuthors(searchResults.authors)
   const totalResults = searchResults.totalResults
+  const totalPostPages = Math.ceil(searchResults.postTotal / POSTS_PER_PAGE)
   const recommendedSearches = ['Technology', 'Travel', 'Food', 'Health', 'Science']
 
   const renderLoopItems = () => {
@@ -199,7 +212,7 @@ const PageSearch = async ({
         {renderLoopItems()}
 
         {/* PAGINATION */}
-        <PaginationWrapper className="mt-20" />
+        {searchTab === 'posts' && <PaginationWrapper totalPages={totalPostPages} className="mt-20" />}
       </div>
     </div>
   )

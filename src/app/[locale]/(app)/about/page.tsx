@@ -2,9 +2,12 @@ import SectionHero from '@/components/SectionHero'
 import rightImg from '@/images/about-hero-right.png'
 import { Divider } from '@/shared/divider'
 import SectionStatistic from './SectionStatistic'
+import LeadershipCard from '@/components/leadership/LeadershipCard'
+import { fetchLeadershipMembers } from '@/utils/serverApi'
 import { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
+import { Link } from '@/i18n/navigation'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
@@ -23,6 +26,8 @@ export async function generateMetadata() {
 
 const PageAbout = async () => {
   const t = await getTranslations('about')
+  const tLeadership = await getTranslations('leadership')
+  const members = await fetchLeadershipMembers()
 
   return (
     <div className="nc-PageAbout relative">
@@ -68,6 +73,42 @@ const PageAbout = async () => {
         </div>
 
         <Divider />
+
+        {/* Leadership Team Preview */}
+        {members.length > 0 && (
+          <>
+            <div className="mx-auto max-w-5xl text-center">
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                {tLeadership('meetTheTeam')}
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
+                {tLeadership('meetTheTeamDescription')}
+              </p>
+              <div className="mt-12 grid grid-cols-2 gap-8 sm:gap-12 lg:grid-cols-4">
+                {members.slice(0, 4).map((member) => (
+                  <LeadershipCard
+                    key={member.id}
+                    member={member}
+                    compact
+                  />
+                ))}
+              </div>
+              {members.length > 4 && (
+                <Link
+                  href="/leadership"
+                  className="mt-10 inline-flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+                >
+                  {tLeadership('viewFullTeam')}
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              )}
+            </div>
+            <Divider />
+          </>
+        )}
+
         <SectionStatistic />
       </div>
     </div>

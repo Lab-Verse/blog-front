@@ -3,6 +3,7 @@
 import BookmarkBtn from '@/components/BookmarkBtn'
 import PostCardCommentBtn from '@/components/PostCardCommentBtn'
 import PostCardLikeBtn from '@/components/PostCardLikeBtn'
+import ShareDropdown from '@/components/ShareDropdown'
 import { TPostDetail } from '@/data/posts'
 import { Button } from '@/shared/Button'
 import { Dialog, DialogActions, DialogBody, DialogTitle } from '@/shared/dialog'
@@ -10,12 +11,8 @@ import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/shared/d
 import {
   ClipboardIcon,
   Comment01Icon,
-  Facebook01Icon,
   Flag03Icon,
-  Mail01Icon,
   MoreHorizontalIcon,
-  NewTwitterIcon,
-  Share03Icon,
   ViewOffSlashIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -120,45 +117,6 @@ function ActionDropdown({ handle, title, author }: { handle: string; title: stri
   )
 }
 
-function ShareDropdown({ handle }: { handle: string }) {
-  const socialsShare = [
-    {
-      name: 'Facebook',
-      href: '#',
-      icon: Facebook01Icon,
-    },
-    {
-      name: 'Email',
-      href: '#',
-      icon: Mail01Icon,
-    },
-    {
-      name: 'Twitter',
-      href: '#',
-      icon: NewTwitterIcon,
-    },
-  ]
-
-  return (
-    <Dropdown>
-      <DropdownButton
-        as="button"
-        className="flex size-8.5 items-center justify-center rounded-full bg-neutral-50 transition-colors duration-300 hover:bg-neutral-100 dark:bg-white/10 dark:hover:bg-white/20"
-      >
-        <HugeiconsIcon icon={Share03Icon} size={20} />
-      </DropdownButton>
-      <DropdownMenu>
-        {socialsShare.map((item, index) => (
-          <DropdownItem key={index} href={item.href}>
-            <HugeiconsIcon icon={item.icon} size={20} data-slot="icon" />
-            {item.name}
-          </DropdownItem>
-        ))}
-      </DropdownMenu>
-    </Dropdown>
-  )
-}
-
 interface Props extends Pick<TPostDetail, 'likeCount' | 'liked' | 'commentCount' | 'handle' | 'title' | 'author'> {
   className?: string
 }
@@ -171,7 +129,7 @@ const SingleMetaAction: FC<Props> = ({ className, likeCount, liked, commentCount
         <PostCardCommentBtn commentCount={commentCount} handle={handle} />
         <p className="font-light text-neutral-400 sm:mx-1">/</p>
         <BookmarkBtn className="size-8.5!" />
-        <ShareDropdown handle={handle} />
+        <ShareDropdown title={title} />
         <ActionDropdown handle={handle} title={title} author={author} />
       </div>
     </div>

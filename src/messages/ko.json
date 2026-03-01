@@ -63,6 +63,7 @@
     "search": "검색",
     "aboutUs": "소개",
     "contact": "문의",
+    "leadership": "리더십",
     "account": "계정",
     "login": "로그인",
     "signUp": "회원가입",
@@ -627,5 +628,40 @@
     "title": "글 쓰기",
     "description": "새 기사를 작성하고 게시하세요.",
     "loadingEditor": "에디터 로딩 중..."
+  },
+  "eMagazine": {
+    "title": "E-매거진",
+    "subtitle": "디지털 매거진 호를 둘러보고 읽어보세요",
+    "latestIssues": "최신호",
+    "issue": "호",
+    "pages": "페이지",
+    "readNow": "지금 읽기",
+    "download": "PDF 다운로드",
+    "publishedOn": "게시일",
+    "noIssues": "아직 매거진 호가 없습니다.",
+    "backToIssues": "목록으로 돌아가기",
+    "flipbookViewer": "플립북 뷰어",
+    "loading": "매거진 로드 중...",
+    "pageOf": "{total}페이지 중 {current}페이지",
+    "prevPage": "이전",
+    "nextPage": "다음",
+    "zoomIn": "확대",
+    "zoomOut": "축소",
+    "fullscreen": "전체 화면",
+    "metaTitle": "E-매거진 | TWA 블로그",
+    "metaDescription": "인터랙티브 플립북 리더로 디지털 매거진 호를 둘러보고 읽어보세요."
+  },
+  "leadership": {
+    "title": "우리의 리더십",
+    "subtitle": "플랫폼과 편집 비전을 이끄는 사람들을 만나보세요",
+    "meetTheTeam": "팀 소개",
+    "meetTheTeamDescription": "우리 리더십 팀은 다양한 경험과 전문성을 모아 플랫폼을 이끌고 있습니다.",
+    "viewFullTeam": "전체 팀 보기",
+    "designation": "직책",
+    "bio": "소개",
+    "website": "웹사이트",
+    "noMembers": "팀 페이지가 업데이트 중입니다. 곧 다시 확인해 주세요!",
+    "metaTitle": "우리의 리더십 | TWA 블로그",
+    "metaDescription": "TWA 블로그를 이끄는 리더십 팀을 만나보세요 — 플랫폼을 만들어가는 편집자, 작가, 비전가들."
   }
 }

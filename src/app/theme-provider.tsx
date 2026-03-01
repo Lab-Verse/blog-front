@@ -14,24 +14,19 @@ interface ThemeContextValue {
 export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false)
+  // Initialize from DOM state (set by inline FOUC-prevention script)
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.classList.contains('dark')
+    }
+    return false
+  })
   const [themeDir, setThemeDir] = useState<'rtl' | 'ltr'>('ltr')
 
-  // themeMode
+  // Sync React state with the inline script's DOM state on mount
   useEffect(() => {
-    if (localStorage.getItem('theme') === 'dark-mode') {
-      setIsDarkMode(true)
-      const root = document.querySelector('html')
-      if (root && !root.classList.contains('dark')) {
-        root.classList.add('dark')
-      }
-    } else {
-      setIsDarkMode(false)
-      const root = document.querySelector('html')
-      if (root) {
-        root.classList.remove('dark')
-      }
-    }
+    const hasDarkClass = document.documentElement.classList.contains('dark')
+    setIsDarkMode(hasDarkClass)
   }, [])
 
   // themeDir

@@ -1,3 +1,4 @@
+import PostViewTracker from '@/components/PostViewTracker'
 import WidgetAuthors from '@/components/WidgetAuthors'
 import WidgetCategories from '@/components/WidgetCategories'
 import WidgetPosts from '@/components/WidgetPosts'
@@ -30,6 +31,16 @@ import SingleRelatedPosts from '../SingleRelatedPosts'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
+
+/** Pre-generate pages for the most recent posts at build time */
+export async function generateStaticParams() {
+  try {
+    const posts = await fetchPosts({ limit: 50, sortBy: 'created_at', sortOrder: 'DESC' })
+    return posts.map((post) => ({ handle: post.slug }))
+  } catch {
+    return []
+  }
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params
@@ -108,9 +119,38 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/post/${apiPost.slug}` },
   }
 
+  // Build breadcrumb: Home > Category > Post
+  const breadcrumbItems: { name: string; url: string }[] = [
+    { name: 'Home', url: SITE_URL },
+  ]
+  // Extract first category from postCategories or category field
+  const pc = (apiPost as unknown as Record<string, unknown>).postCategories as
+    | { category?: { name: string; slug: string } }[]
+    | undefined
+  const firstCat = (Array.isArray(pc) && pc.length > 0 && pc[0].category)
+    ? pc[0].category
+    : apiPost.category
+  if (firstCat) {
+    breadcrumbItems.push({ name: firstCat.name, url: `${SITE_URL}/category/${firstCat.slug}` })
+  }
+  breadcrumbItems.push({ name: apiPost.title, url: `${SITE_URL}/post/${apiPost.slug}` })
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  }
+
   return (
     <>
       <JsonLd data={articleJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
+      <PostViewTracker postId={apiPost.id} />
       <div className="single-post-page">
         <SingleHeaderContainer post={post} />
 

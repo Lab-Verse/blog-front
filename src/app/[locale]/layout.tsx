@@ -161,7 +161,7 @@ export default async function LocaleLayout({
   ].join(' ')
 
   return (
-    <html lang={locale} dir={dir} className={`${allFontVars} ${fontVarClass}`}>
+    <html lang={locale} dir={dir} className={`${allFontVars} ${fontVarClass}`} suppressHydrationWarning>
       <head>
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script
@@ -189,6 +189,19 @@ export default async function LocaleLayout({
         )}
       </head>
       <body className="bg-white text-base text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200">
+        {/* FOUC prevention: apply dark class synchronously before paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark-mode'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()`
+          }}
+        />
+        {/* Skip to content link for accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-md focus:bg-primary-600 focus:px-4 focus:py-2 focus:text-white focus:outline-none"
+        >
+          Skip to main content
+        </a>
         <NextIntlClientProvider>
           <ThemeProvider>
             <Toaster richColors position={dir === 'rtl' ? 'top-left' : 'top-right'} closeButton />

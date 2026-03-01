@@ -1,6 +1,7 @@
 'use client'
 
 import FollowButton from '@/components/FollowButton'
+import ShareDropdown from '@/components/ShareDropdown'
 import { TCategory } from '@/data/categories'
 import Avatar from '@/shared/Avatar'
 import { Badge } from '@/shared/Badge'
@@ -10,14 +11,10 @@ import { Dialog, DialogActions, DialogBody, DialogTitle } from '@/shared/dialog'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/shared/dropdown'
 import {
   CopyLinkIcon,
-  Facebook01Icon,
   Fire03Icon,
   Flag03Icon,
-  Mail01Icon,
   MoreHorizontalIcon,
-  NewTwitterIcon,
   PlayListIcon,
-  Share03Icon,
   ViewOffSlashIcon,
   Vynil02Icon,
 } from '@hugeicons/core-free-icons'
@@ -78,48 +75,12 @@ const PageHeader = ({
           {/* ACTIONS */}
           <div className="flex gap-x-2 self-start">
             <FollowButton className="py-[calc(--spacing(2)-1px)]!" />
-            <ShareDropdown handle={handle} />
+            <ShareDropdown variant="outline" />
             <ActionDropdown handle={handle} category={category} />
           </div>
         </div>
       </div>
     </div>
-  )
-}
-
-function ShareDropdown({ handle }: { handle: string }) {
-  const socialsShare = [
-    {
-      name: 'Facebook',
-      href: '#',
-      icon: Facebook01Icon,
-    },
-    {
-      name: 'Email',
-      href: '#',
-      icon: Mail01Icon,
-    },
-    {
-      name: 'Twitter',
-      href: '#',
-      icon: NewTwitterIcon,
-    },
-  ]
-
-  return (
-    <Dropdown>
-      <DropdownButton as={ButtonCircle} outline className="size-10">
-        <HugeiconsIcon icon={Share03Icon} size={20} />
-      </DropdownButton>
-      <DropdownMenu>
-        {socialsShare.map((item, index) => (
-          <DropdownItem key={index} href={item.href}>
-            <HugeiconsIcon icon={item.icon} size={20} data-slot="icon" />
-            {item.name}
-          </DropdownItem>
-        ))}
-      </DropdownMenu>
-    </Dropdown>
   )
 }
 

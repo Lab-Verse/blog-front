@@ -80,7 +80,7 @@ function NotifyDropdown() {
   const t = useTranslations('common')
   return (
     <Popover className="me-3">
-      <PopoverButton as={ButtonCircle} className="relative" color="light" plain>
+      <PopoverButton as={ButtonCircle} aria-label="Notifications" className="relative" color="light" plain>
         <span className="absolute end-0 top-px size-2.5 rounded-full bg-primary-500" />
         <HugeiconsIcon icon={Notification02Icon} size={24} />
       </PopoverButton>
@@ -107,7 +107,7 @@ function AvatarMenu() {
 
   return (
     <Popover>
-      <PopoverButton as={ButtonCircle} className="relative" plain>
+      <PopoverButton as={ButtonCircle} aria-label="User menu" className="relative" plain>
         <Avatar
           alt="avatar"
           width={32}

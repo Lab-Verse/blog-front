@@ -63,6 +63,7 @@
     "search": "搜索",
     "aboutUs": "关于我们",
     "contact": "联系我们",
+    "leadership": "领导团队",
     "account": "账户",
     "login": "登录",
     "signUp": "注册",
@@ -627,5 +628,40 @@
     "title": "写文章",
     "description": "创建和发布新文章。",
     "loadingEditor": "编辑器加载中..."
+  },
+  "eMagazine": {
+    "title": "电子杂志",
+    "subtitle": "浏览和阅读我们的数字杂志期刊",
+    "latestIssues": "最新一期",
+    "issue": "第",
+    "pages": "页",
+    "readNow": "立即阅读",
+    "download": "下载PDF",
+    "publishedOn": "发布于",
+    "noIssues": "暂无杂志期刊。",
+    "backToIssues": "返回期刊列表",
+    "flipbookViewer": "翻页阅读器",
+    "loading": "正在加载杂志...",
+    "pageOf": "第 {current} 页，共 {total} 页",
+    "prevPage": "上一页",
+    "nextPage": "下一页",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "fullscreen": "全屏",
+    "metaTitle": "电子杂志 | TWA博客",
+    "metaDescription": "通过互动翻页阅读器浏览和阅读我们的数字杂志期刊。"
+  },
+  "leadership": {
+    "title": "我们的领导团队",
+    "subtitle": "认识平台和编辑愿景背后的人们",
+    "meetTheTeam": "认识我们的团队",
+    "meetTheTeamDescription": "我们的领导团队汇集了多元化的经验和专长来引导平台发展。",
+    "viewFullTeam": "查看完整团队",
+    "designation": "职位",
+    "bio": "简介",
+    "website": "网站",
+    "noMembers": "我们的团队页面正在更新中，请稍后查看！",
+    "metaTitle": "我们的领导团队 | TWA博客",
+    "metaDescription": "认识TWA博客背后的领导团队——塑造平台的编辑、作家和远见者。"
   }
 }

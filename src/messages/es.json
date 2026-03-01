@@ -63,6 +63,7 @@
     "search": "Buscar",
     "aboutUs": "Sobre nosotros",
     "contact": "Contacto",
+    "leadership": "Liderazgo",
     "account": "Cuenta",
     "login": "Iniciar sesión",
     "signUp": "Registrarse",
@@ -627,5 +628,40 @@
     "title": "Escribir artículo",
     "description": "Crea y publica un nuevo artículo.",
     "loadingEditor": "Cargando editor..."
+  },
+  "eMagazine": {
+    "title": "E-Magazine",
+    "subtitle": "Explora y lee nuestras ediciones de revista digital",
+    "latestIssues": "Últimas Ediciones",
+    "issue": "Edición",
+    "pages": "Páginas",
+    "readNow": "Leer Ahora",
+    "download": "Descargar PDF",
+    "publishedOn": "Publicado el",
+    "noIssues": "Aún no hay ediciones de revista disponibles.",
+    "backToIssues": "Volver a Ediciones",
+    "flipbookViewer": "Visor de Revista",
+    "loading": "Cargando revista...",
+    "pageOf": "Página {current} de {total}",
+    "prevPage": "Anterior",
+    "nextPage": "Siguiente",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "fullscreen": "Pantalla completa",
+    "metaTitle": "E-Magazine | Blog TWA",
+    "metaDescription": "Explora y lee nuestras ediciones de revista digital con un lector interactivo de revista."
+  },
+  "leadership": {
+    "title": "Nuestro Liderazgo",
+    "subtitle": "Conoce a las personas detrás de nuestra plataforma y visión editorial",
+    "meetTheTeam": "Conoce a Nuestro Equipo",
+    "meetTheTeamDescription": "Nuestro equipo de liderazgo reúne experiencia diversa para guiar nuestra plataforma.",
+    "viewFullTeam": "Ver Equipo Completo",
+    "designation": "Cargo",
+    "bio": "Biografía",
+    "website": "Sitio Web",
+    "noMembers": "Nuestra página de equipo se está actualizando. ¡Vuelve pronto!",
+    "metaTitle": "Nuestro Liderazgo | Blog TWA",
+    "metaDescription": "Conoce al equipo de liderazgo detrás del Blog TWA — nuestros editores, escritores y visionarios."
   }
 }

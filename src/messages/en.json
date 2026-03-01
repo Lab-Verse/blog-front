@@ -63,6 +63,7 @@
     "search": "Search",
     "aboutUs": "About Us",
     "contact": "Contact",
+    "leadership": "Leadership",
     "account": "Account",
     "login": "Login",
     "signUp": "Sign Up",
@@ -627,5 +628,40 @@
     "title": "Write a Post",
     "description": "Create and publish a new article.",
     "loadingEditor": "Loading editor..."
+  },
+  "eMagazine": {
+    "title": "E-Magazine",
+    "subtitle": "Browse and read our digital magazine issues",
+    "latestIssues": "Latest Issues",
+    "issue": "Issue",
+    "pages": "Pages",
+    "readNow": "Read Now",
+    "download": "Download PDF",
+    "publishedOn": "Published on",
+    "noIssues": "No magazine issues available yet.",
+    "backToIssues": "Back to Issues",
+    "flipbookViewer": "Flipbook Viewer",
+    "loading": "Loading magazine...",
+    "pageOf": "Page {current} of {total}",
+    "prevPage": "Previous",
+    "nextPage": "Next",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "fullscreen": "Fullscreen",
+    "metaTitle": "E-Magazine | TWA Blog",
+    "metaDescription": "Browse and read our digital magazine issues with an interactive flipbook reader."
+  },
+  "leadership": {
+    "title": "Our Leadership",
+    "subtitle": "Meet the people behind our platform and editorial vision",
+    "meetTheTeam": "Meet Our Team",
+    "meetTheTeamDescription": "Our leadership team brings together diverse experience and expertise to guide our platform.",
+    "viewFullTeam": "View Full Team",
+    "designation": "Designation",
+    "bio": "Bio",
+    "website": "Website",
+    "noMembers": "Our team page is being updated. Check back soon!",
+    "metaTitle": "Our Leadership | TWA Blog",
+    "metaDescription": "Meet the leadership team behind TWA Blog — our editors, writers, and visionaries shaping the platform."
   }
 }

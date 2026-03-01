@@ -56,7 +56,7 @@ const NotifyDropdown: FC<Props> = ({ className = '' }) => {
   return (
     <Popover className={className}>
       <>
-        <PopoverButton as={ButtonCircle} className="relative" color="light" plain>
+        <PopoverButton as={ButtonCircle} aria-label="Notifications" className="relative" color="light" plain>
           {unreadCount > 0 && (
             <span className="absolute end-0 top-px flex size-4 items-center justify-center rounded-full bg-primary-500 text-[10px] font-bold text-white">
               {unreadCount > 9 ? '9+' : unreadCount}

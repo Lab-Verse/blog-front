@@ -2,8 +2,9 @@ import ArchiveSortByListBox from '@/components/ArchiveSortByListBox'
 import ArchiveTabs from '@/components/ArchiveTabs'
 import PaginationWrapper from '@/components/PaginationWrapper'
 import Card11 from '@/components/PostCards/Card11'
-import { fetchAuthorByUsername } from '@/utils/serverApi'
+import { fetchAuthorByUsername, fetchPostsPaginated } from '@/utils/serverApi'
 import { transformAuthor, transformPosts } from '@/utils/dataTransformers'
+import { mapSortBy } from '@/utils/sortMapping'
 import { AllBookmarkIcon, FolderFavouriteIcon, LicenseIcon } from '@hugeicons/core-free-icons'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -12,6 +13,7 @@ import { generateAlternateLanguages } from '@/utils/seo'
 import PageHeader from '../page-header'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
+const POSTS_PER_PAGE = 12
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params
@@ -48,16 +50,35 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   }
 }
 
-const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
+const Page = async ({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ handle: string }>
+  searchParams: Promise<{ page?: string; 'sort-by'?: string }>
+}) => {
   const { handle } = await params
+  const { page: pageStr, 'sort-by': sortByParam } = await searchParams
   const t = await getTranslations('authorProfile')
   const ts = await getTranslations('search')
   const result = await fetchAuthorByUsername(handle)
 
   if (!result?.user) return notFound()
 
-  const author = transformAuthor(result.user, null, result.posts.length)
-  const posts = transformPosts(result.posts)
+  const page = Math.max(Number(pageStr) || 1, 1)
+  const { sortBy, sortOrder } = mapSortBy(sortByParam)
+
+  const { posts: apiPosts, total } = await fetchPostsPaginated({
+    user: result.user.id,
+    page,
+    limit: POSTS_PER_PAGE,
+    sortBy,
+    sortOrder,
+  })
+
+  const totalPages = Math.ceil(total / POSTS_PER_PAGE)
+  const author = transformAuthor(result.user, result.profile, total)
+  const posts = transformPosts(apiPosts)
 
   const sortByOptions = [
     { name: ts('sortMostRecent'), value: 'most-recent' },
@@ -92,7 +113,7 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
         </div>
 
         {/* PAGINATION */}
-        <PaginationWrapper className="mt-20" totalPages={Math.ceil(posts.length / 12)} />
+        <PaginationWrapper className="mt-20" totalPages={totalPages} />
       </div>
     </div>
   )

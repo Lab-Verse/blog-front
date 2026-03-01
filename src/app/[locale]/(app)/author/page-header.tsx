@@ -1,6 +1,7 @@
 'use client'
 
 import FollowButton from '@/components/FollowButton'
+import ShareDropdown from '@/components/ShareDropdown'
 import VerifyIcon from '@/components/VerifyIcon'
 import { TAuthor } from '@/data/authors'
 import Avatar from '@/shared/Avatar'
@@ -12,12 +13,8 @@ import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/shared/d
 import { GlobeAltIcon } from '@heroicons/react/24/outline'
 import {
   CopyLinkIcon,
-  Facebook01Icon,
   Flag03Icon,
-  Mail01Icon,
   MoreHorizontalIcon,
-  NewTwitterIcon,
-  Share03Icon,
   ViewOffSlashIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -26,9 +23,24 @@ import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { useState } from 'react'
 
+import { Facebook01Icon, InstagramIcon, NewTwitterIcon, YoutubeIcon, Linkedin01Icon } from '@hugeicons/core-free-icons'
+
+type SocialItem = { name: string; href: string; icon: typeof Facebook01Icon }
+
+function buildSocialsList(author: TAuthor): SocialItem[] {
+  const links: SocialItem[] = []
+  if (author.socialLinks?.facebook) links.push({ name: 'Facebook', href: author.socialLinks.facebook, icon: Facebook01Icon })
+  if (author.socialLinks?.twitter) links.push({ name: 'Twitter', href: author.socialLinks.twitter, icon: NewTwitterIcon })
+  if (author.socialLinks?.instagram) links.push({ name: 'Instagram', href: author.socialLinks.instagram, icon: InstagramIcon })
+  if (author.socialLinks?.youtube) links.push({ name: 'YouTube', href: author.socialLinks.youtube, icon: YoutubeIcon })
+  if (author.socialLinks?.linkedin) links.push({ name: 'LinkedIn', href: author.socialLinks.linkedin, icon: Linkedin01Icon })
+  return links
+}
+
 const PageHeader = ({ author, className }: { author: TAuthor; className?: string }) => {
   const { name, description, cover, avatar, handle } = author
   const authorId = (author as any).id
+  const socials = buildSocialsList(author)
 
   return (
     <div className={clsx('w-full', className)}>
@@ -62,61 +74,25 @@ const PageHeader = ({ author, className }: { author: TAuthor; className?: string
                 <VerifyIcon iconClass="size-6 lg:size-7" />
               </div>
               <p className="text-sm/6 text-neutral-600 dark:text-neutral-400">{description}</p>
-              {(author as any).website && (author as any).website !== '#' && (
-                <a href={(author as any).website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-x-2 text-xs text-neutral-500 dark:text-neutral-400">
+              {author.website && author.website !== '#' && (
+                <a href={author.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-x-2 text-xs text-neutral-500 dark:text-neutral-400">
                   <GlobeAltIcon className="size-4" />
-                  <span className="font-medium text-neutral-700 dark:text-neutral-300">{(author as any).website}</span>
+                  <span className="font-medium text-neutral-700 dark:text-neutral-300">{author.website}</span>
                 </a>
               )}
-              <SocialsList />
+              {socials.length > 0 && <SocialsList socials={socials} />}
             </div>
           </div>
 
           {/* ACTIONS */}
           <div className="flex gap-x-2">
             <FollowButton className="py-[calc(--spacing(2)-1px)]!" authorId={authorId} />
-            <ShareDropdown handle={handle} />
+            <ShareDropdown variant="outline" />
             <ActionDropdown handle={handle} author={author} />
           </div>
         </div>
       </div>
     </div>
-  )
-}
-
-function ShareDropdown({ handle }: { handle: string }) {
-  const socialsShare = [
-    {
-      name: 'Facebook',
-      href: '#',
-      icon: Facebook01Icon,
-    },
-    {
-      name: 'Email',
-      href: '#',
-      icon: Mail01Icon,
-    },
-    {
-      name: 'Twitter',
-      href: '#',
-      icon: NewTwitterIcon,
-    },
-  ]
-
-  return (
-    <Dropdown>
-      <DropdownButton as={ButtonCircle} outline className="size-10">
-        <HugeiconsIcon icon={Share03Icon} size={20} />
-      </DropdownButton>
-      <DropdownMenu>
-        {socialsShare.map((item, index) => (
-          <DropdownItem key={index} href={item.href}>
-            <HugeiconsIcon icon={item.icon} size={20} data-slot="icon" />
-            {item.name}
-          </DropdownItem>
-        ))}
-      </DropdownMenu>
-    </Dropdown>
   )
 }
 

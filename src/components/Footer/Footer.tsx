@@ -95,6 +95,7 @@ const Footer: React.FC = async () => {
         { href: '/search', label: t('search') },
         { href: '/about', label: t('aboutUs') },
         { href: '/contact', label: t('contact') },
+        { href: '/leadership', label: t('leadership') },
       ],
     },
     {

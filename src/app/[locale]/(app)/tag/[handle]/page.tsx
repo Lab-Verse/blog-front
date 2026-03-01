@@ -7,7 +7,7 @@ import Card11 from '@/components/PostCards/Card11'
 import JsonLd from '@/components/seo/JsonLd'
 import {
   fetchTagBySlug,
-  fetchTagPosts,
+  fetchPostsPaginated,
   fetchCategories,
   fetchTags,
 } from '@/utils/serverApi'
@@ -17,12 +17,24 @@ import {
   transformTags,
   transformPosts,
 } from '@/utils/dataTransformers'
+import { mapSortBy } from '@/utils/sortMapping'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
+const POSTS_PER_PAGE = 12
+
+/** Pre-generate pages for all tags at build time */
+export async function generateStaticParams() {
+  try {
+    const tags = await fetchTags()
+    return tags.map((tag) => ({ handle: tag.slug }))
+  } catch {
+    return []
+  }
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params
@@ -51,18 +63,35 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   }
 }
 
-const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
+const Page = async ({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ handle: string }>
+  searchParams: Promise<{ page?: string; 'sort-by'?: string }>
+}) => {
   const { handle } = await params
+  const { page: pageStr, 'sort-by': sortByParam } = await searchParams
   const apiTag = await fetchTagBySlug(handle)
 
   if (!apiTag) return notFound()
 
-  const [apiPosts, apiCategories, apiTags] = await Promise.all([
-    fetchTagPosts(apiTag.id),
+  const page = Math.max(Number(pageStr) || 1, 1)
+  const { sortBy, sortOrder } = mapSortBy(sortByParam)
+
+  const [{ posts: apiPosts, total }, apiCategories, apiTags] = await Promise.all([
+    fetchPostsPaginated({
+      tag: apiTag.id,
+      page,
+      limit: POSTS_PER_PAGE,
+      sortBy,
+      sortOrder,
+    }),
     fetchCategories(),
     fetchTags(),
   ])
 
+  const totalPages = Math.ceil(total / POSTS_PER_PAGE)
   const tag = transformTag(apiTag, apiPosts)
   const posts = transformPosts(apiPosts)
   const categories = transformCategories(apiCategories)
@@ -110,7 +139,7 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
         </div>
 
         {/* PAGINATIONS */}
-        <PaginationWrapper className="mt-20" />
+        <PaginationWrapper totalPages={totalPages} className="mt-20" />
       </div>
     </div>
   )

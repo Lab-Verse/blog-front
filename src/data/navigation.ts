@@ -16,7 +16,7 @@ export async function getParentNavigation(): Promise<TNavigationItem[]> {
   try {
     const categories = await fetchCategories()
     const tree = buildCategoryTree(categories)
-    return tree.map((cat) => ({
+    const categoryNav: TNavigationItem[] = tree.map((cat) => ({
       id: String(cat.id),
       href: `/category/${cat.slug}`,
       name: cat.name,
@@ -26,6 +26,15 @@ export async function getParentNavigation(): Promise<TNavigationItem[]> {
         name: sub.name,
       })),
     }))
+
+    // Static E-Magazine link appended after categories
+    const eMagazineItem: TNavigationItem = {
+      id: 'e-magazine',
+      href: '/e-magazine',
+      name: 'E-Magazine',
+    }
+
+    return [...categoryNav, eMagazineItem]
   } catch {
     return []
   }

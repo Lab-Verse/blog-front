@@ -10,7 +10,7 @@ import { redirect } from 'next/navigation'
 const SearchBtnPopover = () => {
   return (
     <Popover>
-      <PopoverButton className="-m-2.5 flex cursor-pointer items-center justify-center rounded-full p-2.5 hover:bg-neutral-100 focus-visible:outline-0 dark:hover:bg-neutral-800">
+      <PopoverButton aria-label="Search" className="-m-2.5 flex cursor-pointer items-center justify-center rounded-full p-2.5 hover:bg-neutral-100 focus-visible:outline-0 dark:hover:bg-neutral-800">
         <HugeiconsIcon icon={Search01Icon} size={24} color="currentColor" strokeWidth={1.5} />
       </PopoverButton>
 
@@ -42,7 +42,7 @@ const SearchBtnPopover = () => {
                 spellCheck="false"
                 aria-autocomplete="list"
               />
-              <CloseButton className="-m-2.5 inline-flex cursor-pointer items-center justify-center rounded-md p-2.5 transition-transform duration-300 hover:rotate-90">
+              <CloseButton aria-label="Close search" className="-m-2.5 inline-flex cursor-pointer items-center justify-center rounded-md p-2.5 transition-transform duration-300 hover:rotate-90">
                 <HugeiconsIcon icon={Cancel01Icon} size={24} color="currentColor" strokeWidth={1} />
               </CloseButton>
 

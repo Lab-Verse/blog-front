@@ -167,6 +167,11 @@ export interface ApiUserProfile {
   website_url?: string
   company?: string
   job_title?: string
+  twitter_url?: string
+  facebook_url?: string
+  instagram_url?: string
+  linkedin_url?: string
+  youtube_url?: string
   posts_count: number
   followers_count: number
   following_count: number
@@ -258,6 +263,7 @@ export async function fetchPosts(filters?: {
 /** Fetch posts and total count (paginated). Use when you need total for pagination UI. */
 export async function fetchPostsPaginated(filters?: {
   category?: string
+  tag?: string
   user?: string
   limit?: number
   page?: number
@@ -267,6 +273,7 @@ export async function fetchPostsPaginated(filters?: {
 }): Promise<{ posts: ApiPost[]; total: number }> {
   const params = new URLSearchParams()
   if (filters?.category) params.append('category', filters.category)
+  if (filters?.tag) params.append('tag', filters.tag)
   if (filters?.user) params.append('user', filters.user)
   if (filters?.limit) params.append('limit', String(filters.limit))
   if (filters?.page) params.append('page', String(filters.page))
@@ -504,6 +511,7 @@ export async function fetchUserProfile(
 /** Find an author by username using the API */
 export async function fetchAuthorByUsername(username: string): Promise<{
   user: ApiUser | null
+  profile: ApiUserProfile | null
   posts: ApiPost[]
 } | null> {
   try {
@@ -517,19 +525,21 @@ export async function fetchAuthorByUsername(username: string): Promise<{
     const user = await res.json()
     if (!user || !user.id) return null
 
-    // Fetch their posts using paginated endpoint
-    const postsUrl = `${API_URL}/posts?user=${user.id}&limit=50`
-    const postsRes = await fetch(postsUrl, {
-      headers: { 'Content-Type': 'application/json' },
-      next: { revalidate: 60, tags: [`author-posts-${user.id}`] },
-    })
+    // Fetch profile and posts in parallel
+    const [profile, postsRes] = await Promise.all([
+      fetchUserProfile(user.id),
+      fetch(`${API_URL}/posts?user=${user.id}&limit=50`, {
+        headers: { 'Content-Type': 'application/json' },
+        next: { revalidate: 60, tags: [`author-posts-${user.id}`] },
+      }),
+    ])
     let posts: ApiPost[] = []
     if (postsRes.ok) {
       const postsData = await postsRes.json()
       posts = Array.isArray(postsData) ? postsData : (postsData?.data || postsData?.items || [])
     }
 
-    return { user, posts }
+    return { user, profile, posts }
   } catch {
     return null
   }
@@ -544,11 +554,19 @@ export interface SearchResults {
 }
 
 /** Search across posts, categories, tags, and authors using backend search */
-export async function searchAll(query: string): Promise<SearchResults> {
+export async function searchAll(
+  query: string,
+  options?: { page?: number; limit?: number; sortBy?: string; sortOrder?: 'ASC' | 'DESC' }
+): Promise<SearchResults & { postTotal: number }> {
   try {
-    // Use the dedicated search endpoint for posts (SQL ILIKE — efficient)
-    const [searchedPosts, allCategories, allTags] = await Promise.all([
-      fetchPosts({ search: query, limit: 50 }),
+    const [{ posts: searchedPosts, total: postTotal }, allCategories, allTags] = await Promise.all([
+      fetchPostsPaginated({
+        search: query,
+        page: options?.page ?? 1,
+        limit: options?.limit ?? 12,
+        sortBy: options?.sortBy,
+        sortOrder: options?.sortOrder,
+      }),
       fetchCategories(),
       fetchTags(),
     ])
@@ -575,10 +593,11 @@ export async function searchAll(query: string): Promise<SearchResults> {
       categories,
       tags,
       authors,
-      totalResults: searchedPosts.length + categories.length + tags.length + authors.length,
+      totalResults: postTotal + categories.length + tags.length + authors.length,
+      postTotal,
     }
   } catch {
-    return { posts: [], categories: [], tags: [], authors: [], totalResults: 0 }
+    return { posts: [], categories: [], tags: [], authors: [], totalResults: 0, postTotal: 0 }
   }
 }
 
@@ -697,5 +716,114 @@ export function applyTagTranslation(tag: ApiTag, translation: ApiTagTranslation 
     ...tag,
     name: translation.name || tag.name,
     slug: translation.slug || tag.slug,
+  }
+}
+
+// ========================
+// E-Magazines
+// ========================
+
+export interface ApiEMagazine {
+  id: string
+  title: string
+  slug: string
+  description?: string
+  cover_image_url?: string
+  pdf_url: string
+  issue_number: number
+  published_date?: string
+  status: string
+  page_count?: number
+  file_size?: number
+  category_id?: string
+  uploaded_by: string
+  created_at: string
+  updated_at: string
+  user?: ApiUser
+  category?: ApiCategory
+  tags?: ApiTag[]
+}
+
+/**
+ * Fetch published e-magazines with pagination.
+ * Uses raw fetch (like fetchPostsPaginated) to avoid serverFetch's
+ * auto-unwrap of `{ data }` envelopes.
+ */
+export async function fetchEMagazines(filters?: {
+  page?: number
+  limit?: number
+  category?: string
+  search?: string
+}): Promise<{ magazines: ApiEMagazine[]; total: number }> {
+  const params = new URLSearchParams()
+  params.append('status', 'published')
+  if (filters?.page) params.append('page', String(filters.page))
+  if (filters?.limit) params.append('limit', String(filters.limit))
+  if (filters?.category) params.append('category', filters.category)
+  if (filters?.search) params.append('search', filters.search)
+  const query = params.toString() ? `?${params.toString()}` : ''
+
+  try {
+    const url = `${API_URL}/e-magazines${query}`
+    const res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      next: { revalidate: 60, tags: ['e-magazines'] },
+    })
+    if (!res.ok) return { magazines: [], total: 0 }
+    const json = await res.json()
+    const magazines: ApiEMagazine[] = Array.isArray(json) ? json : (json?.data || [])
+    const total = json?.total ?? magazines.length
+    return { magazines, total }
+  } catch {
+    return { magazines: [], total: 0 }
+  }
+}
+
+/** Fetch a single e-magazine by slug */
+export async function fetchEMagazineBySlug(slug: string): Promise<ApiEMagazine | null> {
+  try {
+    return await serverFetch<ApiEMagazine>(`/e-magazines/${encodeURIComponent(slug)}`, {
+      revalidate: 60,
+      tags: ['e-magazines', `e-magazine-${slug}`],
+    })
+  } catch {
+    return null
+  }
+}
+
+// ========================
+// Leadership Members
+// ========================
+
+export interface ApiLeadershipMember {
+  id: string
+  name: string
+  designation: string
+  bio?: string
+  photo_url?: string
+  email?: string
+  website_url?: string
+  twitter_url?: string
+  linkedin_url?: string
+  facebook_url?: string
+  instagram_url?: string
+  display_order: number
+  is_active: boolean
+  user_id?: string
+  created_at: string
+  updated_at: string
+  user?: ApiUser
+}
+
+/** Fetch active leadership members (sorted by display_order) */
+export async function fetchLeadershipMembers(): Promise<ApiLeadershipMember[]> {
+  try {
+    const result = await serverFetch<ApiLeadershipMember[]>('/leadership-members', {
+      revalidate: 120,
+      tags: ['leadership-members'],
+    })
+    return Array.isArray(result) ? result : []
+  } catch {
+    return []
   }
 }

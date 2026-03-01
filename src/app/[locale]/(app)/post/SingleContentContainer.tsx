@@ -14,7 +14,7 @@ import { ArrowUp02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { FC, useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { ShareDropdown } from './SingleMetaAction'
+import ShareDropdown from '@/components/ShareDropdown'
 import TheContent from './TheContent'
 import { useCreateCommentMutation, useGetCommentsByPostQuery } from '@/app/redux/api/comments/commentsApi'
 import { cookies } from '@/app/redux/utils/cookies'
@@ -192,7 +192,7 @@ const SingleContentContainer: FC<Props> = ({ post, comments: ssrComments, classN
           <div className="h-4 border-s border-neutral-200 dark:border-neutral-700"></div>
           <PostCardCommentBtn commentCount={commentCount} handle={handle} />
           <div className="h-4 border-s border-neutral-200 dark:border-neutral-700"></div>
-          <ShareDropdown handle={handle} />
+          <ShareDropdown />
           <div className="h-4 border-s border-neutral-200 dark:border-neutral-700"></div>
 
           <button
