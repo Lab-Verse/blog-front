@@ -2,18 +2,24 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import { useLocale, useTranslations } from 'next-intl'
+import { useRouter, usePathname } from '@/i18n/navigation'
+import { locales, type Locale } from '@/i18n/routing'
 
-const LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'ur', label: 'اردو', flag: '🇵🇰' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { code: 'ko', label: '한국어', flag: '🇰🇷' },
-  { code: 'zh', label: '中文', flag: '🇨🇳' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
-]
+const FLAG_MAP: Record<string, string> = {
+  en: 'gb',
+  ur: 'pk',
+  ar: 'sa',
+  ko: 'kr',
+  zh: 'cn',
+  es: 'es',
+}
 
 export default function TopBar() {
-  const [currentLang, setCurrentLang] = useState('en')
+  const locale = useLocale() as Locale
+  const router = useRouter()
+  const pathname = usePathname()
+  const t = useTranslations('topBar')
   const [isOpen, setIsOpen] = useState(false)
   const [dateTime, setDateTime] = useState('')
 
@@ -21,14 +27,14 @@ export default function TopBar() {
     const update = () => {
       const now = new Date()
       setDateTime(
-        now.toLocaleDateString('en-US', {
+        now.toLocaleDateString(locale, {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
           day: 'numeric',
         }) +
           '  |  ' +
-          now.toLocaleTimeString('en-US', {
+          now.toLocaleTimeString(locale, {
             hour: '2-digit',
             minute: '2-digit',
             hour12: true,
@@ -38,9 +44,12 @@ export default function TopBar() {
     update()
     const id = setInterval(update, 30_000)
     return () => clearInterval(id)
-  }, [])
+  }, [locale])
 
-  const activeLang = LANGUAGES.find((l) => l.code === currentLang)!
+  const switchLocale = (newLocale: Locale) => {
+    router.replace(pathname, { locale: newLocale })
+    setIsOpen(false)
+  }
 
   return (
     <div className="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
@@ -64,26 +73,26 @@ export default function TopBar() {
               onClick={() => setIsOpen(!isOpen)}
               className="flex items-center gap-1.5 rounded px-2 py-1 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
             >
-              <span>{activeLang.flag}</span>
-              <span className="hidden sm:inline">{activeLang.label}</span>
-              <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+              <span className={`fi fi-${FLAG_MAP[locale]} fis rounded-sm`} />
+              <span className="hidden sm:inline">{t(`languages.${locale}`)}</span>
+              <svg className="h-3 w-3 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
               </svg>
             </button>
             {isOpen && (
               <>
                 <div className="fixed inset-0 z-30" onClick={() => setIsOpen(false)} />
-                <div className="absolute right-0 z-40 mt-1 w-40 rounded-lg border border-neutral-200 bg-white py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
-                  {LANGUAGES.map((lang) => (
+                <div className="absolute end-0 z-40 mt-1 w-40 rounded-lg border border-neutral-200 bg-white py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+                  {locales.map((code) => (
                     <button
-                      key={lang.code}
-                      onClick={() => { setCurrentLang(lang.code); setIsOpen(false) }}
-                      className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
-                        lang.code === currentLang ? 'bg-neutral-100 font-medium dark:bg-neutral-800' : ''
+                      key={code}
+                      onClick={() => switchLocale(code)}
+                      className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800 rtl:text-right ${
+                        code === locale ? 'bg-neutral-100 font-medium dark:bg-neutral-800' : ''
                       }`}
                     >
-                      <span>{lang.flag}</span>
-                      <span>{lang.label}</span>
+                      <span className={`fi fi-${FLAG_MAP[code]} fis rounded-sm`} />
+                      <span>{t(`languages.${code}`)}</span>
                     </button>
                   ))}
                 </div>

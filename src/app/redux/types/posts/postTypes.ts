@@ -5,6 +5,7 @@ import { User } from "../users/userTypes";
 // Enums
 export enum PostStatus {
   DRAFT = 'draft',
+  PENDING = 'pending',
   PUBLISHED = 'published',
   ARCHIVED = 'archived',
 }
@@ -73,6 +74,11 @@ export interface CreatePostDto {
   status?: PostStatus;
   featured_image?: string;
   published_at?: string;
+  excerpt?: string;
+  description?: string;
+  tag_ids?: string[];
+  category_ids?: string[];
+  media_ids?: string[];
 }
 
 export interface UpdatePostDto {

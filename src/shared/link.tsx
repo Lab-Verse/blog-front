@@ -1,18 +1,21 @@
 'use client'
 
 import * as Headless from '@headlessui/react'
-import NextLink, { type LinkProps } from 'next/link'
+import NextLink from 'next/link'
+import { Link as I18nLink } from '@/i18n/navigation'
 import React, { forwardRef } from 'react'
 
+type LinkProps = React.ComponentPropsWithoutRef<typeof I18nLink>
+
 export const Link = forwardRef(function Link(
-  props: LinkProps & React.ComponentPropsWithoutRef<'a'>,
+  props: LinkProps,
   ref: React.ForwardedRef<HTMLAnchorElement>
 ) {
   const closeHeadless = Headless.useClose()
 
   return (
     <Headless.DataInteractive>
-      <NextLink
+      <I18nLink
         {...props}
         ref={ref}
         onClick={(e) => {

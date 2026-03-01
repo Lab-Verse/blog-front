@@ -9,7 +9,7 @@ import { RewindButton } from '@/components/audio-player/RewindButton'
 import { Slider } from '@/components/audio-player/Slider'
 import { HeartIcon } from '@heroicons/react/24/outline'
 import { XMarkIcon } from '@heroicons/react/24/solid'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { useEffect, useRef, useState } from 'react'
 import PostCardLikeBtn from '../PostCardLikeBtn'
 

@@ -7,6 +7,7 @@ import { Field, Label } from '@/shared/fieldset'
 import Input from '@/shared/Input'
 import Logo from '@/shared/Logo'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState('')
@@ -26,6 +27,7 @@ const ForgotPasswordForm = () => {
 
     try {
       await forgotPassword({ email }).unwrap()
+      toast.success('Reset link sent! Check your email.')
       setSent(true)
     } catch (err: any) {
       const message =
@@ -33,6 +35,7 @@ const ForgotPasswordForm = () => {
         err?.error ||
         'Failed to send reset email. Please try again.'
       setError(message)
+      toast.error(message)
     }
   }
 

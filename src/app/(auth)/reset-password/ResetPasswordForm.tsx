@@ -8,6 +8,7 @@ import { Field, Label } from '@/shared/fieldset'
 import Input from '@/shared/Input'
 import Logo from '@/shared/Logo'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 const ResetPasswordForm = () => {
   const searchParams = useSearchParams()
@@ -46,6 +47,7 @@ const ResetPasswordForm = () => {
 
     try {
       await resetPassword({ token, password }).unwrap()
+      toast.success('Password reset successfully!')
       setSuccess(true)
     } catch (err: any) {
       const message =
@@ -53,6 +55,7 @@ const ResetPasswordForm = () => {
         err?.error ||
         'Failed to reset password. The link may have expired.'
       setError(message)
+      toast.error(message)
     }
   }
 

@@ -18,6 +18,7 @@ import { Button } from '@/shared/Button'
 import SpinLoading from '@/shared/spin-loading'
 import Image from 'next/image'
 import { Dialog } from '@/shared/dialog'
+import { toast } from 'sonner'
 
 interface DashboardMediaLibraryProps {
     userId: string
@@ -51,9 +52,10 @@ const DashboardMediaLibrary: React.FC<DashboardMediaLibraryProps> = ({ userId })
 
         try {
             await uploadMedia(formData).unwrap()
+            toast.success('Media uploaded successfully.')
             refetch()
-        } catch (err) {
-            console.error('Failed to upload media:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to upload media.')
         }
     }
 
@@ -71,22 +73,24 @@ const DashboardMediaLibrary: React.FC<DashboardMediaLibraryProps> = ({ userId })
 
         try {
             await deleteMedia(selectedMedia.id).unwrap()
+            toast.success('Media deleted successfully.')
             setShowDeleteDialog(false)
             setSelectedMedia(null)
             refetch()
-        } catch (err) {
-            console.error('Failed to delete media:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to delete media.')
         }
     }
 
     const handleBulkDelete = async () => {
         try {
             await bulkDelete(selectedMediaIds).unwrap()
+            toast.success(`${selectedMediaIds.length} media items deleted.`)
             dispatch(clearSelectedMedia())
             setShowBulkDeleteDialog(false)
             refetch()
-        } catch (err) {
-            console.error('Failed to bulk delete media:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to delete selected media.')
         }
     }
 

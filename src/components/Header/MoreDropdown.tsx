@@ -2,7 +2,7 @@
 
 import { TNavigationItem } from '@/data/navigation'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 
 interface Props {
   items: TNavigationItem[]

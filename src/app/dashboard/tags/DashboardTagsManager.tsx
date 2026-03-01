@@ -16,6 +16,7 @@ import { Button } from '@/shared/Button'
 import Input from '@/shared/Input'
 import SpinLoading from '@/shared/spin-loading'
 import { Dialog } from '@/shared/dialog'
+import { toast } from 'sonner'
 
 const DashboardTagsManager: React.FC = () => {
     const dispatch = useAppDispatch()
@@ -76,10 +77,11 @@ const DashboardTagsManager: React.FC = () => {
     const handleCreate = async () => {
         try {
             await createTag(formData).unwrap()
+            toast.success('Tag created successfully.')
             setShowCreateDialog(false)
             refetch()
-        } catch (err) {
-            console.error('Failed to create tag:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to create tag.')
         }
     }
 
@@ -88,11 +90,12 @@ const DashboardTagsManager: React.FC = () => {
 
         try {
             await updateTag({ id: selectedTag.id, data: formData }).unwrap()
+            toast.success('Tag updated successfully.')
             setShowEditDialog(false)
             setSelectedTag(null)
             refetch()
-        } catch (err) {
-            console.error('Failed to update tag:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to update tag.')
         }
     }
 
@@ -101,11 +104,12 @@ const DashboardTagsManager: React.FC = () => {
 
         try {
             await deleteTag(selectedTag.id).unwrap()
+            toast.success('Tag deleted successfully.')
             setShowDeleteDialog(false)
             setSelectedTag(null)
             refetch()
-        } catch (err) {
-            console.error('Failed to delete tag:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to delete tag.')
         }
     }
 
@@ -113,11 +117,12 @@ const DashboardTagsManager: React.FC = () => {
         try {
             const ids = selectedTags.map(t => t.id)
             await bulkDelete(ids).unwrap()
+            toast.success(`${ids.length} tags deleted successfully.`)
             dispatch(clearSelectedTags())
             setShowBulkDeleteDialog(false)
             refetch()
-        } catch (err) {
-            console.error('Failed to bulk delete tags:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to delete selected tags.')
         }
     }
 

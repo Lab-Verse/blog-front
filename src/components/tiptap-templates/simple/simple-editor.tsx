@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { EditorContent, EditorContext, useEditor } from '@tiptap/react'
 import * as React from 'react'
@@ -73,6 +73,16 @@ import Logo from '@/shared/Logo'
 import SwitchDarkMode from '@/shared/SwitchDarkMode'
 import { TagsInput } from '@/shared/TagsInput'
 import { useRouter } from 'next/navigation'
+
+// --- API & Auth ---
+import { useCreatePostMutation } from '@/app/redux/api/posts/postsApi'
+import { useGetAllCategoriesQuery } from '@/app/redux/api/categories/categoriesApi'
+import { useGetAllTagsQuery } from '@/app/redux/api/tags/tagsApi'
+import { PostStatus } from '@/app/redux/types/posts/postTypes'
+import { cookies } from '@/app/redux/utils/cookies'
+import { jwtDecode } from 'jwt-decode'
+import Select from '@/shared/Select'
+import { toast } from 'sonner'
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -159,19 +169,28 @@ const MobileToolbarContent = ({ type, onBack }: { type: 'highlighter' | 'link'; 
 )
 
 export function SimpleEditor() {
-  // Example topicsSuggestions
-  const topicsSuggestions = [
-    { id: '1', name: 'React' },
-    { id: '2', name: 'TypeScript' },
-    { id: '3', name: 'Next.js' },
-    { id: '4', name: 'TailwindCSS' },
-    { id: '5', name: 'JavaScript' },
-    { id: '6', name: 'Node.js' },
-    { id: '7', name: 'GraphQL' },
-    { id: '8', name: 'Docker' },
-    { id: '9', name: 'Hello' },
-    { id: '10', name: 'MongoDB' },
-  ]
+  // --- Auth ---
+  const [userId, setUserId] = React.useState('')
+  React.useEffect(() => {
+    const token = cookies.getAccessToken()
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token)
+        setUserId(decoded?.sub || '')
+      } catch { /* ignore */ }
+    }
+  }, [])
+
+  // --- API hooks ---
+  const [createPost, { isLoading: isSubmitting }] = useCreatePostMutation()
+  const { data: categories = [] } = useGetAllCategoriesQuery()
+  const { data: tagsData = [] } = useGetAllTagsQuery()
+
+  // Map API tags to TagsInput format
+  const topicsSuggestions = React.useMemo(
+    () => tagsData.map((t: any) => ({ id: t.id, name: t.name })),
+    [tagsData]
+  )
 
   const isMobile = useMobile()
   const [mobileView, setMobileView] = React.useState<'main' | 'highlighter' | 'link'>('main')
@@ -180,6 +199,7 @@ export function SimpleEditor() {
   const [selectedTags, setSelectedTags] = React.useState<typeof topicsSuggestions>([])
   const [featuredImageUrl, setFeaturedImageUrl] = React.useState('')
   const [isOpenPreview, setIsOpenPreview] = React.useState(false)
+  const [selectedCategoryId, setSelectedCategoryId] = React.useState('')
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -219,28 +239,7 @@ export function SimpleEditor() {
       TrailingNode,
       Link.configure({ openOnClick: false }),
     ],
-    content: `<h2>Typography should be easy, </h2>
-    <p>
-      this is a basic <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you’d probably expect from a text editor. But wait until you see the lists:
-    </p>
-    <ul>
-      <li> That’s a bullet list with one … </li>
-      <li> … or two list items. </li>
-    </ul>
-    <p>
-      Isn’t that great? And all of that is editable. But wait, there’s more. Let’s try a code block:
-    </p>
-<pre><code class="language-css">body {
-  display: none;
-}</code></pre>
-    <p>
-      I know, I know, this is impressive. It’s only the tip of the iceberg though. Give it a try and click a little bit around. Don’t forget to check the other examples too.
-    </p>
-    <blockquote>
-      Wow, that’s amazing. Good work, boy! 👏
-      <br />
-      — John Doe
-    </blockquote>`,
+    content: ``,
   })
 
   const featuredImageEditor = useEditor({
@@ -321,9 +320,75 @@ export function SimpleEditor() {
   })
 
   const getTitle = () => {
-    if (!titleEditor) return
+    if (!titleEditor) return ''
     const content = titleEditor.getJSON()
     return content.content?.[0]?.content?.[0]?.text || ''
+  }
+
+  const slugify = (text: string) =>
+    text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-').replace(/^-+|-+$/g, '')
+
+  const handlePublish = async (status: PostStatus = PostStatus.DRAFT) => {
+    const title = getTitle()
+    if (!title) {
+      toast.error('Please add a title for your post.')
+      return
+    }
+    const htmlContent = editor?.getHTML() || ''
+    if (!htmlContent || htmlContent === '<p></p>') {
+      toast.error('Please add some content to your post.')
+      return
+    }
+    if (!selectedCategoryId) {
+      toast.error('Please select a category.')
+      return
+    }
+    if (!userId) {
+      toast.error('You must be logged in to publish.')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('slug', slugify(title))
+    formData.append('content', htmlContent)
+    formData.append('user_id', userId)
+    formData.append('category_id', selectedCategoryId)
+    formData.append('status', status)
+
+    if (featuredImageUrl) {
+      // If it's a base64 data URL, convert to a File for upload
+      if (featuredImageUrl.startsWith('data:')) {
+        try {
+          const res = await fetch(featuredImageUrl)
+          const blob = await res.blob()
+          const file = new File([blob], 'featured-image.jpg', { type: blob.type })
+          formData.append('featured_image', file)
+        } catch {
+          formData.append('featured_image', featuredImageUrl)
+        }
+      } else {
+        formData.append('featured_image', featuredImageUrl)
+      }
+    }
+
+    if (selectedTags.length > 0) {
+      selectedTags.forEach((tag) => formData.append('tag_ids[]', tag.id))
+    }
+
+    try {
+      await createPost(formData).unwrap()
+      toast.success(
+        status === PostStatus.PUBLISHED
+          ? 'Post published successfully!'
+          : 'Post saved as draft!'
+      )
+      router.push('/dashboard/posts')
+    } catch (err: any) {
+      const message =
+        err?.data?.message || err?.error || 'Failed to submit post. Please try again.'
+      toast.error(message)
+    }
   }
 
   React.useEffect(() => {
@@ -346,11 +411,11 @@ export function SimpleEditor() {
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <Button data-style="ghost" onClick={() => setIsOpenPreview(true)}>
-              Publish
+            <Button data-style="ghost" onClick={() => handlePublish(PostStatus.DRAFT)} disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save Draft'}
             </Button>
             <Button data-style="ghost" onClick={() => setIsOpenPreview(true)}>
-              Preview
+              Publish
             </Button>
             <SwitchDarkMode iconSize="size-4.5" className="size-8!" />
           </div>
@@ -399,11 +464,28 @@ export function SimpleEditor() {
         </div>
       </>
 
-      {/* Preview Dialog */}
+      {/* Publish / Preview Dialog */}
       <Dialog className="mt-4" size="4xl" open={isOpenPreview} onClose={setIsOpenPreview}>
-        <DialogTitle>Preview the post you will publish</DialogTitle>
+        <DialogTitle>Review &amp; Publish</DialogTitle>
         <DialogBody>
           <div className="flex flex-col gap-5 text-sm/6">
+            {/* Category Select */}
+            <div className="flex flex-col gap-2">
+              <div className="font-medium text-neutral-700 dark:text-neutral-300">Category *</div>
+              <Select
+                value={selectedCategoryId}
+                onChange={(e) => setSelectedCategoryId(e.target.value)}
+              >
+                <option value="">-- Select a category --</option>
+                {categories.map((cat: any) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <Divider />
+
             <div className="flex flex-wrap gap-2.5">
               <div className="text-neutral-600 dark:text-neutral-400">Title:</div>
               <div className="font-medium">{getTitle() || 'No title'}</div>
@@ -418,21 +500,36 @@ export function SimpleEditor() {
 
             <div className="flex flex-col gap-2.5">
               <div className="text-neutral-600 dark:text-neutral-400">Featured image:</div>
-              <div className="line-clamp-1">{featuredImageUrl || 'No featured image'}</div>
+              <div className="line-clamp-1">{featuredImageUrl ? 'Uploaded' : 'No featured image'}</div>
             </div>
             <Divider />
 
             <div className="flex flex-col gap-2.5">
-              <div className="text-neutral-600 dark:text-neutral-400">Content HTML:</div>
-              <div className="line-clamp-6">{editor?.getHTML() || 'No content'}</div>
+              <div className="text-neutral-600 dark:text-neutral-400">Content preview:</div>
+              <div
+                className="prose prose-sm max-h-40 overflow-y-auto rounded border border-neutral-200 p-3 dark:prose-invert dark:border-neutral-700"
+                dangerouslySetInnerHTML={{ __html: editor?.getHTML() || '<p>No content</p>' }}
+              />
             </div>
           </div>
         </DialogBody>
         <DialogActions>
-          <SharedButton plain onClick={() => setIsOpenPreview(false)}>
+          <SharedButton plain onClick={() => setIsOpenPreview(false)} disabled={isSubmitting}>
             Cancel
           </SharedButton>
-          <SharedButton onClick={() => setIsOpenPreview(false)}>Publish</SharedButton>
+          <SharedButton
+            plain
+            onClick={() => handlePublish(PostStatus.DRAFT)}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Saving...' : 'Save as Draft'}
+          </SharedButton>
+          <SharedButton
+            onClick={() => handlePublish(PostStatus.PUBLISHED)}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Publishing...' : 'Publish'}
+          </SharedButton>
         </DialogActions>
       </Dialog>
     </EditorContext.Provider>

@@ -7,6 +7,7 @@ import { Field, Label } from '@/shared/fieldset'
 import Input from '@/shared/Input'
 import Logo from '@/shared/Logo'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 const SignupForm = () => {
   const [email, setEmail] = useState('')
@@ -34,6 +35,7 @@ const SignupForm = () => {
     try {
       await register({ email, password, username }).unwrap()
       // Registration successful - account is PENDING admin approval
+      toast.success('Account created! Awaiting admin approval.')
       setRegistered(true)
     } catch (err: any) {
       const message =
@@ -41,6 +43,7 @@ const SignupForm = () => {
         err?.error ||
         'Signup failed. Please try again.'
       setError(message)
+      toast.error(message)
     }
   }
 

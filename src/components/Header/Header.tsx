@@ -1,7 +1,7 @@
 import { getParentNavigation, getSubNavigation, TNavigationItem } from '@/data/navigation'
 import clsx from 'clsx'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import HeaderAuthButtons from './HeaderAuthButtons'

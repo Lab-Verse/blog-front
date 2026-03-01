@@ -5,7 +5,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import Image, { StaticImageData } from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { FC, useState } from 'react'
 import { useSwipeable } from 'react-swipeable'
 

@@ -4,7 +4,7 @@ import { CloseButton, Popover, PopoverButton, PopoverPanel } from '@headlessui/r
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { Airplane02Icon, Building03Icon, Car03Icon, HotAirBalloonIcon, House04Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { usePathname } from 'next/navigation'
 
 const solutions = [

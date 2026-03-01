@@ -2,15 +2,18 @@
 
 import { useState } from 'react'
 import { useLoginMutation } from '@/app/redux/api/auth/authApi'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import { Field, Label } from '@/shared/fieldset'
 import Input from '@/shared/Input'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { useDispatch } from 'react-redux'
 import { setAccessToken } from '@/app/redux/slices/auth/authSlice'
+import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 const LoginForm = () => {
+  const t = useTranslations('auth')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -25,28 +28,25 @@ const LoginForm = () => {
   setSuccess('')
 
   if (!email || !password) {
-    setError('Please fill in all fields.')
+    setError(t('fillAllFields'))
     return
   }
 
   try {
-    // Call RTK Query mutation – this triggers onQueryStarted internally
     await login({ email, password }).unwrap()
 
-    // Tokens + user are now in cookies / Redux via setCredentials
-    setSuccess('Login successful!')
+    setSuccess(t('loginSuccessRedirecting'))
+    toast.success(t('loginSuccessRedirecting'))
 
-    // Prefer router.push so Next.js handles routing
     router.push('/dashboard')
-    // or: router.replace('/dashboard')
   } catch (err: any) {
-    // RTK Query fetchBaseQuery-style error handling
     const message =
       err?.data?.message ||
       err?.error ||
-      'Login failed. Please check your credentials and try again.'
+      t('loginFailed')
 
     setError(message)
+    toast.error(message)
   }
 }
 
@@ -57,19 +57,19 @@ const LoginForm = () => {
       {success && <div className="text-green-500 text-sm">{success}</div>}
       <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
         <Field className="block">
-          <Label className="text-neutral-800 dark:text-neutral-200">Email address</Label>
-          <Input type="email" placeholder="example@example.com" className="mt-1" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Label className="text-neutral-800 dark:text-neutral-200">{t('emailAddress')}</Label>
+          <Input type="email" placeholder={t('emailPlaceholder')} className="mt-1" value={email} onChange={(e) => setEmail(e.target.value)} />
         </Field>
         <Field className="block">
           <div className="flex items-center justify-between text-neutral-800 dark:text-neutral-200">
-            <Label>Password</Label>
+            <Label>{t('password')}</Label>
             <Link href="/forgot-password" className="text-sm font-medium underline">
-              Forgot password?
+              {t('forgotPassword')}
             </Link>
           </div>
           <Input type="password" className="mt-1" value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
-        <ButtonPrimary type="submit" disabled={isLoading}>{isLoading ? 'Logging in...' : 'Login'}</ButtonPrimary>
+        <ButtonPrimary type="submit" disabled={isLoading}>{isLoading ? t('loggingIn') : t('loginButton')}</ButtonPrimary>
       </form>
     </>
   )

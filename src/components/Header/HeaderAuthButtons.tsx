@@ -21,9 +21,11 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function HeaderAuthButtons() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const t = useTranslations('header')
 
   useEffect(() => {
     const token = cookies.getAccessToken()
@@ -43,13 +45,13 @@ export default function HeaderAuthButtons() {
           href="/login"
           className="rounded-full px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
         >
-          Login
+          {t('login')}
         </Link>
         <Link
           href="/signup"
           className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
         >
-          Register
+          {t('register')}
         </Link>
       </div>
     )
@@ -60,7 +62,7 @@ export default function HeaderAuthButtons() {
       <div className="hidden sm:block">
         <Button className="h-10 px-3!" href="/submission" plain>
           <PlusIcon className="size-5!" />
-          Create
+          {t('create')}
         </Button>
       </div>
 
@@ -75,6 +77,7 @@ export default function HeaderAuthButtons() {
 
 /* ─── Notification dropdown (inline) ─── */
 function NotifyDropdown() {
+  const t = useTranslations('common')
   return (
     <Popover className="me-3">
       <PopoverButton as={ButtonCircle} className="relative" color="light" plain>
@@ -87,7 +90,7 @@ function NotifyDropdown() {
         className="z-40 w-sm rounded-3xl shadow-lg ring-1 ring-black/5 transition duration-200 ease-in-out data-closed:translate-y-1 data-closed:opacity-0"
       >
         <div className="relative grid gap-8 bg-white p-7 dark:bg-neutral-800">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">No new notifications</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">{t('noNewNotifications')}</p>
         </div>
       </PopoverPanel>
     </Popover>
@@ -96,6 +99,7 @@ function NotifyDropdown() {
 
 /* ─── Avatar dropdown menu (inline) ─── */
 function AvatarMenu() {
+  const t = useTranslations('header')
   const handleLogout = () => {
     cookies.clearAuthTokens()
     window.location.href = '/'
@@ -126,7 +130,7 @@ function AvatarMenu() {
             <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
               <HugeiconsIcon icon={UserIcon} size={24} strokeWidth={1.5} />
             </div>
-            <p className="text-sm font-medium">My Account</p>
+            <p className="text-sm font-medium">{t('myAccount')}</p>
           </Link>
 
           {/* My Posts */}
@@ -137,7 +141,7 @@ function AvatarMenu() {
             <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
               <HugeiconsIcon icon={Task01Icon} size={24} strokeWidth={1.5} />
             </div>
-            <p className="text-sm font-medium">My Posts</p>
+            <p className="text-sm font-medium">{t('myPosts')}</p>
           </Link>
 
           {/* Favorites */}
@@ -148,7 +152,7 @@ function AvatarMenu() {
             <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
               <HugeiconsIcon icon={FavouriteIcon} size={24} strokeWidth={1.5} />
             </div>
-            <p className="text-sm font-medium">Favorites</p>
+            <p className="text-sm font-medium">{t('favorites')}</p>
           </Link>
 
           {/* Create Post */}
@@ -159,7 +163,7 @@ function AvatarMenu() {
             <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
               <HugeiconsIcon icon={PlusSignCircleIcon} size={24} strokeWidth={1.5} />
             </div>
-            <p className="text-sm font-medium">Write a Post</p>
+            <p className="text-sm font-medium">{t('writeAPost')}</p>
           </Link>
 
           <Divider />
@@ -170,7 +174,7 @@ function AvatarMenu() {
               <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
                 <HugeiconsIcon icon={Idea01Icon} size={24} strokeWidth={1.5} />
               </div>
-              <p className="ms-4 text-sm font-medium">Dark theme</p>
+              <p className="ms-4 text-sm font-medium">{t('darkTheme')}</p>
             </div>
             <SwitchDarkMode2 />
           </div>
@@ -183,7 +187,7 @@ function AvatarMenu() {
             <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
               <HugeiconsIcon icon={BulbChargingIcon} size={24} strokeWidth={1.5} />
             </div>
-            <p className="ms-4 text-sm font-medium">Help</p>
+            <p className="ms-4 text-sm font-medium">{t('help')}</p>
           </Link>
 
           {/* Log out */}
@@ -194,7 +198,7 @@ function AvatarMenu() {
             <div className="flex shrink-0 items-center justify-center text-neutral-500 dark:text-neutral-300">
               <HugeiconsIcon icon={Logout01Icon} size={24} strokeWidth={1.5} />
             </div>
-            <p className="ms-4 text-sm font-medium">Log out</p>
+            <p className="ms-4 text-sm font-medium">{t('logOut')}</p>
           </button>
         </div>
       </PopoverPanel>

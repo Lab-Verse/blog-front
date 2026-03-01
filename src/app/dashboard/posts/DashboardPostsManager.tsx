@@ -24,6 +24,7 @@ import SpinLoading from '@/shared/spin-loading'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Dialog } from '@/shared/dialog'
+import { toast } from 'sonner'
 
 interface DashboardPostsManagerProps {
     userId: string
@@ -79,11 +80,12 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
 
         try {
             await deletePost(postToDelete).unwrap()
+            toast.success('Post deleted successfully.')
             setShowDeleteDialog(false)
             setPostToDelete(null)
             refetch()
-        } catch (err) {
-            console.error('Failed to delete post:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to delete post.')
         }
     }
 
@@ -97,11 +99,12 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
         dispatch(setBulkActionInProgress(true))
         try {
             await bulkDelete(selectedPosts).unwrap()
+            toast.success(`${selectedPosts.length} posts deleted successfully.`)
             dispatch(clearSelection())
             setShowBulkDeleteDialog(false)
             refetch()
-        } catch (err) {
-            console.error('Failed to bulk delete posts:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to delete selected posts.')
         } finally {
             dispatch(setBulkActionInProgress(false))
         }
@@ -111,10 +114,11 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
         dispatch(setBulkActionInProgress(true))
         try {
             await bulkUpdateStatus({ ids: selectedPosts, status: PostStatus.PUBLISHED }).unwrap()
+            toast.success(`${selectedPosts.length} posts published.`)
             dispatch(clearSelection())
             refetch()
-        } catch (err) {
-            console.error('Failed to bulk publish posts:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to publish selected posts.')
         } finally {
             dispatch(setBulkActionInProgress(false))
         }
@@ -124,10 +128,11 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
         dispatch(setBulkActionInProgress(true))
         try {
             await bulkUpdateStatus({ ids: selectedPosts, status: PostStatus.DRAFT }).unwrap()
+            toast.success(`${selectedPosts.length} posts unpublished.`)
             dispatch(clearSelection())
             refetch()
-        } catch (err) {
-            console.error('Failed to bulk unpublish posts:', err)
+        } catch (err: any) {
+            toast.error(err?.data?.message || 'Failed to unpublish selected posts.')
         } finally {
             dispatch(setBulkActionInProgress(false))
         }

@@ -2,7 +2,8 @@ import { CustomLink } from '@/data/types'
 import { fetchCategories } from '@/utils/serverApi'
 import Logo from '@/shared/Logo'
 import SocialsList1 from '@/shared/SocialsList1'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
+import { getTranslations } from 'next-intl/server'
 import React from 'react'
 
 export interface WidgetFooterMenu {
@@ -10,39 +11,6 @@ export interface WidgetFooterMenu {
   title: string
   menus: CustomLink[]
 }
-
-const staticMenus: WidgetFooterMenu[] = [
-  {
-    id: '1',
-    title: 'Quick Links',
-    menus: [
-      { href: '/', label: 'Home' },
-      { href: '/search', label: 'Search' },
-      { href: '/about', label: 'About Us' },
-      { href: '/contact', label: 'Contact' },
-    ],
-  },
-  {
-    id: '2',
-    title: 'Account',
-    menus: [
-      { href: '/login', label: 'Login' },
-      { href: '/signup', label: 'Sign Up' },
-      { href: '/dashboard', label: 'Dashboard' },
-      { href: '/dashboard/posts', label: 'My Posts' },
-      { href: '/submission', label: 'Write a Post' },
-    ],
-  },
-  {
-    id: '3',
-    title: 'Legal',
-    menus: [
-      { href: '/privacy-policy', label: 'Privacy Policy' },
-      { href: '/terms-of-service', label: 'Terms of Service' },
-      { href: '/cookie-policy', label: 'Cookie Policy' },
-    ],
-  },
-]
 
 interface CategoryWithChildren {
   id: string
@@ -75,6 +43,7 @@ function buildCategoryTree(categories: any[]): CategoryWithChildren[] {
 }
 
 const Footer: React.FC = async () => {
+  const t = await getTranslations('footer')
   let categoryTree: CategoryWithChildren[] = []
   try {
     const categories = await fetchCategories()
@@ -94,7 +63,7 @@ const Footer: React.FC = async () => {
         id: `cat-${parent.id}`,
         title: parent.name,
         menus: [
-          { href: `/category/${parent.slug}`, label: `All ${parent.name}` },
+          { href: `/category/${parent.slug}`, label: t('allCategory', { name: parent.name }) },
           ...parent.children.slice(0, 6).map(child => ({
             href: `/category/${child.slug}`,
             label: child.name,
@@ -108,7 +77,7 @@ const Footer: React.FC = async () => {
     if (standalone.length > 0) {
       categoryMenus.push({
         id: 'cats-other',
-        title: 'Categories',
+        title: t('categories'),
         menus: standalone.map(c => ({
           href: `/category/${c.slug}`,
           label: c.name,
@@ -116,6 +85,39 @@ const Footer: React.FC = async () => {
       })
     }
   }
+
+  const staticMenus: WidgetFooterMenu[] = [
+    {
+      id: '1',
+      title: t('quickLinks'),
+      menus: [
+        { href: '/', label: t('home') },
+        { href: '/search', label: t('search') },
+        { href: '/about', label: t('aboutUs') },
+        { href: '/contact', label: t('contact') },
+      ],
+    },
+    {
+      id: '2',
+      title: t('account'),
+      menus: [
+        { href: '/login', label: t('login') },
+        { href: '/signup', label: t('signUp') },
+        { href: '/dashboard', label: t('dashboard') },
+        { href: '/dashboard/posts', label: t('myPosts') },
+        { href: '/submission', label: t('writeAPost') },
+      ],
+    },
+    {
+      id: '3',
+      title: t('legal'),
+      menus: [
+        { href: '/privacy-policy', label: t('privacyPolicy') },
+        { href: '/terms-of-service', label: t('termsOfService') },
+        { href: '/cookie-policy', label: t('cookiePolicy') },
+      ],
+    },
+  ]
 
   const widgetMenus = [...categoryMenus, ...staticMenus]
 
@@ -150,7 +152,7 @@ const Footer: React.FC = async () => {
             </div>
             <div className="col-span-2 md:col-span-3 lg:mt-2">
               <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                Your trusted source for the latest articles, insights, and stories.
+                {t('tagline')}
               </p>
               <div className="mt-4">
                 <SocialsList1 />
@@ -167,12 +169,12 @@ const Footer: React.FC = async () => {
       <div className="border-t border-neutral-200 dark:border-neutral-700">
         <div className="container flex flex-col items-center justify-between gap-4 py-6 sm:flex-row">
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            &copy; {new Date().getFullYear()} TWA. All rights reserved.
+            {t('copyright', { year: new Date().getFullYear() })}
           </p>
           <div className="flex gap-x-6 text-sm text-neutral-500 dark:text-neutral-400">
-            <Link href="/privacy-policy" className="hover:text-neutral-700 dark:hover:text-neutral-200">Privacy</Link>
-            <Link href="/terms-of-service" className="hover:text-neutral-700 dark:hover:text-neutral-200">Terms</Link>
-            <Link href="/contact" className="hover:text-neutral-700 dark:hover:text-neutral-200">Contact</Link>
+            <Link href="/privacy-policy" className="hover:text-neutral-700 dark:hover:text-neutral-200">{t('privacy')}</Link>
+            <Link href="/terms-of-service" className="hover:text-neutral-700 dark:hover:text-neutral-200">{t('terms')}</Link>
+            <Link href="/contact" className="hover:text-neutral-700 dark:hover:text-neutral-200">{t('contact')}</Link>
           </div>
         </div>
       </div>

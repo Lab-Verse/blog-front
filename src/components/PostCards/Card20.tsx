@@ -1,7 +1,7 @@
 import { TPost } from '@/data/posts'
 import clsx from 'clsx'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import CategoryBadgeList from '../CategoryBadgeList'
 import LocalDate from '../LocalDate'
 

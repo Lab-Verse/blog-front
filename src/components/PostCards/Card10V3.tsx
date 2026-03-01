@@ -1,7 +1,7 @@
 'use client'
 import { TPost } from '@/data/posts'
 import clsx from 'clsx'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { FC, useState } from 'react'
 import CategoryBadgeList from '../CategoryBadgeList'
 import NcImage from '../NcImage/NcImage'

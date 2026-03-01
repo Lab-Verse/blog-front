@@ -3,7 +3,7 @@ import { Badge } from '@/shared/Badge'
 import { Button } from '@/shared/Button'
 import { ArrowRightIcon } from '@heroicons/react/24/solid'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
 
 interface Props {

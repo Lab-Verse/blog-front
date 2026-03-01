@@ -1,7 +1,7 @@
 import { TAuthor } from '@/data/authors'
 import Avatar from '@/shared/Avatar'
 import clsx from 'clsx'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
 
 interface Props {

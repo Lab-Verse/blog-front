@@ -1,7 +1,7 @@
 import NcImage from '@/components/NcImage/NcImage'
 import { TCategory } from '@/data/categories'
 import clsx from 'clsx'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
 
 interface Props {

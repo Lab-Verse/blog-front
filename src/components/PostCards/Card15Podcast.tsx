@@ -4,7 +4,7 @@ import { TPost } from '@/data/posts'
 import { PauseIcon, PlayIcon } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
 import ButtonPlayMusicPlayer from '../ButtonPlayMusicPlayer'
 

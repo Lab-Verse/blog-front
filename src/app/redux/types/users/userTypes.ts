@@ -53,6 +53,12 @@ export interface UserProfile {
   website_url?: string;
   company?: string;
   job_title?: string;
+  twitter_url?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  youtube_url?: string;
   posts_count: number;
   followers_count: number;
   following_count: number;
@@ -106,6 +112,12 @@ export interface UpdateUserProfileDto {
   website_url?: string;
   company?: string;
   job_title?: string;
+  twitter_url?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  youtube_url?: string;
 }
 
 // State Types
