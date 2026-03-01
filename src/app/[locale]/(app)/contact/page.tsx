@@ -7,6 +7,7 @@ import SocialsList from '@/shared/SocialsList'
 import Textarea from '@/shared/Textarea'
 import { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
+import { generateAlternateLanguages } from '@/utils/seo'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || `contact@${process.env.NEXT_PUBLIC_SITE_DOMAIN || 'watt.com.pk'}`
@@ -17,6 +18,10 @@ export async function generateMetadata() {
   return {
     title: t('title'),
     description: t('description'),
+    alternates: {
+      canonical: `${SITE_URL}/contact`,
+      languages: generateAlternateLanguages('/contact'),
+    },
   }
 }
 

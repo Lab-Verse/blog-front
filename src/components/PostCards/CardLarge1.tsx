@@ -59,6 +59,7 @@ const CardLarge1: FC<Props> = ({ className, post, onClickNext, onClickPrev }) =>
               bookmarkClass="size-8 bg-neutral-50/30 hover:bg-neutral-50/50 dark:bg-neutral-800/30 dark:hover:bg-neutral-800/50"
               readingTime={readingTime}
               bookmarked={bookmarked}
+              postId={post.id}
             />
           </div>
         </div>

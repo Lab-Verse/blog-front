@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 
 export default function SectionStatistic() {
+  const t = useTranslations('about')
   const [stats, setStats] = useState({ posts: 0, categories: 0, authors: 0 })
 
   useEffect(() => {
@@ -46,11 +48,10 @@ export default function SectionStatistic() {
     <div>
       <div className="mx-auto max-w-4xl">
         <h2 className="text-3xl font-semibold tracking-tight text-pretty sm:text-4xl lg:text-5xl">
-          Growing Every Day
+          {t('growingEveryDay')}
         </h2>
         <p className="mt-6 text-base/7 text-neutral-600 dark:text-neutral-400">
-          Our community is constantly expanding as more writers share their content and readers
-          discover stories that resonate with them.
+          {t('growingDescription')}
         </p>
       </div>
       <div className="mx-auto mt-16 flex max-w-2xl flex-col gap-8 lg:mx-0 lg:mt-20 lg:max-w-none lg:flex-row lg:items-end">
@@ -59,9 +60,9 @@ export default function SectionStatistic() {
             {stats.posts > 0 ? `${stats.posts.toLocaleString()}+` : '—'}
           </p>
           <div className="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
-            <p className="text-lg font-semibold tracking-tight">Published Articles</p>
+            <p className="text-lg font-semibold tracking-tight">{t('publishedArticles')}</p>
             <p className="mt-2 text-base/7 text-neutral-600 dark:text-neutral-400">
-              Quality posts covering a wide range of topics and categories.
+              {t('publishedArticlesDescription')}
             </p>
           </div>
         </div>
@@ -70,9 +71,9 @@ export default function SectionStatistic() {
             {stats.categories > 0 ? `${stats.categories.toLocaleString()}+` : '—'}
           </p>
           <div className="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
-            <p className="text-lg font-semibold tracking-tight text-white">Content Categories</p>
+            <p className="text-lg font-semibold tracking-tight text-white">{t('contentCategories')}</p>
             <p className="mt-2 text-base/7 text-neutral-400">
-              Organized collections spanning diverse interests and expertise.
+              {t('contentCategoriesDescription')}
             </p>
           </div>
         </div>
@@ -81,9 +82,9 @@ export default function SectionStatistic() {
             {stats.authors > 0 ? `${stats.authors.toLocaleString()}+` : '—'}
           </p>
           <div className="sm:w-80 sm:shrink lg:w-auto lg:flex-none">
-            <p className="text-lg font-semibold tracking-tight text-white">Contributing Authors</p>
+            <p className="text-lg font-semibold tracking-tight text-white">{t('contributingAuthors')}</p>
             <p className="mt-2 text-base/7 text-primary-100">
-              Talented writers sharing their knowledge and perspectives.
+              {t('contributingAuthorsDescription')}
             </p>
           </div>
         </div>

@@ -32,7 +32,7 @@ const PostCardLikeBtn: FC<Props> = ({ className, likeCount = 0, liked, postId })
         setisLiked(!isLiked)
         return
       }
-      const decoded: any = jwtDecode(token)
+      const decoded: { sub?: string } = jwtDecode(token)
       const userId = decoded?.sub
       if (!userId) {
         setisLiked(!isLiked)

@@ -8,6 +8,7 @@ import { AllBookmarkIcon, FolderFavouriteIcon, LicenseIcon } from '@hugeicons/co
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { generateAlternateLanguages } from '@/utils/seo'
 import PageHeader from '../page-header'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
@@ -40,7 +41,10 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
       description,
       ...(avatar ? { images: [avatar] } : {}),
     },
-    alternates: { canonical: `${SITE_URL}/author/${result.user.username}` },
+    alternates: {
+      canonical: `${SITE_URL}/author/${result.user.username}`,
+      languages: generateAlternateLanguages(`/author/${result.user.username}`),
+    },
   }
 }
 

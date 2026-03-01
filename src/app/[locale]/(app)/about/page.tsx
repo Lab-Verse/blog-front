@@ -4,14 +4,20 @@ import { Divider } from '@/shared/divider'
 import SectionStatistic from './SectionStatistic'
 import { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
+import { generateAlternateLanguages } from '@/utils/seo'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
 
 export async function generateMetadata() {
   const t = await getTranslations('about')
   return {
     title: t('title'),
     description: t('aboutSubheading', { siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog' }),
+    alternates: {
+      canonical: `${SITE_URL}/about`,
+      languages: generateAlternateLanguages('/about'),
+    },
   }
 }
 

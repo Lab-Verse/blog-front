@@ -15,9 +15,7 @@ export const categoriesApi = baseApi.injectEndpoints({
     getAllCategories: builder.query<Category[], void>({
       query: () => ({ url: '/categories', method: 'GET' }),
       transformResponse: (res: unknown) => {
-        console.log('[CategoriesAPI] Raw response:', res);
         const categories = extractArrayFromResponse<Category>(res);
-        console.log('[CategoriesAPI] Extracted categories:', categories);
         return categories;
       },
       providesTags: (result) =>

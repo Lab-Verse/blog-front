@@ -17,6 +17,9 @@ import { Metadata } from 'next'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { generateAlternateLanguages } from '@/utils/seo'
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
@@ -28,6 +31,10 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     title: t('searchResultsFor', { query: String(query || '') }),
     description: t('searchResultsFor', { query: String(query || '') }),
     robots: { index: false, follow: true },
+    alternates: {
+      canonical: `${SITE_URL}/search`,
+      languages: generateAlternateLanguages('/search'),
+    },
   }
 }
 

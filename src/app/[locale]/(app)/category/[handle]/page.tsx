@@ -18,6 +18,8 @@ import {
 } from '@/utils/dataTransformers'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
+import { generateAlternateLanguages } from '@/utils/seo'
 import PageHeader from '../page-header'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
@@ -25,12 +27,13 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params
   const apiCategory = await fetchCategoryBySlug(handle)
+  const tCat = await getTranslations('category')
 
   if (!apiCategory) {
-    return { title: 'Category not found', description: 'Category not found' }
+    return { title: tCat('categoryNotFound'), description: tCat('categoryNotFoundDescription') }
   }
 
-  const description = `Explore ${apiCategory.name} articles and news`
+  const description = tCat('exploreArticles', { name: apiCategory.name })
   return {
     title: apiCategory.name,
     description,
@@ -41,7 +44,10 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
       url: `${SITE_URL}/category/${apiCategory.slug}`,
     },
     twitter: { card: 'summary', title: apiCategory.name, description },
-    alternates: { canonical: `${SITE_URL}/category/${apiCategory.slug}` },
+    alternates: {
+      canonical: `${SITE_URL}/category/${apiCategory.slug}`,
+      languages: generateAlternateLanguages(`/category/${apiCategory.slug}`),
+    },
   }
 }
 
@@ -62,12 +68,15 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
   const categories = transformCategories(apiCategories)
   const tags = transformTags(apiTags)
 
+  const t = await getTranslations('search')
+  const tCat = await getTranslations('category')
+
   const filterOptions = [
-    { name: 'Most recent', value: 'most-recent' },
-    { name: 'Curated by admin', value: 'curated-by-admin' },
-    { name: 'Most appreciated', value: 'most-appreciated' },
-    { name: 'Most discussed', value: 'most-discussed' },
-    { name: 'Most viewed', value: 'most-viewed' },
+    { name: t('sortMostRecent'), value: 'most-recent' },
+    { name: t('sortCuratedByAdmin'), value: 'curated-by-admin' },
+    { name: t('sortMostAppreciated'), value: 'most-appreciated' },
+    { name: t('sortMostDiscussed'), value: 'most-discussed' },
+    { name: t('sortMostViewed'), value: 'most-viewed' },
   ]
 
   return (
@@ -77,7 +86,7 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
           name: category.name,
-          description: `Explore ${category.name} articles and news`,
+          description: tCat('exploreArticles', { name: category.name }),
           url: `${SITE_URL}/category/${handle}`,
         }}
       />

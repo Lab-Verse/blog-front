@@ -29,7 +29,7 @@ const Card10: FC<Props> = ({ className, post, ratio = 'aspect-square sm:aspect-1
       </div>
       <div className="absolute inset-x-3 top-3 z-10 flex items-start justify-between gap-x-4">
         <CategoryBadgeList categories={categories} />
-        <PostCardSaveBtn bookmarked={bookmarked} />
+        <PostCardSaveBtn bookmarked={bookmarked} postId={post.id} />
       </div>
 
       <PostCardMeta2 meta={post} className="mt-4" />

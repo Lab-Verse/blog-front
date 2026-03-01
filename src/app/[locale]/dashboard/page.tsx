@@ -19,7 +19,7 @@ const Page = () => {
       return
     }
     try {
-      const decoded: any = jwtDecode(token)
+      const decoded: { sub?: string } = jwtDecode(token)
       setUserId(decoded?.sub || '')
     } catch {
       router.push('/login')

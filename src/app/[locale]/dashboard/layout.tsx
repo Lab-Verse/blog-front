@@ -15,6 +15,9 @@ import {
   ArrowRightStartOnRectangleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  BookmarkIcon,
+  BellIcon,
+  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import Image from 'next/image'
@@ -45,6 +48,9 @@ export default function Layout({ children }: { children: ReactNode }) {
     { name: t('writePost'), href: '/dashboard/submit-post', icon: PencilSquareIcon, section: 'main' },
     { name: t('media'), href: '/dashboard/media', icon: PhotoIcon, section: 'content' },
     { name: t('tags'), href: '/dashboard/tags', icon: TagIcon, section: 'content' },
+    { name: t('bookmarks'), href: '/dashboard/bookmarks', icon: BookmarkIcon, section: 'content' },
+    { name: t('drafts'), href: '/dashboard/drafts', icon: DocumentDuplicateIcon, section: 'content' },
+    { name: t('notifications'), href: '/dashboard/notifications', icon: BellIcon, section: 'content' },
     { name: t('settings'), href: '/dashboard/edit-profile', icon: Cog6ToothIcon, section: 'account' },
     { name: t('billing'), href: '/dashboard/billing-address', icon: CreditCardIcon, section: 'account' },
   ]
@@ -64,7 +70,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (accessToken) {
       try {
-        const decoded: any = jwtDecode(accessToken)
+        const decoded: { sub?: string } = jwtDecode(accessToken)
         setUserId(decoded?.sub || '')
       } catch {
         setUserId('')

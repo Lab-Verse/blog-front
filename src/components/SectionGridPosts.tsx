@@ -1,8 +1,11 @@
+'use client'
+
 import { TPost } from '@/data/posts'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import HeadingWithSub from '@/shared/Heading'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
+import { useTranslations } from 'next-intl'
 import { FC, ReactNode } from 'react'
 import Card10 from './PostCards/Card10'
 import Card10V2 from './PostCards/Card10V2'
@@ -33,6 +36,8 @@ const SectionGridPosts: FC<Props> = ({
   subHeading,
   headingIsCenter,
 }) => {
+  const t = useTranslations('common')
+
   const renderCard = (post: TPost) => {
     switch (postCardName) {
       case 'card3':
@@ -74,7 +79,7 @@ const SectionGridPosts: FC<Props> = ({
       </div>
       <div className="mt-20 flex items-center justify-center">
         <ButtonPrimary>
-          Show me more
+          {t('showMore')}
           <ArrowRightIcon className="h-5 w-5 rtl:rotate-180" />
         </ButtonPrimary>
       </div>

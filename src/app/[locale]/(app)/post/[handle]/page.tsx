@@ -21,6 +21,8 @@ import {
   transformComments,
 } from '@/utils/dataTransformers'
 import { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
+import { generateAlternateLanguages } from '@/utils/seo'
 import { notFound } from 'next/navigation'
 import SingleContentContainer from '../SingleContentContainer'
 import SingleHeaderContainer from '../SingleHeaderContainer'
@@ -33,7 +35,8 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   const { handle } = await params
   const apiPost = await fetchPostBySlug(handle)
   if (!apiPost) {
-    return { title: 'Post not found', description: 'Post not found' }
+    const t = await getTranslations('post')
+    return { title: t('postNotFound'), description: t('postNotFoundDescription') }
   }
   const description = apiPost.excerpt || apiPost.description || apiPost.title
   const imageUrl = resolveImageUrl(apiPost.featured_image)
@@ -57,6 +60,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
     },
     alternates: {
       canonical: `${SITE_URL}/post/${apiPost.slug}`,
+      languages: generateAlternateLanguages(`/post/${apiPost.slug}`),
     },
   }
 }

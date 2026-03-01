@@ -1,42 +1,61 @@
+'use client'
+
 import { Button } from '@/shared/Button'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import Textarea from '@/shared/Textarea'
-import React, { FC } from 'react'
+import React, { FC, useRef, useState } from 'react'
 
-interface Props extends React.HTMLAttributes<HTMLTextAreaElement> {
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
-  onClickSubmit?: () => void
+  onSubmitComment?: (content: string) => Promise<void> | void
   onClickCancel?: () => void
-  textareaRef?: React.RefObject<HTMLTextAreaElement | null>
   defaultValue?: string
   rows?: number
+  isLoading?: boolean
+  placeholder?: string
 }
 
 const SingleCommentForm: FC<Props> = ({
   className = 'mt-5',
-  onClickSubmit,
+  onSubmitComment,
   onClickCancel,
-  textareaRef,
   defaultValue = '',
   rows = 4,
-  ...props
+  isLoading = false,
+  placeholder = 'Add to discussion',
 }) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [content, setContent] = useState(defaultValue)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmed = content.trim()
+    if (!trimmed || !onSubmitComment) return
+    await onSubmitComment(trimmed)
+    setContent('')
+    if (textareaRef.current) {
+      textareaRef.current.value = ''
+    }
+  }
+
   return (
-    <form className={`single-comment-form ${className}`}>
+    <form className={`single-comment-form ${className}`} onSubmit={handleSubmit}>
       <Textarea
-        placeholder="Add to discussion"
+        placeholder={placeholder}
         ref={textareaRef}
         required={true}
-        defaultValue={defaultValue}
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
         rows={rows}
-        {...props}
       />
       <div className="mt-3 flex gap-3">
-        <Button plain type="button" onClick={onClickCancel}>
-          Cancel
-        </Button>
-        <ButtonPrimary onClick={onClickSubmit} type="submit">
-          Submit
+        {onClickCancel && (
+          <Button plain type="button" onClick={onClickCancel}>
+            Cancel
+          </Button>
+        )}
+        <ButtonPrimary type="submit" disabled={isLoading || !content.trim()}>
+          {isLoading ? 'Submitting...' : 'Submit'}
         </ButtonPrimary>
       </div>
     </form>

@@ -27,9 +27,7 @@ export const postsApi = baseApi.injectEndpoints({
         };
       },
       transformResponse: (res: unknown) => {
-        console.log('[PostsAPI] Raw response:', res);
         const posts = extractArrayFromResponse<Post>(res);
-        console.log('[PostsAPI] Extracted posts:', posts);
         return posts;
       },
       providesTags: (result) =>

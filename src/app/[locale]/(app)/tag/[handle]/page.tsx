@@ -19,18 +19,21 @@ import {
 } from '@/utils/dataTransformers'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
+import { generateAlternateLanguages } from '@/utils/seo'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params
   const apiTag = await fetchTagBySlug(handle)
+  const tTag = await getTranslations('tag')
 
   if (!apiTag) {
-    return { title: 'Tag not found', description: 'Tag not found' }
+    return { title: tTag('tagNotFound'), description: tTag('tagNotFoundDescription') }
   }
 
-  const description = `Posts tagged with ${apiTag.name}`
+  const description = tTag('postsTaggedWith', { name: apiTag.name })
   return {
     title: apiTag.name,
     description,
@@ -41,7 +44,10 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
       url: `${SITE_URL}/tag/${apiTag.slug}`,
     },
     twitter: { card: 'summary', title: apiTag.name, description },
-    alternates: { canonical: `${SITE_URL}/tag/${apiTag.slug}` },
+    alternates: {
+      canonical: `${SITE_URL}/tag/${apiTag.slug}`,
+      languages: generateAlternateLanguages(`/tag/${apiTag.slug}`),
+    },
   }
 }
 
@@ -62,12 +68,15 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
   const categories = transformCategories(apiCategories)
   const tags = transformTags(apiTags)
 
+  const t = await getTranslations('search')
+  const tTag = await getTranslations('tag')
+
   const filterOptions = [
-    { name: 'Most recent', value: 'most-recent' },
-    { name: 'Curated by admin', value: 'curated-by-admin' },
-    { name: 'Most appreciated', value: 'most-appreciated' },
-    { name: 'Most discussed', value: 'most-discussed' },
-    { name: 'Most viewed', value: 'most-viewed' },
+    { name: t('sortMostRecent'), value: 'most-recent' },
+    { name: t('sortCuratedByAdmin'), value: 'curated-by-admin' },
+    { name: t('sortMostAppreciated'), value: 'most-appreciated' },
+    { name: t('sortMostDiscussed'), value: 'most-discussed' },
+    { name: t('sortMostViewed'), value: 'most-viewed' },
   ]
 
   return (
@@ -77,7 +86,7 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
           name: tag.name,
-          description: `Posts tagged with ${tag.name}`,
+          description: tTag('postsTaggedWith', { name: tag.name }),
           url: `${SITE_URL}/tag/${handle}`,
         }}
       />

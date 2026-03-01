@@ -104,7 +104,7 @@ const Card10V3: FC<Props> = ({ className, post, galleryType = 1 }) => {
 
       <div className="absolute inset-x-3 top-3 flex items-start justify-between space-x-4">
         <CategoryBadgeList categories={categories} />
-        <PostCardSaveBtn bookmarked={bookmarked} />
+        <PostCardSaveBtn bookmarked={bookmarked} postId={post.id} />
       </div>
 
       <div className="mt-4 space-y-4 px-4">

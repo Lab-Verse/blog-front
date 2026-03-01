@@ -27,7 +27,9 @@
     "noNewNotifications": "No new notifications",
     "readMore": "Read More",
     "backToHome": "Back to Home",
-    "all": "All"
+    "all": "All",
+    "categories": "Categories",
+    "tags": "Tags"
   },
   "header": {
     "login": "Login",
@@ -153,6 +155,9 @@
     "tags": "Tags",
     "settings": "Settings",
     "billing": "Billing",
+    "bookmarks": "Bookmarks",
+    "notifications": "Notifications",
+    "drafts": "Drafts",
     "sectionMain": "Main",
     "sectionContent": "Content",
     "sectionAccount": "Account",
@@ -177,6 +182,43 @@
     "mediaLibrary": "Media Library",
     "dashboardError": "Dashboard Error",
     "somethingWentWrongSection": "Something went wrong loading this section."
+  },
+  "bookmarks": {
+    "myBookmarks": "My Bookmarks",
+    "myBookmarksDescription": "Posts you've saved for later reading",
+    "noBookmarks": "You haven't bookmarked any posts yet.",
+    "noBookmarksHint": "Browse posts and click the bookmark icon to save them here.",
+    "removeBookmark": "Remove Bookmark",
+    "removeBookmarkConfirm": "Remove this post from your bookmarks?",
+    "bookmarkRemoved": "Bookmark removed.",
+    "failedRemoveBookmark": "Failed to remove bookmark.",
+    "savedOn": "Saved on {date}",
+    "browseArticles": "Browse Articles"
+  },
+  "notifications": {
+    "notifications": "Notifications",
+    "notificationsDescription": "Stay up to date with your blog activity",
+    "noNotifications": "No notifications yet.",
+    "noNotificationsHint": "When someone interacts with your posts, you'll see it here.",
+    "markAllRead": "Mark All Read",
+    "markRead": "Mark as Read",
+    "deleteNotification": "Delete",
+    "allNotifications": "All",
+    "unread": "Unread",
+    "read": "Read"
+  },
+  "drafts": {
+    "myDrafts": "My Drafts",
+    "myDraftsDescription": "Continue working on your unpublished posts",
+    "noDrafts": "You don't have any drafts.",
+    "noDraftsHint": "Start writing a new post — it'll be saved here automatically.",
+    "lastEdited": "Last edited {date}",
+    "continueDraft": "Continue Editing",
+    "deleteDraft": "Delete Draft",
+    "deleteDraftConfirm": "Are you sure you want to delete this draft? This action cannot be undone.",
+    "draftDeleted": "Draft deleted.",
+    "failedDeleteDraft": "Failed to delete draft.",
+    "startWriting": "Start Writing"
   },
   "posts": {
     "managePosts": "Manage Posts",
@@ -351,7 +393,8 @@
     "latestArticlesSubHeading": "Explore the most popular categories",
     "becomeAnAuthorHeading": "Become an author and share your great stories",
     "becomeAnAuthorDescription": "Become an author you can earn extra income by writing articles. Read and share new perspectives on just about any topic. Everyone's welcome.",
-    "becomeAnAuthorButton": "Become an author"
+    "becomeAnAuthorButton": "Become an author",
+    "superChangeYourPlanningPowers": "supper change your planning powers"
   },
   "about": {
     "title": "About Us",
@@ -394,6 +437,29 @@
     "benefit1": "Get more discount",
     "benefit2": "Get premium magazines",
     "emailPlaceholder": "Enter your email"
+  },
+  "post": {
+    "writtenBy": "WRITTEN BY",
+    "readMoreAboutAuthor": "Read more",
+    "responses": "Responses ({count})",
+    "viewAllComments": "View all {count} comments",
+    "goToTop": "Go to top",
+    "dontMissThese": "Don't miss these",
+    "moreFromAuthor": "More from author",
+    "postNotFound": "Post not found",
+    "postNotFoundDescription": "Post not found"
+  },
+  "category": {
+    "categoryNotFound": "Category not found",
+    "categoryNotFoundDescription": "Category not found",
+    "exploreArticles": "Explore {name} articles and news",
+    "discoverCategories": "Discover other categories"
+  },
+  "tag": {
+    "tagNotFound": "Tag not found",
+    "tagNotFoundDescription": "Tag not found",
+    "postsTaggedWith": "Posts tagged with {name}",
+    "discoverTags": "Discover other tags"
   },
   "authorProfile": {
     "defaultAuthorName": "Author",

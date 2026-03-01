@@ -27,7 +27,9 @@
     "noNewNotifications": "لا توجد إشعارات جديدة",
     "readMore": "اقرأ المزيد",
     "backToHome": "العودة للرئيسية",
-    "all": "الكل"
+    "all": "الكل",
+    "categories": "الفئات",
+    "tags": "الوسوم"
   },
   "header": {
     "login": "تسجيل الدخول",
@@ -153,6 +155,9 @@
     "tags": "الوسوم",
     "settings": "الإعدادات",
     "billing": "الفواتير",
+    "bookmarks": "المفضلات",
+    "notifications": "الإشعارات",
+    "drafts": "المسودات",
     "sectionMain": "الرئيسي",
     "sectionContent": "المحتوى",
     "sectionAccount": "الحساب",
@@ -177,6 +182,43 @@
     "mediaLibrary": "مكتبة الوسائط",
     "dashboardError": "خطأ في لوحة التحكم",
     "somethingWentWrongSection": "حدث خطأ أثناء تحميل هذا القسم."
+  },
+  "bookmarks": {
+    "myBookmarks": "مفضلاتي",
+    "myBookmarksDescription": "المقالات التي حفظتها للقراءة لاحقاً",
+    "noBookmarks": "لم تقم بحفظ أي مقالات بعد.",
+    "noBookmarksHint": "تصفح المقالات وانقر على أيقونة الحفظ لإضافتها هنا.",
+    "removeBookmark": "إزالة من المفضلة",
+    "removeBookmarkConfirm": "هل تريد إزالة هذا المقال من مفضلاتك؟",
+    "bookmarkRemoved": "تمت إزالة المقال من المفضلة.",
+    "failedRemoveBookmark": "فشل إزالة المقال من المفضلة.",
+    "savedOn": "تم الحفظ في {date}",
+    "browseArticles": "تصفح المقالات"
+  },
+  "notifications": {
+    "notifications": "الإشعارات",
+    "notificationsDescription": "ابقَ على اطلاع بأنشطة مدونتك",
+    "noNotifications": "لا توجد إشعارات بعد.",
+    "noNotificationsHint": "عندما يتفاعل شخص ما مع مقالاتك، ستراه هنا.",
+    "markAllRead": "تعيين الكل كمقروء",
+    "markRead": "تعيين كمقروء",
+    "deleteNotification": "حذف",
+    "allNotifications": "الكل",
+    "unread": "غير مقروء",
+    "read": "مقروء"
+  },
+  "drafts": {
+    "myDrafts": "مسوداتي",
+    "myDraftsDescription": "واصل العمل على مقالاتك غير المنشورة",
+    "noDrafts": "ليس لديك أي مسودات.",
+    "noDraftsHint": "ابدأ بكتابة مقال جديد — سيتم حفظه هنا تلقائياً.",
+    "lastEdited": "آخر تعديل {date}",
+    "continueDraft": "متابعة التحرير",
+    "deleteDraft": "حذف المسودة",
+    "deleteDraftConfirm": "هل أنت متأكد من حذف هذه المسودة؟ لا يمكن التراجع عن هذا الإجراء.",
+    "draftDeleted": "تم حذف المسودة.",
+    "failedDeleteDraft": "فشل حذف المسودة.",
+    "startWriting": "ابدأ الكتابة"
   },
   "posts": {
     "managePosts": "إدارة المقالات",
@@ -351,7 +393,8 @@
     "latestArticlesSubHeading": "اكتشف الأقسام الأكثر شعبية",
     "becomeAnAuthorHeading": "كن مؤلفاً وشارك قصصك الرائعة",
     "becomeAnAuthorDescription": "كن مؤلفاً ويمكنك كسب دخل إضافي من خلال كتابة المقالات. اقرأ وشارك وجهات نظر جديدة حول أي موضوع تقريباً. الجميع مرحب بهم.",
-    "becomeAnAuthorButton": "كن مؤلفاً"
+    "becomeAnAuthorButton": "كن مؤلفاً",
+    "superChangeYourPlanningPowers": "غيّر قدراتك التخطيطية بشكل كبير"
   },
   "about": {
     "title": "من نحن",
@@ -394,6 +437,29 @@
     "benefit1": "احصل على خصومات أكثر",
     "benefit2": "احصل على مجلات متميزة",
     "emailPlaceholder": "أدخل بريدك الإلكتروني"
+  },
+  "post": {
+    "writtenBy": "بقلم",
+    "readMoreAboutAuthor": "اقرأ المزيد",
+    "responses": "الردود ({count})",
+    "viewAllComments": "عرض جميع التعليقات {count}",
+    "goToTop": "الذهاب للأعلى",
+    "dontMissThese": "لا تفوت هذه",
+    "moreFromAuthor": "المزيد من الكاتب",
+    "postNotFound": "المقال غير موجود",
+    "postNotFoundDescription": "المقال غير موجود"
+  },
+  "category": {
+    "categoryNotFound": "الفئة غير موجودة",
+    "categoryNotFoundDescription": "الفئة غير موجودة",
+    "exploreArticles": "استكشف مقالات {name}",
+    "discoverCategories": "اكتشف فئات أخرى"
+  },
+  "tag": {
+    "tagNotFound": "الوسم غير موجود",
+    "tagNotFoundDescription": "الوسم غير موجود",
+    "postsTaggedWith": "مقالات بوسم {name}",
+    "discoverTags": "اكتشف وسوم أخرى"
   },
   "authorProfile": {
     "defaultAuthorName": "المؤلف",

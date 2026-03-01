@@ -63,9 +63,10 @@ export interface TPostDetail extends TPost {
 }
 
 export interface TComment {
-  id: number
+  id: string
   author: TPostAuthor
   date: string
   content: string
   like: { count: number; isLiked: boolean }
+  repliesCount?: number
 }

@@ -27,7 +27,9 @@
     "noNewNotifications": "کوئی نئی اطلاع نہیں",
     "readMore": "مزید پڑھیں",
     "backToHome": "واپس ہوم",
-    "all": "سب"
+    "all": "سب",
+    "categories": "زمرے",
+    "tags": "ٹیگز"
   },
   "header": {
     "login": "لاگ ان",
@@ -153,6 +155,9 @@
     "tags": "ٹیگز",
     "settings": "ترتیبات",
     "billing": "بلنگ",
+    "bookmarks": "بک مارکس",
+    "notifications": "اطلاعات",
+    "drafts": "مسودے",
     "sectionMain": "مرکزی",
     "sectionContent": "مواد",
     "sectionAccount": "اکاؤنٹ",
@@ -177,6 +182,43 @@
     "mediaLibrary": "میڈیا لائبریری",
     "dashboardError": "ڈیش بورڈ خرابی",
     "somethingWentWrongSection": "اس سیکشن کو لوڈ کرنے میں کچھ غلط ہو گیا۔"
+  },
+  "bookmarks": {
+    "myBookmarks": "میرے بک مارکس",
+    "myBookmarksDescription": "وہ پوسٹس جو آپ نے بعد میں پڑھنے کے لیے محفوظ کی ہیں",
+    "noBookmarks": "آپ نے ابھی تک کوئی پوسٹ بک مارک نہیں کی۔",
+    "noBookmarksHint": "پوسٹس براؤز کریں اور بک مارک آئیکن پر کلک کر کے انہیں یہاں محفوظ کریں۔",
+    "removeBookmark": "بک مارک ہٹائیں",
+    "removeBookmarkConfirm": "اس پوسٹ کو اپنے بک مارکس سے ہٹائیں؟",
+    "bookmarkRemoved": "بک مارک ہٹا دیا گیا۔",
+    "failedRemoveBookmark": "بک مارک ہٹانے میں ناکامی۔",
+    "savedOn": "{date} کو محفوظ کیا گیا",
+    "browseArticles": "مضامین براؤز کریں"
+  },
+  "notifications": {
+    "notifications": "اطلاعات",
+    "notificationsDescription": "اپنے بلاگ کی سرگرمیوں سے باخبر رہیں",
+    "noNotifications": "ابھی تک کوئی اطلاع نہیں۔",
+    "noNotificationsHint": "جب کوئی آپ کی پوسٹس کے ساتھ تعامل کرے گا، آپ اسے یہاں دیکھیں گے۔",
+    "markAllRead": "سب پڑھا ہوا نشان لگائیں",
+    "markRead": "پڑھا ہوا نشان لگائیں",
+    "deleteNotification": "حذف کریں",
+    "allNotifications": "سب",
+    "unread": "غیر پڑھا",
+    "read": "پڑھا ہوا"
+  },
+  "drafts": {
+    "myDrafts": "میرے مسودے",
+    "myDraftsDescription": "اپنی غیر شائع شدہ پوسٹس پر کام جاری رکھیں",
+    "noDrafts": "آپ کے کوئی مسودے نہیں ہیں۔",
+    "noDraftsHint": "نئی پوسٹ لکھنا شروع کریں — یہ یہاں خودکار طور پر محفوظ ہو جائے گی۔",
+    "lastEdited": "آخری ترمیم {date}",
+    "continueDraft": "ترمیم جاری رکھیں",
+    "deleteDraft": "مسودہ حذف کریں",
+    "deleteDraftConfirm": "کیا آپ واقعی یہ مسودہ حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔",
+    "draftDeleted": "مسودہ حذف ہو گیا۔",
+    "failedDeleteDraft": "مسودہ حذف کرنے میں ناکامی۔",
+    "startWriting": "لکھنا شروع کریں"
   },
   "posts": {
     "managePosts": "پوسٹس کا انتظام",
@@ -351,7 +393,8 @@
     "latestArticlesSubHeading": "سب سے مقبول زمرے دریافت کریں",
     "becomeAnAuthorHeading": "مصنف بنیں اور اپنی شاندار کہانیاں شیئر کریں",
     "becomeAnAuthorDescription": "مصنف بن کر آپ مضامین لکھ کر اضافی آمدنی حاصل کر سکتے ہیں۔ تقریباً کسی بھی موضوع پر نئے نقطہ نظر پڑھیں اور شیئر کریں۔ سب کا خیرمقدم ہے۔",
-    "becomeAnAuthorButton": "مصنف بنیں"
+    "becomeAnAuthorButton": "مصنف بنیں",
+    "superChangeYourPlanningPowers": "اپنی منصوبہ بندی کی صلاحیتوں کو بہتر بنائیں"
   },
   "about": {
     "title": "ہمارے بارے میں",
@@ -394,6 +437,29 @@
     "benefit1": "مزید رعایت حاصل کریں",
     "benefit2": "پریمیم میگزینز حاصل کریں",
     "emailPlaceholder": "اپنا ای میل درج کریں"
+  },
+  "post": {
+    "writtenBy": "تحریر",
+    "readMoreAboutAuthor": "مزید پڑھیں",
+    "responses": "جوابات ({count})",
+    "viewAllComments": "تمام {count} تبصرے دیکھیں",
+    "goToTop": "اوپر جائیں",
+    "dontMissThese": "یہ مت چھوڑیں",
+    "moreFromAuthor": "مصنف کی مزید تحریریں",
+    "postNotFound": "پوسٹ نہیں ملی",
+    "postNotFoundDescription": "پوسٹ نہیں ملی"
+  },
+  "category": {
+    "categoryNotFound": "زمرہ نہیں ملا",
+    "categoryNotFoundDescription": "زمرہ نہیں ملا",
+    "exploreArticles": "{name} کے مضامین دریافت کریں",
+    "discoverCategories": "دیگر زمرے دریافت کریں"
+  },
+  "tag": {
+    "tagNotFound": "ٹیگ نہیں ملا",
+    "tagNotFoundDescription": "ٹیگ نہیں ملا",
+    "postsTaggedWith": "{name} کے ساتھ ٹیگ شدہ پوسٹس",
+    "discoverTags": "دیگر ٹیگز دریافت کریں"
   },
   "authorProfile": {
     "defaultAuthorName": "مصنف",

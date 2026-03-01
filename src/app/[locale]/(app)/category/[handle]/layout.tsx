@@ -3,6 +3,7 @@ import BackgroundSection from '@/components/BackgroundSection'
 import SectionSliderNewAuthors from '@/components/SectionSliderNewAuthors'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
 import { fetchAuthors } from '@/utils/serverApi'
+import { getTranslations } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 const defaultAvatar = {
@@ -19,6 +20,7 @@ interface Props {
 
 const CategoryHandleLayout = async ({ children, params }: Props) => {
   const { handle } = await params
+  const t = await getTranslations('search')
 
   let authors: any[] = []
   try {
@@ -58,8 +60,8 @@ const CategoryHandleLayout = async ({ children, params }: Props) => {
         <div className="relative py-16 lg:py-20">
           <BackgroundSection />
           <SectionSliderNewAuthors
-            heading="Top elite authors"
-            subHeading="Discover our elite writers"
+            heading={t('topEliteAuthors')}
+            subHeading={t('discoverEliteWriters')}
             authors={authors.slice(0, 10)}
           />
         </div>

@@ -59,7 +59,7 @@ const Card19: FC<Props> = ({
       <div className="absolute inset-x-0 top-0 flex flex-wrap gap-x-2 gap-y-1 p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:px-7">
         <PostCardLikeBtn likeCount={likeCount} liked={liked} />
         <PostCardCommentBtn commentCount={commentCount} handle={handle} />
-        <PostCardSaveBtn className="ms-auto" bookmarked={bookmarked} />
+        <PostCardSaveBtn className="ms-auto" bookmarked={bookmarked} postId={post.id} />
       </div>
 
       <div className="absolute inset-x-0 bottom-0 flex grow flex-col p-5 sm:p-8">

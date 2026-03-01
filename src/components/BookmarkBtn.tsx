@@ -21,7 +21,7 @@ const BookmarkBtn: FC<Props> = ({ className, bookmarked, postId }) => {
   const userId = useMemo(() => {
     if (!token) return ''
     try {
-      const decoded: any = jwtDecode(token)
+      const decoded: { sub?: string } = jwtDecode(token)
       return decoded?.sub || ''
     } catch { return '' }
   }, [token])

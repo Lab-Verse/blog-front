@@ -175,7 +175,7 @@ export function SimpleEditor() {
     const token = cookies.getAccessToken()
     if (token) {
       try {
-        const decoded: any = jwtDecode(token)
+        const decoded: { sub?: string } = jwtDecode(token)
         setUserId(decoded?.sub || '')
       } catch { /* ignore */ }
     }

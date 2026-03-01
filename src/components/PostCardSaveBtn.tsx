@@ -7,13 +7,14 @@ interface Props {
   bookmarkClass?: string
   readingTime?: number
   bookmarked?: boolean
+  postId?: string
 }
 
-const PostCardSaveBtn: FC<Props> = ({ className, bookmarkClass, readingTime, bookmarked }) => {
+const PostCardSaveBtn: FC<Props> = ({ className, bookmarkClass, readingTime, bookmarked, postId }) => {
   return (
     <div className={clsx('post-card-save-btn flex items-center gap-x-2 text-xs', className)}>
       {readingTime ? <span>{readingTime} min read</span> : null}
-      <BookmarkBtn className={bookmarkClass} bookmarked={bookmarked} />
+      <BookmarkBtn className={bookmarkClass} bookmarked={bookmarked} postId={postId} />
     </div>
   )
 }

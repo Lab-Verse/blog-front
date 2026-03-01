@@ -8,6 +8,7 @@ import { Divider } from '@/shared/divider'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { NotificationSquareIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useTranslations } from 'next-intl'
 import { FC, useState } from 'react'
 
 interface Props {
@@ -15,6 +16,8 @@ interface Props {
 }
 
 const ModalCategories: FC<Props> = ({ categories }) => {
+  const t = useTranslations('common')
+  const tCat = useTranslations('category')
   let [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -22,11 +25,11 @@ const ModalCategories: FC<Props> = ({ categories }) => {
       <>
         <Button type="button" color="white" onClick={() => setIsOpen(true)}>
           <HugeiconsIcon icon={NotificationSquareIcon} size={24} />
-          <span>Categories</span>
+          <span>{t('categories')}</span>
           <ChevronDownIcon className="size-4" />
         </Button>
         <Dialog size="5xl" open={isOpen} onClose={setIsOpen}>
-          <DialogTitle>Discover other categories</DialogTitle>
+          <DialogTitle>{tCat('discoverCategories')}</DialogTitle>
           <DialogBody>
             <Divider className="my-6" />
             <div className="grid gap-6 sm:grid-cols-2 sm:py-2 md:grid-cols-3 md:gap-8 lg:grid-cols-4">
@@ -37,9 +40,9 @@ const ModalCategories: FC<Props> = ({ categories }) => {
           </DialogBody>
           <DialogActions>
             <Button plain onClick={() => setIsOpen(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
-            <Button onClick={() => setIsOpen(false)}>Close</Button>
+            <Button onClick={() => setIsOpen(false)}>{t('close')}</Button>
           </DialogActions>
         </Dialog>
       </>

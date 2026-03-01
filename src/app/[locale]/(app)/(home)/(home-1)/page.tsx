@@ -11,6 +11,7 @@ import { Metadata } from 'next'
 import JsonLd from '@/components/seo/JsonLd'
 import nextDynamic from 'next/dynamic'
 import { getTranslations } from 'next-intl/server'
+import { generateAlternateLanguages } from '@/utils/seo'
 
 // Dynamic imports for below-the-fold sections (loaded on demand)
 const SectionBecomeAnAuthor = nextDynamic(() => import('@/components/SectionBecomeAnAuthor'))
@@ -18,7 +19,7 @@ const SectionPostsWithWidgets = nextDynamic(() => import('@/components/SectionPo
 const SectionSliderNewAuthors = nextDynamic(() => import('@/components/SectionSliderNewAuthors'))
 const SectionSliderPosts = nextDynamic(() => import('@/components/SectionSliderPosts'))
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60 // ISR: revalidate every 60 seconds
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
@@ -28,7 +29,7 @@ export async function generateMetadata() {
   return {
     title: t('metaTitle'),
     description: t('metaDescription'),
-    alternates: { canonical: SITE_URL },
+    alternates: { canonical: SITE_URL, languages: generateAlternateLanguages('/') },
   }
 }
 

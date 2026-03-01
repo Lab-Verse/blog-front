@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
+import { generateAlternateLanguages } from '@/utils/seo'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
@@ -10,6 +11,10 @@ export async function generateMetadata() {
   return {
     title: t('termsOfService'),
     description: t('termsIntro', { siteName: SITE_NAME, siteUrl: SITE_URL }),
+    alternates: {
+      canonical: `${SITE_URL}/terms-of-service`,
+      languages: generateAlternateLanguages('/terms-of-service'),
+    },
   }
 }
 

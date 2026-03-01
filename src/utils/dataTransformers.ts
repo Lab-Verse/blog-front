@@ -38,15 +38,17 @@ function makeImage(url?: string | null, alt?: string) {
 /** Extract categories from a post — handles both legacy `category` and join-table `postCategories` */
 function extractCategories(post: ApiPost) {
   // Prefer postCategories (join table) if available
-  const pc = (post as any).postCategories
+  const pc = (post as unknown as Record<string, unknown>).postCategories as
+    | { category?: { id: string; name: string; slug: string } }[]
+    | undefined
   if (Array.isArray(pc) && pc.length > 0) {
     return pc
-      .filter((entry: any) => entry.category)
-      .map((entry: any) => ({
-        id: entry.category.id,
-        name: entry.category.name,
-        handle: entry.category.slug,
-        color: getCategoryColor(entry.category.name),
+      .filter((entry) => entry.category)
+      .map((entry) => ({
+        id: entry.category!.id,
+        name: entry.category!.name,
+        handle: entry.category!.slug,
+        color: getCategoryColor(entry.category!.name),
       }))
   }
   // Fallback to legacy `category` field
@@ -65,13 +67,14 @@ function extractCategories(post: ApiPost) {
 function extractTags(post: ApiPost) {
   const rawTags = post.tags
   if (!Array.isArray(rawTags) || rawTags.length === 0) return []
-  return rawTags.map((t: any) => {
+  return rawTags.map((t) => {
     // If it's a join-table entry with nested `tag`, unwrap it
-    const tag = t.tag || t
+    const tagEntry = t as ApiTag & { tag?: ApiTag; handle?: string }
+    const tag = tagEntry.tag || tagEntry
     return {
       id: tag.id || String(t),
       name: tag.name || '',
-      handle: tag.slug || tag.handle || '',
+      handle: tag.slug || (tag as { handle?: string }).handle || '',
       color: getCategoryColor(tag.name || ''),
     }
   })
@@ -267,9 +270,9 @@ export function transformAuthors(
 // ========================
 
 /** Transform an API Comment to the theme's TComment shape */
-export function transformComment(comment: ApiComment, index: number = 0) {
+export function transformComment(comment: ApiComment) {
   return {
-    id: index + 1,
+    id: comment.id,
     author: comment.user
       ? {
           id: comment.user.id,
@@ -286,12 +289,13 @@ export function transformComment(comment: ApiComment, index: number = 0) {
     date: comment.created_at,
     content: comment.content,
     like: { count: comment.likes_count || 0, isLiked: false },
+    repliesCount: comment.replies_count || 0,
   }
 }
 
 /** Transform an array of API Comments */
 export function transformComments(comments: ApiComment[]) {
-  return comments.map((c, i) => transformComment(c, i))
+  return comments.map((c) => transformComment(c))
 }
 
 // ========================

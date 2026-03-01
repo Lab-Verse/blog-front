@@ -10,13 +10,53 @@ interface FetchOptions {
   revalidate?: number | false
   tags?: string[]
   cache?: RequestCache
+  /** When provided, appends ?locale=xx to the request URL (for backends that support it) */
+  locale?: string
+}
+
+// ========================
+// Translation types
+// ========================
+
+export interface ApiPostTranslation {
+  id: string
+  post_id: string
+  locale: string
+  title: string
+  slug: string
+  content?: string
+  excerpt?: string
+  description?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ApiCategoryTranslation {
+  id: string
+  category_id: string
+  locale: string
+  name: string
+  slug: string
+  description?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ApiTagTranslation {
+  id: string
+  tag_id: string
+  locale: string
+  name: string
+  slug: string
+  created_at: string
+  updated_at: string
 }
 
 async function serverFetch<T>(
   endpoint: string,
   options: FetchOptions = {}
 ): Promise<T> {
-  const { revalidate = 60, tags, cache } = options
+  const { revalidate = 60, tags, cache, locale } = options
 
   const fetchOptions: RequestInit & { next?: { revalidate?: number | false; tags?: string[] } } = {
     headers: {
@@ -29,7 +69,14 @@ async function serverFetch<T>(
     ...(cache && { cache }),
   }
 
-  const url = `${API_URL}${endpoint}`
+  // Append locale query param when provided and not default English
+  let finalEndpoint = endpoint
+  if (locale && locale !== 'en') {
+    const sep = endpoint.includes('?') ? '&' : '?'
+    finalEndpoint = `${endpoint}${sep}locale=${locale}`
+  }
+
+  const url = `${API_URL}${finalEndpoint}`
 
   try {
     const response = await fetch(url, fetchOptions)
@@ -270,10 +317,10 @@ export async function fetchPostById(id: string): Promise<ApiPost | null> {
   }
 }
 
-/** Fetch comments for a post */
+/** Fetch comments for a post (uses /comments?postId=X which loads user relations) */
 export async function fetchPostComments(postId: string): Promise<ApiComment[]> {
   try {
-    return await serverFetch<ApiComment[]>(`/posts/${postId}/comments`, {
+    return await serverFetch<ApiComment[]>(`/comments?postId=${postId}`, {
       revalidate: 30,
       tags: ['comments', `post-comments-${postId}`],
     })
@@ -532,5 +579,123 @@ export async function searchAll(query: string): Promise<SearchResults> {
     }
   } catch {
     return { posts: [], categories: [], tags: [], authors: [], totalResults: 0 }
+  }
+}
+
+// ========================
+// Translations
+// ========================
+
+/** Fetch all translations for a post */
+export async function fetchPostTranslations(postId: string): Promise<ApiPostTranslation[]> {
+  try {
+    return await serverFetch<ApiPostTranslation[]>(`/posts/${postId}/translations`, {
+      revalidate: 300,
+      tags: [`post-translations-${postId}`],
+    })
+  } catch {
+    return []
+  }
+}
+
+/** Fetch a single translation for a post in a specific locale */
+export async function fetchPostTranslation(
+  postId: string,
+  locale: string
+): Promise<ApiPostTranslation | null> {
+  if (locale === 'en') return null
+  try {
+    const translations = await fetchPostTranslations(postId)
+    return translations.find((t) => t.locale === locale) || null
+  } catch {
+    return null
+  }
+}
+
+/** Fetch all translations for a category */
+export async function fetchCategoryTranslations(categoryId: string): Promise<ApiCategoryTranslation[]> {
+  try {
+    return await serverFetch<ApiCategoryTranslation[]>(`/categories/${categoryId}/translations`, {
+      revalidate: 300,
+      tags: [`category-translations-${categoryId}`],
+    })
+  } catch {
+    return []
+  }
+}
+
+/** Fetch a single translation for a category in a specific locale */
+export async function fetchCategoryTranslation(
+  categoryId: string,
+  locale: string
+): Promise<ApiCategoryTranslation | null> {
+  if (locale === 'en') return null
+  try {
+    const translations = await fetchCategoryTranslations(categoryId)
+    return translations.find((t) => t.locale === locale) || null
+  } catch {
+    return null
+  }
+}
+
+/** Fetch all translations for a tag */
+export async function fetchTagTranslations(tagId: string): Promise<ApiTagTranslation[]> {
+  try {
+    return await serverFetch<ApiTagTranslation[]>(`/tags/${tagId}/translations`, {
+      revalidate: 300,
+      tags: [`tag-translations-${tagId}`],
+    })
+  } catch {
+    return []
+  }
+}
+
+/** Fetch a single translation for a tag in a specific locale */
+export async function fetchTagTranslation(
+  tagId: string,
+  locale: string
+): Promise<ApiTagTranslation | null> {
+  if (locale === 'en') return null
+  try {
+    const translations = await fetchTagTranslations(tagId)
+    return translations.find((t) => t.locale === locale) || null
+  } catch {
+    return null
+  }
+}
+
+/** Apply post translation overlay — merges translated fields onto the base post */
+export function applyPostTranslation(post: ApiPost, translation: ApiPostTranslation | null): ApiPost {
+  if (!translation) return post
+  return {
+    ...post,
+    title: translation.title || post.title,
+    slug: translation.slug || post.slug,
+    content: translation.content ?? post.content,
+    excerpt: translation.excerpt ?? post.excerpt,
+    description: translation.description ?? post.description,
+  }
+}
+
+/** Apply category translation overlay */
+export function applyCategoryTranslation(
+  category: ApiCategory,
+  translation: ApiCategoryTranslation | null
+): ApiCategory {
+  if (!translation) return category
+  return {
+    ...category,
+    name: translation.name || category.name,
+    slug: translation.slug || category.slug,
+  }
+}
+
+/** Apply tag translation overlay */
+export function applyTagTranslation(tag: ApiTag, translation: ApiTagTranslation | null): ApiTag {
+  if (!translation) return tag
+  return {
+    ...tag,
+    name: translation.name || tag.name,
+    slug: translation.slug || tag.slug,
   }
 }

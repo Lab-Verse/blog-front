@@ -5,6 +5,7 @@ import SectionSliderNewAuthors from '@/components/SectionSliderNewAuthors'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
 import { fetchAuthors, fetchCategories } from '@/utils/serverApi'
 import ButtonPrimary from '@/shared/ButtonPrimary'
+import { getTranslations } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 interface Props {
@@ -27,6 +28,9 @@ const defaultAvatar = {
 }
 
 const Layout: React.FC<Props> = async ({ children }) => {
+  const t = await getTranslations('search')
+  const tc = await getTranslations('common')
+
   let categories: any[] = []
   let authors: any[] = []
 
@@ -88,13 +92,13 @@ const Layout: React.FC<Props> = async ({ children }) => {
           <BackgroundSection />
           <SectionGridCategoryBox categories={categories.slice(0, 10) as any} />
           <div className="mx-auto mt-10 text-center md:mt-16">
-            <ButtonPrimary>Show me more</ButtonPrimary>
+            <ButtonPrimary>{tc('showMore')}</ButtonPrimary>
           </div>
         </div>
 
         <SectionSliderNewAuthors
-          heading="Top elite authors"
-          subHeading="Discover our elite writers"
+          heading={t('topEliteAuthors')}
+          subHeading={t('discoverEliteWriters')}
           authors={authors.slice(0, 10) as any}
         />
 

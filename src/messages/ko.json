@@ -27,7 +27,9 @@
     "noNewNotifications": "새 알림 없음",
     "readMore": "자세히 보기",
     "backToHome": "홈으로 돌아가기",
-    "all": "전체"
+    "all": "전체",
+    "categories": "카테고리",
+    "tags": "태그"
   },
   "header": {
     "login": "로그인",
@@ -153,6 +155,9 @@
     "tags": "태그",
     "settings": "설정",
     "billing": "결제",
+    "bookmarks": "북마크",
+    "notifications": "알림",
+    "drafts": "임시저장",
     "sectionMain": "메인",
     "sectionContent": "콘텐츠",
     "sectionAccount": "계정",
@@ -177,6 +182,43 @@
     "mediaLibrary": "미디어 라이브러리",
     "dashboardError": "대시보드 오류",
     "somethingWentWrongSection": "이 섹션을 로드하는 중 문제가 발생했습니다."
+  },
+  "bookmarks": {
+    "myBookmarks": "내 북마크",
+    "myBookmarksDescription": "나중에 읽기 위해 저장한 게시물",
+    "noBookmarks": "아직 북마크한 게시물이 없습니다.",
+    "noBookmarksHint": "게시물을 둘러보고 북마크 아이콘을 클릭하여 여기에 저장하세요.",
+    "removeBookmark": "북마크 제거",
+    "removeBookmarkConfirm": "이 게시물을 북마크에서 제거하시겠습니까?",
+    "bookmarkRemoved": "북마크가 제거되었습니다.",
+    "failedRemoveBookmark": "북마크 제거 실패.",
+    "savedOn": "{date}에 저장됨",
+    "browseArticles": "게시물 둘러보기"
+  },
+  "notifications": {
+    "notifications": "알림",
+    "notificationsDescription": "블로그 활동 소식을 확인하세요",
+    "noNotifications": "아직 알림이 없습니다.",
+    "noNotificationsHint": "누군가 게시물에 반응하면 여기에 표시됩니다.",
+    "markAllRead": "모두 읽음 처리",
+    "markRead": "읽음 처리",
+    "deleteNotification": "삭제",
+    "allNotifications": "전체",
+    "unread": "읽지 않음",
+    "read": "읽음"
+  },
+  "drafts": {
+    "myDrafts": "내 임시저장",
+    "myDraftsDescription": "미게시 게시물 작업을 계속하세요",
+    "noDrafts": "임시저장된 글이 없습니다.",
+    "noDraftsHint": "새 글을 작성하세요 — 자동으로 여기에 저장됩니다.",
+    "lastEdited": "마지막 편집 {date}",
+    "continueDraft": "편집 계속하기",
+    "deleteDraft": "임시저장 삭제",
+    "deleteDraftConfirm": "이 임시저장 글을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    "draftDeleted": "임시저장이 삭제되었습니다.",
+    "failedDeleteDraft": "임시저장 삭제 실패.",
+    "startWriting": "글쓰기 시작"
   },
   "posts": {
     "managePosts": "게시물 관리",
@@ -351,7 +393,8 @@
     "latestArticlesSubHeading": "가장 인기 있는 카테고리를 탐색하세요",
     "becomeAnAuthorHeading": "작가가 되어 멋진 이야기를 공유하세요",
     "becomeAnAuthorDescription": "작가가 되면 글을 써서 추가 수입을 얻을 수 있습니다. 거의 모든 주제에 대한 새로운 관점을 읽고 공유하세요. 누구나 환영합니다.",
-    "becomeAnAuthorButton": "작가 되기"
+    "becomeAnAuthorButton": "작가 되기",
+    "superChangeYourPlanningPowers": "기획 역량을 크게 향상시키세요"
   },
   "about": {
     "title": "소개",
@@ -394,6 +437,29 @@
     "benefit1": "더 많은 할인 받기",
     "benefit2": "프리미엄 매거진 받기",
     "emailPlaceholder": "이메일을 입력하세요"
+  },
+  "post": {
+    "writtenBy": "작성자",
+    "readMoreAboutAuthor": "더 읽기",
+    "responses": "댓글 ({count})",
+    "viewAllComments": "댓글 {count}개 모두 보기",
+    "goToTop": "맨 위로",
+    "dontMissThese": "놓치지 마세요",
+    "moreFromAuthor": "작성자의 다른 글",
+    "postNotFound": "게시글을 찾을 수 없습니다",
+    "postNotFoundDescription": "게시글을 찾을 수 없습니다"
+  },
+  "category": {
+    "categoryNotFound": "카테고리를 찾을 수 없습니다",
+    "categoryNotFoundDescription": "카테고리를 찾을 수 없습니다",
+    "exploreArticles": "{name} 관련 기사 탐색",
+    "discoverCategories": "다른 카테고리 둘러보기"
+  },
+  "tag": {
+    "tagNotFound": "태그를 찾을 수 없습니다",
+    "tagNotFoundDescription": "태그를 찾을 수 없습니다",
+    "postsTaggedWith": "{name} 태그가 있는 게시글",
+    "discoverTags": "다른 태그 둘러보기"
   },
   "authorProfile": {
     "defaultAuthorName": "작성자",

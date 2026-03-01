@@ -10,6 +10,7 @@ import { Divider } from '@/shared/divider'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { Tag02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 interface Props {
@@ -17,6 +18,8 @@ interface Props {
 }
 
 const ModalTags: FC<Props> = ({ tags }) => {
+  const t = useTranslations('common')
+  const tTag = useTranslations('tag')
   let [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -24,11 +27,11 @@ const ModalTags: FC<Props> = ({ tags }) => {
       <>
         <Button type="button" color="white" onClick={() => setIsOpen(true)}>
           <HugeiconsIcon icon={Tag02Icon} size={24} />
-          <span>Tags</span>
+          <span>{t('tags')}</span>
           <ChevronDownIcon className="size-4" />
         </Button>
         <Dialog size="3xl" open={isOpen} onClose={setIsOpen}>
-          <DialogTitle>Discover other tags</DialogTitle>
+          <DialogTitle>{tTag('discoverTags')}</DialogTitle>
           <Divider className="my-6" />
           <DialogBody>
             <div className="flex flex-wrap dark:text-neutral-200">
@@ -41,9 +44,9 @@ const ModalTags: FC<Props> = ({ tags }) => {
           </DialogBody>
           <DialogActions>
             <Button plain onClick={() => setIsOpen(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
-            <Button onClick={() => setIsOpen(false)}>Close</Button>
+            <Button onClick={() => setIsOpen(false)}>{t('close')}</Button>
           </DialogActions>
         </Dialog>
       </>

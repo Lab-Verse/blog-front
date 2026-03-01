@@ -27,7 +27,9 @@
     "noNewNotifications": "没有新通知",
     "readMore": "阅读更多",
     "backToHome": "返回首页",
-    "all": "全部"
+    "all": "全部",
+    "categories": "分类",
+    "tags": "标签"
   },
   "header": {
     "login": "登录",
@@ -153,6 +155,9 @@
     "tags": "标签",
     "settings": "设置",
     "billing": "账单",
+    "bookmarks": "收藏",
+    "notifications": "通知",
+    "drafts": "草稿",
     "sectionMain": "主要",
     "sectionContent": "内容",
     "sectionAccount": "账户",
@@ -177,6 +182,43 @@
     "mediaLibrary": "媒体库",
     "dashboardError": "仪表盘错误",
     "somethingWentWrongSection": "加载此部分时出现问题。"
+  },
+  "bookmarks": {
+    "myBookmarks": "我的收藏",
+    "myBookmarksDescription": "您保存以供日后阅读的文章",
+    "noBookmarks": "您还没有收藏任何文章。",
+    "noBookmarksHint": "浏览文章并点击收藏图标将其保存到此处。",
+    "removeBookmark": "取消收藏",
+    "removeBookmarkConfirm": "确定要取消收藏此文章吗？",
+    "bookmarkRemoved": "已取消收藏。",
+    "failedRemoveBookmark": "取消收藏失败。",
+    "savedOn": "收藏于 {date}",
+    "browseArticles": "浏览文章"
+  },
+  "notifications": {
+    "notifications": "通知",
+    "notificationsDescription": "了解您的博客最新动态",
+    "noNotifications": "暂无通知。",
+    "noNotificationsHint": "当有人与您的文章互动时，您会在此处看到通知。",
+    "markAllRead": "全部标为已读",
+    "markRead": "标为已读",
+    "deleteNotification": "删除",
+    "allNotifications": "全部",
+    "unread": "未读",
+    "read": "已读"
+  },
+  "drafts": {
+    "myDrafts": "我的草稿",
+    "myDraftsDescription": "继续编辑您未发布的文章",
+    "noDrafts": "您没有任何草稿。",
+    "noDraftsHint": "开始撰写新文章——它将自动保存在此处。",
+    "lastEdited": "最后编辑于 {date}",
+    "continueDraft": "继续编辑",
+    "deleteDraft": "删除草稿",
+    "deleteDraftConfirm": "确定要删除此草稿吗？此操作无法撤销。",
+    "draftDeleted": "草稿已删除。",
+    "failedDeleteDraft": "删除草稿失败。",
+    "startWriting": "开始写作"
   },
   "posts": {
     "managePosts": "管理文章",
@@ -351,7 +393,8 @@
     "latestArticlesSubHeading": "探索最热门的分类",
     "becomeAnAuthorHeading": "成为作者，分享你的精彩故事",
     "becomeAnAuthorDescription": "成为作者，您可以通过撰写文章获得额外收入。阅读和分享几乎任何主题的新观点。欢迎所有人。",
-    "becomeAnAuthorButton": "成为作者"
+    "becomeAnAuthorButton": "成为作者",
+    "superChangeYourPlanningPowers": "全面提升你的规划能力"
   },
   "about": {
     "title": "关于我们",
@@ -394,6 +437,29 @@
     "benefit1": "获得更多折扣",
     "benefit2": "获得高级杂志",
     "emailPlaceholder": "输入您的邮箱"
+  },
+  "post": {
+    "writtenBy": "作者",
+    "readMoreAboutAuthor": "阅读更多",
+    "responses": "回复 ({count})",
+    "viewAllComments": "查看全部 {count} 条评论",
+    "goToTop": "返回顶部",
+    "dontMissThese": "不要错过这些",
+    "moreFromAuthor": "作者的更多文章",
+    "postNotFound": "未找到文章",
+    "postNotFoundDescription": "未找到文章"
+  },
+  "category": {
+    "categoryNotFound": "未找到分类",
+    "categoryNotFoundDescription": "未找到分类",
+    "exploreArticles": "探索 {name} 相关文章",
+    "discoverCategories": "发现更多分类"
+  },
+  "tag": {
+    "tagNotFound": "未找到标签",
+    "tagNotFoundDescription": "未找到标签",
+    "postsTaggedWith": "标记为 {name} 的文章",
+    "discoverTags": "发现更多标签"
   },
   "authorProfile": {
     "defaultAuthorName": "作者",

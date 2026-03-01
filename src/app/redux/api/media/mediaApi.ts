@@ -81,8 +81,6 @@ export const mediaApi = baseApi.injectEndpoints({
         body: formData,
       }),
       transformResponse: (res: unknown): Media => {
-        console.log('[MediaAPI] Raw upload response:', res);
-
         if (typeof res === 'object' && res !== null) {
           if ('data' in res && res.data) {
             return res.data as Media;

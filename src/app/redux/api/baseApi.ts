@@ -26,9 +26,7 @@ const rawBaseQuery = fetchBaseQuery({
 });
 
 const baseQueryWithReauth: typeof rawBaseQuery = async (args, api, extra) => {
-  // console.log('[BaseAPI] Request:', args);
   let result = await rawBaseQuery(args, api, extra);
-  // console.log('[BaseAPI] Response:', result);
 
   if (result.error && "status" in result.error && result.error.status === 401) {
     // Get refresh token from cookies

@@ -7,15 +7,20 @@ import SingleCommentForm from '@/components/SingleCommentForm'
 import { TComment, TPostDetail } from '@/data/posts'
 import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 import Avatar from '@/shared/Avatar'
-import ButtonPrimary from '@/shared/ButtonPrimary'
 import SocialsList from '@/shared/SocialsList'
 import Tag from '@/shared/Tag'
 import { Link } from '@/shared/link'
 import { ArrowUp02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { FC, useEffect, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { ShareDropdown } from './SingleMetaAction'
 import TheContent from './TheContent'
+import { useCreateCommentMutation, useGetCommentsByPostQuery } from '@/app/redux/api/comments/commentsApi'
+import { cookies } from '@/app/redux/utils/cookies'
+import { jwtDecode } from 'jwt-decode'
+import { toast } from 'sonner'
+import { transformComment } from '@/utils/dataTransformers'
 
 interface Props {
   post: TPostDetail
@@ -23,7 +28,7 @@ interface Props {
   className?: string
 }
 
-const SingleContentContainer: FC<Props> = ({ post, comments, className }) => {
+const SingleContentContainer: FC<Props> = ({ post, comments: ssrComments, className }) => {
   const endedAnchorRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const progressRef = useRef<HTMLButtonElement>(null)
@@ -31,7 +36,45 @@ const SingleContentContainer: FC<Props> = ({ post, comments, className }) => {
   const [isShowScrollToTop, setIsShowScrollToTop] = useState<boolean>(false)
   //
 
-  const { tags, author, content, likeCount, commentCount, liked, handle } = post
+  const { tags, author, content, likeCount, commentCount, liked, handle, id: postId } = post
+  const t = useTranslations('post')
+
+  // RTK Query for live comment updates (after creating/deleting)
+  const { data: apiComments } = useGetCommentsByPostQuery(postId)
+  const [createComment, { isLoading: isCreatingComment }] = useCreateCommentMutation()
+
+  // Use API comments if loaded, otherwise fall back to SSR comments
+  const comments: TComment[] = apiComments
+    ? apiComments.map((c) =>
+        transformComment(c as Parameters<typeof transformComment>[0])
+      )
+    : ssrComments
+
+  // Check if user is logged in
+  const getUserId = (): string | null => {
+    try {
+      const token = cookies.getAccessToken()
+      if (!token) return null
+      const decoded: { sub?: string } = jwtDecode(token)
+      return decoded?.sub || null
+    } catch {
+      return null
+    }
+  }
+
+  const handleSubmitComment = async (commentContent: string) => {
+    const userId = getUserId()
+    if (!userId) {
+      toast.error('Please log in to comment')
+      return
+    }
+    try {
+      await createComment({ post_id: postId, content: commentContent }).unwrap()
+      toast.success('Comment posted')
+    } catch {
+      toast.error('Failed to post comment')
+    }
+  }
 
   const endedAnchorEntry = useIntersectionObserver(endedAnchorRef, {
     threshold: 0,
@@ -107,14 +150,14 @@ const SingleContentContainer: FC<Props> = ({ post, comments, className }) => {
             <Avatar src={author.avatar.src} className="size-12 sm:size-24" />
           </Link>
           <div className="ms-3 flex max-w-lg flex-col gap-y-1 sm:ms-5">
-            <p className="text-xs tracking-wider text-neutral-500 uppercase">WRITTEN BY</p>
+            <p className="text-xs tracking-wider text-neutral-500 uppercase">{t('writtenBy')}</p>
             <Link className="text-lg font-semibold" href={`/author/${author.handle}`}>
               {author.name}
             </Link>
             <p className="text-sm/relaxed dark:text-neutral-300">
               {author.description}
               <Link className="ms-1 underline" href={`/author/${author.handle}`}>
-                Read more
+                {t('readMoreAboutAuthor')}
               </Link>
             </p>
             <SocialsList className="mt-2" />
@@ -123,17 +166,20 @@ const SingleContentContainer: FC<Props> = ({ post, comments, className }) => {
 
         {/* COMMENT FORM */}
         <div id="comments" className="mx-auto max-w-(--breakpoint-md) scroll-mt-20 pt-5">
-          <h3 className="text-xl font-semibold text-neutral-800 dark:text-neutral-200">Responses ({commentCount})</h3>
-          <SingleCommentForm />
+          <h3 className="text-xl font-semibold text-neutral-800 dark:text-neutral-200">{t('responses', { count: comments.length || commentCount })}</h3>
+          <SingleCommentForm
+            onSubmitComment={handleSubmitComment}
+            isLoading={isCreatingComment}
+            placeholder={getUserId() ? 'Add to discussion' : 'Log in to comment'}
+          />
         </div>
 
         {/* COMMENTS LIST */}
         <div className="mx-auto max-w-(--breakpoint-md)">
           <ul className="single-comment-lists space-y-5">
             {comments.map((comment) => (
-              <CommentCard key={comment.id} comment={comment} />
+              <CommentCard key={comment.id} comment={comment} postId={postId} />
             ))}
-            <ButtonPrimary className="mt-10 w-full">View all {commentCount} comments</ButtonPrimary>
           </ul>
           <div ref={endedAnchorRef}></div>
         </div>
@@ -156,7 +202,7 @@ const SingleContentContainer: FC<Props> = ({ post, comments, className }) => {
             onClick={() => {
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }}
-            title="Go to top"
+            title={t('goToTop')}
           >
             <HugeiconsIcon icon={ArrowUp02Icon} size={18} strokeWidth={1.75} />
           </button>
@@ -164,7 +210,7 @@ const SingleContentContainer: FC<Props> = ({ post, comments, className }) => {
           <button
             ref={progressRef}
             className={`size-8.5 items-center justify-center ${isShowScrollToTop ? 'hidden' : 'flex'}`}
-            title="Go to top"
+            title={t('goToTop')}
           >
             %
           </button>

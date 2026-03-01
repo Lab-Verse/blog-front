@@ -19,7 +19,6 @@ const nextConfig = {
     ],
   },
   images: {
-    unoptimized: true, // Use unoptimized images to avoid _next/image proxy 404s on production
     minimumCacheTTL: 2678400 * 6, // 3 months
     remotePatterns: [
       {
