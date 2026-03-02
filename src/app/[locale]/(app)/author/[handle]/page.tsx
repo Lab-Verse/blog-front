@@ -17,6 +17,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 const POSTS_PER_PAGE = 12
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+  try {
   const { handle } = await params
   const t = await getTranslations('authorProfile')
   const result = await fetchAuthorByUsername(handle)
@@ -49,6 +50,9 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
       languages: generateAlternateLanguages(`/author/${result.user.username}`),
     },
   }
+  } catch {
+    return { title: 'Author', description: '' }
+  }
 }
 
 const Page = async ({
@@ -62,7 +66,12 @@ const Page = async ({
   const { page: pageStr, 'sort-by': sortByParam } = await searchParams
   const t = await getTranslations('authorProfile')
   const ts = await getTranslations('search')
-  const result = await fetchAuthorByUsername(handle)
+  let result: Awaited<ReturnType<typeof fetchAuthorByUsername>> = null
+  try {
+    result = await fetchAuthorByUsername(handle)
+  } catch {
+    // API unreachable
+  }
 
   if (!result?.user) return notFound()
 
@@ -75,7 +84,7 @@ const Page = async ({
     limit: POSTS_PER_PAGE,
     sortBy,
     sortOrder,
-  })
+  }).catch(() => ({ posts: [] as Awaited<ReturnType<typeof fetchPostsPaginated>>['posts'], total: 0 }))
 
   const totalPages = Math.ceil(total / POSTS_PER_PAGE)
   const author = transformAuthor(result.user, result.profile, total)

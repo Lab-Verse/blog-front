@@ -38,6 +38,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+  try {
   const { handle } = await params
   const apiTag = await fetchTagBySlug(handle)
   const tTag = await getTranslations('tag')
@@ -62,6 +63,9 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
       languages: generateAlternateLanguages(`/tag/${apiTag.slug}`),
     },
   }
+  } catch {
+    return { title: 'Tag', description: '' }
+  }
 }
 
 const Page = async ({
@@ -73,24 +77,31 @@ const Page = async ({
 }) => {
   const { handle } = await params
   const { page: pageStr, 'sort-by': sortByParam } = await searchParams
-  const apiTag = await fetchTagBySlug(handle)
+  let apiTag: Awaited<ReturnType<typeof fetchTagBySlug>> = null
+  try {
+    apiTag = await fetchTagBySlug(handle)
+  } catch {
+    // API unreachable
+  }
 
   if (!apiTag) return notFound()
 
   const page = Math.max(Number(pageStr) || 1, 1)
   const { sortBy, sortOrder } = mapSortBy(sortByParam)
 
-  const [{ posts: apiPosts, total }, apiCategories, apiTags] = await Promise.all([
+  const [paginatedResult, apiCategories, apiTags] = await Promise.all([
     fetchPostsPaginated({
       tag: apiTag.id,
       page,
       limit: POSTS_PER_PAGE,
       sortBy,
       sortOrder,
-    }),
-    fetchCategories(),
-    fetchTags(),
+    }).catch(() => ({ posts: [] as Awaited<ReturnType<typeof fetchPostsPaginated>>['posts'], total: 0 })),
+    fetchCategories().catch(() => []),
+    fetchTags().catch(() => []),
   ])
+
+  const { posts: apiPosts, total } = paginatedResult
 
   const totalPages = Math.ceil(total / POSTS_PER_PAGE)
   const tag = transformTag(apiTag, apiPosts)

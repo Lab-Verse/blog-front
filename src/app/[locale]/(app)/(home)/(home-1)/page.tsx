@@ -4,7 +4,7 @@ import SectionMagazine9 from '@/components/SectionMagazine9'
 import SectionMagazine10 from '@/components/SectionMagazine10'
 import SectionCategoryBlock from '@/components/SectionCategoryBlock'
 import type { CategoryBlockData } from '@/components/SectionCategoryBlock'
-import { fetchPosts, fetchCategories, fetchCategoryPosts, buildCategoryTree } from '@/utils/serverApi'
+import { fetchPosts, fetchCategories, buildCategoryTree } from '@/utils/serverApi'
 import { transformPosts, transformCategories, transformCategoriesWithPosts } from '@/utils/dataTransformers'
 import { Divider } from '@/shared/divider'
 import JsonLd from '@/components/seo/JsonLd'
@@ -26,6 +26,26 @@ const CATEGORY_COLORS = ['blue', 'red', 'green', 'purple', 'teal', 'pink', 'indi
 // Rotating layout variants for visual diversity
 const LAYOUT_VARIANTS = ['featured', 'grid', 'list', 'spotlight', 'compact'] as const
 
+// Limit concurrent API requests to avoid overwhelming the backend
+const CONCURRENCY_LIMIT = 3
+
+/** Execute async tasks in controlled batches to avoid overwhelming the API */
+async function fetchWithConcurrencyLimit<T>(
+  tasks: (() => Promise<T>)[],
+  limit: number,
+): Promise<T[]> {
+  const results: T[] = []
+  for (let i = 0; i < tasks.length; i += limit) {
+    const batch = tasks.slice(i, i + limit)
+    const batchResults = await Promise.all(batch.map((fn) => fn()))
+    results.push(...batchResults)
+  }
+  return results
+}
+
+// Categories to exclude from the home page blocks (navigation-only categories)
+const EXCLUDED_CATEGORY_SLUGS = new Set(['more'])
+
 export async function generateMetadata() {
   const t = await getTranslations('home')
   return {
@@ -38,15 +58,14 @@ export async function generateMetadata() {
 const Page = async () => {
   const t = await getTranslations('home')
 
-  // Fetch posts + categories in parallel
+  // ── Step 1: Fetch hero/general posts + all categories in parallel ──
   const [apiPosts, apiCategories] = await Promise.all([
-    fetchPosts({ limit: 100 }),
-    fetchCategories(),
+    fetchPosts({ limit: 100 }).catch(() => []),
+    fetchCategories().catch(() => []),
   ])
 
   // Transform top-level data
   const posts = transformPosts(apiPosts)
-  const categories = transformCategories(apiCategories)
 
   // Extract unique authors from posts
   const authorMap = new Map<string, (typeof posts)[0]['author']>()
@@ -69,58 +88,77 @@ const Page = async () => {
     cover: { src: '/images/placeholder.png', alt: a.name, width: 1920, height: 1080 },
   }))
 
-  // ── Build category blocks by fetching posts per parent category ──
-  const categoryTree = buildCategoryTree(apiCategories)
-
-  // Fetch posts for every parent + its children in parallel
-  const categoryBlocksData: CategoryBlockData[] = await Promise.all(
-    categoryTree.map(async (parent, idx) => {
-      const children = parent.children ?? []
-
-      // Fetch parent posts + all children posts concurrently
-      const [parentPosts, ...childrenPosts] = await Promise.all([
-        fetchCategoryPosts(parent.id),
-        ...children.map((child) => fetchCategoryPosts(child.id)),
-      ])
-
-      const tabs = children
-        .map((child, childIdx) => ({
-          id: child.id,
-          name: child.name,
-          slug: child.slug,
-          posts: transformPosts(childrenPosts[childIdx]),
-        }))
-        .filter((tab) => tab.posts.length > 0)
-
-      // If parent itself has posts, include as fallback for "All" tab
-      const parentTransformed = transformPosts(parentPosts)
-
-      return {
-        id: parent.id,
-        name: parent.name,
-        slug: parent.slug,
-        color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
-        tabs: tabs.length > 0 ? tabs : [{ id: parent.id, name: parent.name, slug: parent.slug, posts: parentTransformed }],
-      } satisfies CategoryBlockData
-    })
+  // ── Step 2: Build category blocks — fetch per-parent via /posts?category= ──
+  // The /posts?category=ID endpoint joins through postCategories (many-to-many)
+  // and returns posts with populated category_id (pointing to child categories).
+  // This lets us group posts by child category for subcategory tabs.
+  const categoryTree = buildCategoryTree(apiCategories).filter(
+    (parent) => !EXCLUDED_CATEGORY_SLUGS.has(parent.slug),
   )
+
+  // Create a child category ID→name lookup for building tabs
+  const childCategoryMap = new Map<string, { id: string; name: string; slug: string }>()
+  for (const parent of categoryTree) {
+    for (const child of parent.children ?? []) {
+      childCategoryMap.set(child.id, { id: child.id, name: child.name, slug: child.slug })
+    }
+  }
+
+  // Fetch posts per parent category (limit 20 for lightweight payloads)
+  const parentFetchTasks = categoryTree.map(
+    (parent) => () => fetchPosts({ category: parent.id, limit: 20 }),
+  )
+
+  // Execute in controlled batches of CONCURRENCY_LIMIT
+  const parentPostResults = await fetchWithConcurrencyLimit(parentFetchTasks, CONCURRENCY_LIMIT)
+
+  const categoryBlocksData: CategoryBlockData[] = categoryTree.map((parent, idx) => {
+    const allPosts = parentPostResults[idx]
+    const children = parent.children ?? []
+
+    // Group fetched posts into child buckets by category_id
+    // (category_id points to the post's child category from WordPress import)
+    const tabs = children
+      .map((child) => ({
+        id: child.id,
+        name: child.name,
+        slug: child.slug,
+        posts: transformPosts(allPosts.filter((p) => p.category_id === child.id)),
+      }))
+      .filter((tab) => tab.posts.length > 0)
+
+    const parentTransformed = transformPosts(allPosts)
+
+    return {
+      id: parent.id,
+      name: parent.name,
+      slug: parent.slug,
+      color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
+      // Use child tabs if available; fall back to a single parent tab
+      tabs:
+        tabs.length > 0
+          ? tabs
+          : [{ id: parent.id, name: parent.name, slug: parent.slug, posts: parentTransformed }],
+    } satisfies CategoryBlockData
+  })
 
   // Filter out categories with no posts at all
-  const categoryBlocks = categoryBlocksData.filter(
-    (block) => block.tabs.some((tab) => tab.posts.length > 0)
+  const categoryBlocks = categoryBlocksData.filter((block) =>
+    block.tabs.some((tab) => tab.posts.length > 0),
   )
 
-  // Build widget data for the latest articles sidebar
-  const widgetCategoryPosts = await Promise.all(
-    apiCategories.slice(0, 7).map((cat) => fetchCategoryPosts(cat.id))
-  )
-  const widgetCategoryPostsMap = new Map<string, typeof apiPosts>()
-  apiCategories.slice(0, 7).forEach((cat, i) => {
-    widgetCategoryPostsMap.set(cat.id, widgetCategoryPosts[i])
+  // ── Step 3: Widget data — reuse already-fetched posts ──
+  const parentPostsMap = new Map<string, typeof apiPosts>()
+  categoryTree.forEach((parent, i) => {
+    parentPostsMap.set(parent.id, parentPostResults[i])
   })
+  const widgetCategoryPostsMap = new Map<string, typeof apiPosts>()
+  for (const cat of apiCategories.slice(0, 7)) {
+    widgetCategoryPostsMap.set(cat.id, parentPostsMap.get(cat.id) || [])
+  }
   const categoriesForWidgets = transformCategoriesWithPosts(
     apiCategories.slice(0, 7),
-    widgetCategoryPostsMap
+    widgetCategoryPostsMap,
   )
 
   return (

@@ -46,6 +46,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+  try {
   const { handle } = await params
   const apiPost = await fetchPostBySlug(handle)
   if (!apiPost) {
@@ -77,20 +78,33 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
       languages: generateAlternateLanguages(`/post/${apiPost.slug}`),
     },
   }
+  } catch {
+    return { title: 'Post', description: '' }
+  }
 }
 
 const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
   const { handle } = await params
-  const apiPost = await fetchPostBySlug(handle)
 
-  if (!apiPost) return notFound()
+  let _apiPost: Awaited<ReturnType<typeof fetchPostBySlug>> = null
+  try {
+    _apiPost = await fetchPostBySlug(handle)
+  } catch {
+    // API unreachable — handled below
+  }
 
+  if (!_apiPost) return notFound()
+
+  // Re-assign to const so TypeScript narrows away null for the rest of the function
+  const apiPost = _apiPost
+
+  // Wrap parallel fetches in individual .catch() to prevent cascade failures
   const [apiComments, allPosts, apiCategories, apiTags, apiAuthors] = await Promise.all([
-    fetchPostComments(apiPost.id),
-    fetchPosts({ limit: 12, sortBy: 'created_at', sortOrder: 'DESC' }),
-    fetchCategories(),
-    fetchTags(),
-    fetchAuthors(),
+    fetchPostComments(apiPost.id).catch(() => []),
+    fetchPosts({ limit: 12, sortBy: 'created_at', sortOrder: 'DESC' }).catch(() => []),
+    fetchCategories().catch(() => []),
+    fetchTags().catch(() => []),
+    fetchAuthors().catch(() => []),
   ])
 
   const post = transformPostDetail(apiPost, apiPost.tags)

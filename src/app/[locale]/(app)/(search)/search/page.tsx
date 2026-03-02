@@ -99,7 +99,14 @@ const PageSearch = async ({
     limit: POSTS_PER_PAGE,
     sortBy,
     sortOrder,
-  })
+  }).catch(() => ({
+    posts: [] as any[],
+    categories: [] as any[],
+    tags: [] as any[],
+    authors: [] as any[],
+    totalResults: 0,
+    postTotal: 0,
+  }))
 
   const posts = transformPosts(searchResults.posts)
   const categories = transformCategories(searchResults.categories)

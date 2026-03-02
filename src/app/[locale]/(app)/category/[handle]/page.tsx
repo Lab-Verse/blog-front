@@ -77,25 +77,33 @@ const Page = async ({
 }) => {
   const { handle } = await params
   const { page: pageStr, 'sort-by': sortByParam } = await searchParams
-  const apiCategory = await fetchCategoryBySlug(handle)
+
+  let apiCategory: Awaited<ReturnType<typeof fetchCategoryBySlug>> = null
+  try {
+    apiCategory = await fetchCategoryBySlug(handle)
+  } catch {
+    // API unreachable — handled below
+  }
 
   if (!apiCategory) return notFound()
 
   const page = Math.max(Number(pageStr) || 1, 1)
   const { sortBy, sortOrder } = mapSortBy(sortByParam)
 
-  const [{ posts: apiPosts, total }, apiCategories, apiTags] = await Promise.all([
+  // Wrap parallel fetches in individual try-catch to prevent cascade failures
+  const [paginatedResult, apiCategories, apiTags] = await Promise.all([
     fetchPostsPaginated({
       category: apiCategory.id,
       page,
       limit: POSTS_PER_PAGE,
       sortBy,
       sortOrder,
-    }),
-    fetchCategories(),
-    fetchTags(),
+    }).catch(() => ({ posts: [] as Awaited<ReturnType<typeof fetchPostsPaginated>>['posts'], total: 0 })),
+    fetchCategories().catch(() => []),
+    fetchTags().catch(() => []),
   ])
 
+  const { posts: apiPosts, total } = paginatedResult
   const totalPages = Math.ceil(total / POSTS_PER_PAGE)
   const category = transformCategory(apiCategory, apiPosts)
   const posts = transformPosts(apiPosts)
