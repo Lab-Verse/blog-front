@@ -4,6 +4,9 @@ import WidgetCategories from '@/components/WidgetCategories'
 import WidgetPosts from '@/components/WidgetPosts'
 import WidgetTags from '@/components/WidgetTags'
 import JsonLd from '@/components/seo/JsonLd'
+import AdInArticle from '@/components/ads/AdInArticle'
+import AdBanner from '@/components/ads/AdBanner'
+import SectionAds from '@/components/SectionAds'
 import {
   fetchPostBySlug,
   fetchPostComments,
@@ -157,15 +160,31 @@ const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
         <div className="container mt-12 flex flex-col lg:flex-row">
           <div className="w-full lg:w-3/5 xl:w-2/3 xl:pe-20">
             <SingleContentContainer post={post} comments={comments} />
+            {/* In-article ad — placed after the full article content */}
+            <AdInArticle
+              slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_IN_ARTICLE}
+              className="mt-8"
+            />
           </div>
           <div className="mt-12 w-full lg:mt-0 lg:w-2/5 lg:ps-10 xl:w-1/3 xl:ps-0">
             <div className="space-y-7 lg:sticky lg:top-7">
               <WidgetAuthors authors={widgetAuthors} />
+              {/* Sidebar rectangle ad */}
+              <AdBanner
+                slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_SIDEBAR}
+                format="rectangle"
+                responsive
+              />
               <WidgetTags tags={widgetTags} />
               <WidgetCategories categories={widgetCategories} />
               <WidgetPosts posts={widgetPosts} />
             </div>
           </div>
+        </div>
+
+        {/* Horizontal banner ad between post and related posts */}
+        <div className="container mt-12">
+          <SectionAds slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_HORIZONTAL} />
         </div>
 
         <SingleRelatedPosts relatedPosts={relatedPosts} moreFromAuthorPosts={moreFromAuthorPosts} />

@@ -5,10 +5,7 @@ import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import HeaderAuthButtons from './HeaderAuthButtons'
-import MoreDropdown from './MoreDropdown'
-
-/** Max visible nav links before overflow goes into "More" dropdown */
-const MAX_VISIBLE_NAV = 8
+import ResponsiveNav from './ResponsiveNav'
 
 interface HeaderProps {
   bottomBorder?: boolean
@@ -22,6 +19,9 @@ const Header: FC<HeaderProps> = async ({ bottomBorder, className, activeCategory
   const parentNav = await getParentNavigation()
 
   const isSubNavMode = subNav && subNav.children.length > 0
+
+  const navItems = isSubNavMode ? subNav.children : parentNav
+  const activeHref = isSubNavMode ? `/category/${activeCategory}` : undefined
 
   return (
     <div className={clsx('relative z-20', className)}>
@@ -57,31 +57,13 @@ const Header: FC<HeaderProps> = async ({ bottomBorder, className, activeCategory
             </>
           )}
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex flex-1 items-center justify-center">
-            <ul className="flex items-center gap-x-1">
-              {(() => {
-                const items = isSubNavMode ? subNav.children : parentNav
-                const visible = items.slice(0, MAX_VISIBLE_NAV)
-                const overflow = items.slice(MAX_VISIBLE_NAV)
-                return (
-                  <>
-                    {visible.map((item) => (
-                      <NavLink
-                        key={item.id}
-                        item={item}
-                        isActive={!!isSubNavMode && item.href === `/category/${activeCategory}`}
-                      />
-                    ))}
-                    {overflow.length > 0 && <MoreDropdown items={overflow} />}
-                  </>
-                )
-              })()}
-            </ul>
+          {/* Desktop Navigation — responsive overflow */}
+          <nav className="hidden lg:flex flex-1 items-center justify-center min-w-0">
+            <ResponsiveNav items={navItems} activeHref={activeHref} />
           </nav>
 
           {/* Right: Auth buttons + Hamburger */}
-          <div className="ms-auto flex items-center justify-end gap-x-1 lg:ms-0">
+          <div className="ms-auto flex items-center justify-end gap-x-1 lg:ms-0 shrink-0">
             <HeaderAuthButtons />
             <div className="ms-2.5 flex lg:hidden">
               <HamburgerBtnMenu />
@@ -90,24 +72,6 @@ const Header: FC<HeaderProps> = async ({ bottomBorder, className, activeCategory
         </div>
       </div>
     </div>
-  )
-}
-
-function NavLink({ item, isActive }: { item: TNavigationItem; isActive?: boolean }) {
-  return (
-    <li>
-      <Link
-        href={item.href || '#'}
-        className={clsx(
-          'block rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors',
-          isActive
-            ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
-            : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-200'
-        )}
-      >
-        {item.name}
-      </Link>
-    </li>
   )
 }
 

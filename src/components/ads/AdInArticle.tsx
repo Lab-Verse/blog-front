@@ -13,6 +13,9 @@ declare global {
   }
 }
 
+/** Reserved height to prevent CLS while the in-article ad is loading */
+const IN_ARTICLE_MIN_HEIGHT = 120
+
 const AdInArticle: React.FC<AdInArticleProps> = ({ className = '', slot = '' }) => {
   const isAdPushed = useRef(false)
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID
@@ -32,7 +35,8 @@ const AdInArticle: React.FC<AdInArticleProps> = ({ className = '', slot = '' }) 
   if (!clientId || clientId === 'ca-pub-XXXXXXXXXXXXXXXX') {
     return (
       <div
-        className={`my-6 flex items-center justify-center rounded-xl bg-neutral-50 py-8 dark:bg-neutral-800/50 ${className}`}
+        className={`my-6 flex items-center justify-center rounded-xl bg-neutral-50 dark:bg-neutral-800/50 ${className}`}
+        style={{ minHeight: IN_ARTICLE_MIN_HEIGHT }}
       >
         <span className="text-xs text-neutral-400">In-Article Ad</span>
       </div>
@@ -40,7 +44,10 @@ const AdInArticle: React.FC<AdInArticleProps> = ({ className = '', slot = '' }) 
   }
 
   return (
-    <div className={`my-6 ${className}`}>
+    <div
+      className={`my-6 overflow-hidden ${className}`}
+      style={{ minHeight: IN_ARTICLE_MIN_HEIGHT }}
+    >
       <ins
         className="adsbygoogle"
         style={{ display: 'block', textAlign: 'center' }}

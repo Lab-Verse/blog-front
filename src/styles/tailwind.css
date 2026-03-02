@@ -62,6 +62,12 @@
     font-family: var(--font-sans);
   }
 
+  /* Prevent horizontal scrollbar on any page */
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
   *,
   ::after,
   ::before,

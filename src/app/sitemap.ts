@@ -3,17 +3,40 @@ import { MetadataRoute } from 'next'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 
+// Non-default locales (English is default and needs no prefix with localePrefix: 'as-needed')
+const NON_DEFAULT_LOCALES = ['ur', 'ar', 'ko', 'zh', 'es']
+
+/**
+ * Build hreflang alternates for each sitemap entry.
+ * English uses no prefix; all other locales use /{locale}{path}.
+ */
+function buildAlternates(path: string): { languages: Record<string, string> } {
+  const languages: Record<string, string> = {
+    en: `${SITE_URL}${path}`,
+    'x-default': `${SITE_URL}${path}`,
+  }
+  for (const locale of NON_DEFAULT_LOCALES) {
+    languages[locale] = `${SITE_URL}/${locale}${path}`
+  }
+  return { languages }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = []
 
-  // Static pages
+  // Static pages — include all locales via alternates
   entries.push(
-    { url: SITE_URL, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
-    { url: `${SITE_URL}/search`, changeFrequency: 'weekly', priority: 0.5 },
-    { url: `${SITE_URL}/login`, changeFrequency: 'monthly', priority: 0.3 },
-    { url: `${SITE_URL}/signup`, changeFrequency: 'monthly', priority: 0.3 },
-    { url: `${SITE_URL}/about`, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${SITE_URL}/contact`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: SITE_URL, lastModified: new Date(), changeFrequency: 'daily', priority: 1, alternates: buildAlternates('/') },
+    { url: `${SITE_URL}/search`, changeFrequency: 'weekly', priority: 0.5, alternates: buildAlternates('/search') },
+    { url: `${SITE_URL}/login`, changeFrequency: 'monthly', priority: 0.3, alternates: buildAlternates('/login') },
+    { url: `${SITE_URL}/signup`, changeFrequency: 'monthly', priority: 0.3, alternates: buildAlternates('/signup') },
+    { url: `${SITE_URL}/about`, changeFrequency: 'monthly', priority: 0.5, alternates: buildAlternates('/about') },
+    { url: `${SITE_URL}/contact`, changeFrequency: 'monthly', priority: 0.5, alternates: buildAlternates('/contact') },
+    { url: `${SITE_URL}/privacy-policy`, changeFrequency: 'yearly', priority: 0.3, alternates: buildAlternates('/privacy-policy') },
+    { url: `${SITE_URL}/terms-of-service`, changeFrequency: 'yearly', priority: 0.3, alternates: buildAlternates('/terms-of-service') },
+    { url: `${SITE_URL}/cookie-policy`, changeFrequency: 'yearly', priority: 0.3, alternates: buildAlternates('/cookie-policy') },
+    { url: `${SITE_URL}/e-magazine`, changeFrequency: 'weekly', priority: 0.6, alternates: buildAlternates('/e-magazine') },
+    { url: `${SITE_URL}/leadership`, changeFrequency: 'weekly', priority: 0.6, alternates: buildAlternates('/leadership') },
   )
 
   // Posts — paginate in batches of 100 (backend caps at 100 per request)
@@ -28,6 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           lastModified: p.updated_at ? new Date(p.updated_at) : new Date(p.created_at),
           changeFrequency: 'weekly',
           priority: 0.8,
+          alternates: buildAlternates(`/post/${p.slug}`),
         })
       }
       hasMore = page * 100 < total
@@ -47,6 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${SITE_URL}/category/${c.slug}`,
         changeFrequency: 'weekly',
         priority: 0.7,
+        alternates: buildAlternates(`/category/${c.slug}`),
       })
     }
   } catch {
@@ -61,6 +86,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${SITE_URL}/tag/${t.slug}`,
         changeFrequency: 'weekly',
         priority: 0.6,
+        alternates: buildAlternates(`/tag/${t.slug}`),
       })
     }
   } catch {
@@ -75,6 +101,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${SITE_URL}/author/${a.username}`,
         changeFrequency: 'weekly',
         priority: 0.6,
+        alternates: buildAlternates(`/author/${a.username}`),
       })
     }
   } catch {

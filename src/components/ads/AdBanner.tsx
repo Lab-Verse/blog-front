@@ -15,6 +15,15 @@ declare global {
   }
 }
 
+/** Minimum heights per format to prevent Cumulative Layout Shift (CLS) */
+const FORMAT_MIN_HEIGHT: Record<string, number> = {
+  auto: 90,
+  fluid: 100,
+  rectangle: 250,
+  vertical: 600,
+  horizontal: 90,
+}
+
 const AdBanner: React.FC<AdBannerProps> = ({
   className = '',
   slot = '',
@@ -24,6 +33,7 @@ const AdBanner: React.FC<AdBannerProps> = ({
   const adRef = useRef<HTMLModElement>(null)
   const isAdPushed = useRef(false)
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID
+  const minHeight = FORMAT_MIN_HEIGHT[format] ?? 90
 
   useEffect(() => {
     if (!clientId || clientId === 'ca-pub-XXXXXXXXXXXXXXXX') return
@@ -41,7 +51,7 @@ const AdBanner: React.FC<AdBannerProps> = ({
     return (
       <div
         className={`mx-auto flex items-center justify-center rounded-3xl bg-neutral-100 dark:bg-neutral-800 ${className}`}
-        style={{ minHeight: 90 }}
+        style={{ minHeight }}
       >
         <span className="text-xs text-neutral-400">Ad Space</span>
       </div>
@@ -49,11 +59,11 @@ const AdBanner: React.FC<AdBannerProps> = ({
   }
 
   return (
-    <div className={className}>
+    <div className={className} style={{ minHeight, overflow: 'hidden' }}>
       <ins
         ref={adRef}
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ display: 'block', minHeight }}
         data-ad-client={clientId}
         data-ad-slot={slot}
         data-ad-format={format}

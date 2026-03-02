@@ -11,6 +11,7 @@ import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 import PageHeader from '../page-header'
+import SectionAds from '@/components/SectionAds'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 const POSTS_PER_PAGE = 12
@@ -97,6 +98,11 @@ const Page = async ({
   return (
     <div className={`page-author`}>
       <PageHeader author={author} />
+
+      {/* Horizontal banner ad below author header */}
+      <div className="container mt-8">
+        <SectionAds slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_HORIZONTAL} />
+      </div>
 
       <div className="container pt-16 lg:pt-20">
         {/* TABS FILTER */}

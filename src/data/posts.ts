@@ -1,7 +1,7 @@
 /**
- * Post type definitions used by theme UI components.
- * All data is fetched from the real API via @/utils/serverApi
- * and transformed via @/utils/dataTransformers.
+ * Type definitions for theme post shapes.
+ * These types match the return shapes of transformPost / transformPostDetail
+ * from @/utils/dataTransformers.
  */
 
 export interface TPostImage {
@@ -33,6 +33,9 @@ export interface TPostTag {
   color: string
 }
 
+export type TPostType = 'standard' | 'video' | 'gallery' | 'audio'
+
+/** Card-level post (no content) — returned by transformPost / transformPosts */
 export interface TPost {
   id: string
   title: string
@@ -47,7 +50,7 @@ export interface TPost {
   bookmarked: boolean
   likeCount: number
   liked: boolean
-  postType: 'standard' | 'audio' | 'video' | 'gallery'
+  postType: TPostType
   status: string
   author: TPostAuthor
   categories: TPostCategory[]
@@ -56,17 +59,23 @@ export interface TPost {
   galleryImgs?: string[]
 }
 
+/** Full post detail (includes content, tags) — returned by transformPostDetail */
 export interface TPostDetail extends TPost {
   content: string
   tags: TPostTag[]
-  author: TPostAuthor & { description?: string }
+  galleryImgs: string[]
+  videoUrl: string
+  audioUrl: string
 }
 
+/** Comment on a post — matches transformComment output */
 export interface TComment {
   id: string
-  author: TPostAuthor
-  date: string
   content: string
+  date: string
   like: { count: number; isLiked: boolean }
-  repliesCount?: number
+  repliesCount: number
+  author: TPostAuthor
+  parentId?: string | null
+  children?: TComment[]
 }

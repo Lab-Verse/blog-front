@@ -1,28 +1,30 @@
 import BackgroundSection from '@/components/BackgroundSection'
 import SectionAds from '@/components/SectionAds'
-import SectionMagazine2 from '@/components/SectionMagazine2'
-import SectionMagazine8 from '@/components/SectionMagazine8'
 import SectionMagazine9 from '@/components/SectionMagazine9'
 import SectionMagazine10 from '@/components/SectionMagazine10'
-import { fetchPosts, fetchCategories, fetchCategoryPosts, fetchAuthors, buildCategoryTree } from '@/utils/serverApi'
-import { transformPosts, transformCategories, transformAuthors, transformCategoriesWithPosts } from '@/utils/dataTransformers'
+import SectionCategoryBlock from '@/components/SectionCategoryBlock'
+import type { CategoryBlockData } from '@/components/SectionCategoryBlock'
+import { fetchPosts, fetchCategories, fetchCategoryPosts, buildCategoryTree } from '@/utils/serverApi'
+import { transformPosts, transformCategories, transformCategoriesWithPosts } from '@/utils/dataTransformers'
 import { Divider } from '@/shared/divider'
-import { Metadata } from 'next'
 import JsonLd from '@/components/seo/JsonLd'
 import nextDynamic from 'next/dynamic'
 import { getTranslations } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 
-// Dynamic imports for below-the-fold sections (loaded on demand)
+// Dynamic imports for below-the-fold sections
 const SectionBecomeAnAuthor = nextDynamic(() => import('@/components/SectionBecomeAnAuthor'))
 const SectionPostsWithWidgets = nextDynamic(() => import('@/components/SectionPostsWithWidgets'))
 const SectionSliderNewAuthors = nextDynamic(() => import('@/components/SectionSliderNewAuthors'))
-const SectionSliderPosts = nextDynamic(() => import('@/components/SectionSliderPosts'))
 
 export const revalidate = 60 // ISR: revalidate every 60 seconds
 
-const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
+
+// Rotating color palette for category blocks
+const CATEGORY_COLORS = ['blue', 'red', 'green', 'purple', 'teal', 'pink', 'indigo', 'yellow']
+// Rotating layout variants for visual diversity
+const LAYOUT_VARIANTS = ['featured', 'grid', 'list', 'spotlight', 'compact'] as const
 
 export async function generateMetadata() {
   const t = await getTranslations('home')
@@ -36,13 +38,13 @@ export async function generateMetadata() {
 const Page = async () => {
   const t = await getTranslations('home')
 
-  // Fetch data from API — limit to what the page actually uses
+  // Fetch data in parallel
   const [apiPosts, apiCategories] = await Promise.all([
     fetchPosts({ limit: 30 }),
     fetchCategories(),
   ])
 
-  // Transform API data to theme format
+  // Transform top-level data
   const posts = transformPosts(apiPosts)
   const categories = transformCategories(apiCategories)
 
@@ -67,23 +69,48 @@ const Page = async () => {
     cover: { src: '/images/placeholder.png', alt: a.name, width: 1920, height: 1080 },
   }))
 
-  // Fetch posts by specific categories for the hero section
+  // ── Build category blocks with subcategory tabs ─────────────────────
   const categoryTree = buildCategoryTree(apiCategories)
-  const categoriesWithPosts: Array<{
-    name: string
-    posts: typeof posts
-  }> = []
 
-  // Get up to 3 categories with their posts for sections
-  for (const cat of apiCategories.slice(0, 3)) {
-    const catPosts = await fetchCategoryPosts(cat.id)
-    categoriesWithPosts.push({
-      name: cat.name,
-      posts: transformPosts(catPosts),
+  // Fetch posts for every parent + its children in parallel
+  const categoryBlocksData: CategoryBlockData[] = await Promise.all(
+    categoryTree.map(async (parent, idx) => {
+      const children = parent.children ?? []
+
+      // Fetch parent posts + all children posts concurrently
+      const [parentPosts, ...childrenPosts] = await Promise.all([
+        fetchCategoryPosts(parent.id),
+        ...children.map((child) => fetchCategoryPosts(child.id)),
+      ])
+
+      const tabs = children
+        .map((child, childIdx) => ({
+          id: child.id,
+          name: child.name,
+          slug: child.slug,
+          posts: transformPosts(childrenPosts[childIdx]),
+        }))
+        .filter((tab) => tab.posts.length > 0)
+
+      // If parent itself has posts, include as fallback for "All" tab
+      const parentTransformed = transformPosts(parentPosts)
+
+      return {
+        id: parent.id,
+        name: parent.name,
+        slug: parent.slug,
+        color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
+        tabs: tabs.length > 0 ? tabs : [{ id: parent.id, name: parent.name, slug: parent.slug, posts: parentTransformed }],
+      } satisfies CategoryBlockData
     })
-  }
+  )
 
-  // Build categories with posts for widgets
+  // Filter out categories with no posts at all
+  const categoryBlocks = categoryBlocksData.filter(
+    (block) => block.tabs.some((tab) => tab.posts.length > 0)
+  )
+
+  // Build widget data for the latest articles sidebar
   const categoryPostsMap = new Map<string, typeof apiPosts>()
   for (const cat of apiCategories.slice(0, 7)) {
     const catPosts = await fetchCategoryPosts(cat.id)
@@ -95,8 +122,8 @@ const Page = async () => {
   )
 
   return (
-    <div className="relative container space-y-28 pb-28 lg:space-y-32 lg:pb-32">
-      {/* JSON-LD Structured Data for Homepage */}
+    <div className="relative container space-y-20 pb-28 lg:space-y-28 lg:pb-32">
+      {/* JSON-LD Structured Data */}
       <JsonLd
         data={{
           '@context': 'https://schema.org',
@@ -111,28 +138,43 @@ const Page = async () => {
         }}
       />
 
-      {/* Hero Grid Section - Country/Category based news */}
+      {/* ═══ Hero Section ═══ */}
       <SectionMagazine10 posts={posts.slice(0, 8)} />
 
-      {/* POPULAR News */}
+      {/* ═══ Popular News ═══ */}
       <SectionMagazine9
         heading={t('popularNewsHeading')}
         subHeading={t('popularNewsSubHeading')}
         posts={posts.slice(0, 18)}
       />
 
-      {/* Latest Audio NEWS */}
-      <SectionMagazine8
-        posts={posts.filter((p) => p.postType === 'audio').slice(0, 6).length > 0
-          ? posts.filter((p) => p.postType === 'audio').slice(0, 6)
-          : posts.slice(0, 6)}
-        heading={t('latestAudioHeading')}
-        dimHeading={t('latestAudioDimHeading')}
-      />
-
       <SectionAds />
 
-      {/* Top Elite Authors */}
+      {/* ═══ Category Blocks with Subcategory Tabs ═══ */}
+      {categoryBlocks.map((block, idx) => (
+        <div key={block.id}>
+          {/* Alternate: every other block gets a subtle background */}
+          {idx % 2 === 1 ? (
+            <div className="relative -mx-4 rounded-3xl px-4 py-10 lg:-mx-8 lg:px-8 lg:py-14">
+              <BackgroundSection />
+              <SectionCategoryBlock
+                category={block}
+                variant={LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]}
+              />
+            </div>
+          ) : (
+            <SectionCategoryBlock
+              category={block}
+              variant={LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]}
+            />
+          )}
+
+          {/* Insert ads every 3 blocks */}
+          {(idx + 1) % 3 === 0 && idx < categoryBlocks.length - 1 && <SectionAds className="mt-20 lg:mt-28" />}
+        </div>
+      ))}
+
+      {/* ═══ Top Authors ═══ */}
       <div className="relative py-16 lg:py-20">
         <BackgroundSection />
         <SectionSliderNewAuthors
@@ -142,28 +184,11 @@ const Page = async () => {
         />
       </div>
 
-      {/* Travel Section */}
-      <div className="relative py-16 lg:py-20">
-        <BackgroundSection />
-        <SectionSliderPosts
-          postCardName="card10V2"
-          heading={t('travelHeading')}
-          subHeading={t('travelSubHeading')}
-          posts={posts.slice(0, 8)}
-        />
-      </div>
-
-      {/* Sports / World News Section */}
-      <SectionMagazine2
-        heading={t('worldNewsHeading')}
-        subHeading={t('worldNewsSubHeading')}
-        posts={posts.slice(0, 7)}
-      />
-
       <Divider />
 
       <SectionBecomeAnAuthor />
 
+      {/* ═══ Latest Articles with Sidebar Widgets ═══ */}
       <SectionPostsWithWidgets
         heading={t('latestArticlesHeading')}
         subHeading={t('latestArticlesSubHeading')}

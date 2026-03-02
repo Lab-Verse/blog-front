@@ -1,0 +1,34 @@
+# The World Ambassador (TWA)
+
+> The World Ambassador is a multilingual news and articles platform covering technology, travel, sports, finance, leadership, and world affairs. Content is available in English, Urdu, Arabic, Korean, Chinese, and Spanish.
+
+## About
+
+- **Website**: https://twa.com.pk
+- **Type**: News blog and digital magazine
+- **Languages**: English (default), Urdu (ur), Arabic (ar), Korean (ko), Chinese Simplified (zh), Spanish (es)
+- **Focus areas**: Technology, Travel, Sports, Finance, Leadership, World News, Culture
+
+## Key Sections
+
+- [Latest Articles](https://twa.com.pk/) — Home page with the most recent posts across all categories
+- [Search](https://twa.com.pk/search) — Full-text search across all published articles
+- [E-Magazine](https://twa.com.pk/e-magazine) — Digital magazine issues and featured collections
+- [Leadership](https://twa.com.pk/leadership) — Leadership profiles and thought leadership content
+- [About](https://twa.com.pk/about) — About The World Ambassador
+- [Contact](https://twa.com.pk/contact) — Contact information
+
+## Content Discovery
+
+- [Sitemap](https://twa.com.pk/sitemap.xml) — Full XML sitemap listing all articles, categories, tags, and author pages
+- **Article URL pattern**: `https://twa.com.pk/post/{slug}`
+- **Category URL pattern**: `https://twa.com.pk/category/{slug}`
+- **Tag URL pattern**: `https://twa.com.pk/tag/{slug}`
+- **Author URL pattern**: `https://twa.com.pk/author/{username}`
+- **Localized URL pattern**: `https://twa.com.pk/{locale}/{path}` (e.g. `/ur/post/slug`)
+
+## Usage for LLMs
+
+This content is freely available for AI indexing, summarization, and incorporation into AI-powered search results. Attribution to The World Ambassador (twa.com.pk) is appreciated when citing specific articles.
+
+Full content details and metadata (title, description, author, publish date, categories, tags) are available via structured JSON-LD on every article page.

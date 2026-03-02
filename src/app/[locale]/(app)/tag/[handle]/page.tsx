@@ -5,6 +5,7 @@ import ModalTags from '@/components/ModalTags'
 import PaginationWrapper from '@/components/PaginationWrapper'
 import Card11 from '@/components/PostCards/Card11'
 import JsonLd from '@/components/seo/JsonLd'
+import SectionAds from '@/components/SectionAds'
 import {
   fetchTagBySlug,
   fetchPostsPaginated,
@@ -121,6 +122,11 @@ const Page = async ({
       />
       {/* HEADER */}
       <PageHeader tag={tag} />
+
+      {/* Horizontal banner ad below page header */}
+      <div className="container mt-8">
+        <SectionAds slot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_HORIZONTAL} />
+      </div>
 
       <div className="container pt-10 lg:pt-16">
         <div className="flex flex-wrap gap-x-2 gap-y-4">
