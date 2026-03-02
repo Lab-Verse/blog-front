@@ -4,7 +4,7 @@ import Input from '@/shared/Input'
 import Logo from '@/shared/Logo'
 import { Metadata } from 'next'
 import { Link } from '@/i18n/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { JSX } from 'react'
 
 import LoginForm from '@/components/LoginForm'
@@ -17,7 +17,9 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic'
 
-const Page = async () => {
+const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('auth')
   const tc = await getTranslations('common')
   

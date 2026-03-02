@@ -25,7 +25,7 @@ import {
   transformComments,
 } from '@/utils/dataTransformers'
 import { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 import { notFound } from 'next/navigation'
 import SingleContentContainer from '../SingleContentContainer'
@@ -45,9 +45,10 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; handle: string }> }): Promise<Metadata> {
   try {
-  const { handle } = await params
+  const { locale, handle } = await params
+  setRequestLocale(locale)
   const apiPost = await fetchPostBySlug(handle)
   if (!apiPost) {
     const t = await getTranslations('post')
@@ -83,8 +84,9 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   }
 }
 
-const Page = async ({ params }: { params: Promise<{ handle: string }> }) => {
-  const { handle } = await params
+const Page = async ({ params }: { params: Promise<{ locale: string; handle: string }> }) => {
+  const { locale, handle } = await params
+  setRequestLocale(locale)
 
   let _apiPost: Awaited<ReturnType<typeof fetchPostBySlug>> = null
   try {

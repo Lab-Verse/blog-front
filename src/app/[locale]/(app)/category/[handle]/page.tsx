@@ -20,7 +20,7 @@ import {
 import { mapSortBy } from '@/utils/sortMapping'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 import PageHeader from '../page-header'
 
@@ -37,9 +37,10 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; handle: string }> }): Promise<Metadata> {
   try {
-    const { handle } = await params
+    const { locale, handle } = await params
+    setRequestLocale(locale)
     const apiCategory = await fetchCategoryBySlug(handle)
     const tCat = await getTranslations('category')
 
@@ -72,10 +73,11 @@ const Page = async ({
   params,
   searchParams,
 }: {
-  params: Promise<{ handle: string }>
+  params: Promise<{ locale: string; handle: string }>
   searchParams: Promise<{ page?: string; 'sort-by'?: string }>
 }) => {
-  const { handle } = await params
+  const { locale, handle } = await params
+  setRequestLocale(locale)
   const { page: pageStr, 'sort-by': sortByParam } = await searchParams
 
   let apiCategory: Awaited<ReturnType<typeof fetchCategoryBySlug>> = null

@@ -6,14 +6,16 @@ import Input from '@/shared/Input'
 import SocialsList from '@/shared/SocialsList'
 import Textarea from '@/shared/Textarea'
 import { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
 const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || `contact@${process.env.NEXT_PUBLIC_SITE_DOMAIN || 'watt.com.pk'}`
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
 
-export async function generateMetadata() {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('contact')
   return {
     title: t('title'),
@@ -25,7 +27,9 @@ export async function generateMetadata() {
   }
 }
 
-const PageContact = async () => {
+const PageContact = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('contact')
 
   const info = [

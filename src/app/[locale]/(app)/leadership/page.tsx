@@ -2,12 +2,14 @@ import JsonLd from '@/components/seo/JsonLd'
 import LeadershipCard from '@/components/leadership/LeadershipCard'
 import { fetchLeadershipMembers } from '@/utils/serverApi'
 import { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('leadership')
   return {
     title: t('metaTitle'),
@@ -30,7 +32,9 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-const LeadershipPage = async () => {
+const LeadershipPage = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params
+  setRequestLocale(locale)
   const members = await fetchLeadershipMembers()
   const t = await getTranslations('leadership')
 

@@ -2,7 +2,7 @@ import PaginationWrapper from '@/components/PaginationWrapper'
 import JsonLd from '@/components/seo/JsonLd'
 import { fetchEMagazines } from '@/utils/serverApi'
 import { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 import { Link } from '@/i18n/navigation'
 import Image from 'next/image'
@@ -10,7 +10,9 @@ import Image from 'next/image'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 const ISSUES_PER_PAGE = 12
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('eMagazine')
   return {
     title: t('metaTitle'),
@@ -34,10 +36,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const Page = async ({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ page?: string }>
 }) => {
+  const { locale } = await params
+  setRequestLocale(locale)
   const { page: pageStr } = await searchParams
   const page = Math.max(Number(pageStr) || 1, 1)
 

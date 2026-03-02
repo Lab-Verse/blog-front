@@ -1,7 +1,7 @@
 import { fetchEMagazines, fetchEMagazineBySlug } from '@/utils/serverApi'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 import JsonLd from '@/components/seo/JsonLd'
 import { Link } from '@/i18n/navigation'
@@ -21,9 +21,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ locale: string; slug: string }>
 }): Promise<Metadata> {
-  const { slug } = await params
+  const { locale, slug } = await params
+  setRequestLocale(locale)
   const magazine = await fetchEMagazineBySlug(slug)
   const t = await getTranslations('eMagazine')
 
@@ -64,9 +65,10 @@ export async function generateMetadata({
 const Page = async ({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ locale: string; slug: string }>
 }) => {
-  const { slug } = await params
+  const { locale, slug } = await params
+  setRequestLocale(locale)
   const magazine = await fetchEMagazineBySlug(slug)
 
   if (!magazine) return notFound()

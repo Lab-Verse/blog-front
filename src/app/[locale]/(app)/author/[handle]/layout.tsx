@@ -5,11 +5,12 @@ import SectionSliderNewAuthors from '@/components/SectionSliderNewAuthors'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
 import { fetchAuthors, fetchCategories } from '@/utils/serverApi'
 import ButtonPrimary from '@/shared/ButtonPrimary'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
+  params: Promise<{ locale: string }>
 }
 
 // Default cover/avatar images for authors missing them
@@ -27,7 +28,9 @@ const defaultAvatar = {
   height: 128,
 }
 
-const Layout: React.FC<Props> = async ({ children }) => {
+const Layout = async ({ children, params }: Props) => {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('search')
   const tc = await getTranslations('common')
 

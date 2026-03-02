@@ -1,12 +1,14 @@
 import DashboardTagsManager from './DashboardTagsManager'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
 export const metadata = {
     title: 'Dashboard - Tags',
     description: 'Manage your blog tags',
 }
 
-const Page = async () => {
+const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
+    const { locale } = await params
+    setRequestLocale(locale)
     const t = await getTranslations('tags')
 
     return (

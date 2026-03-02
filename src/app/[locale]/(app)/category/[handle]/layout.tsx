@@ -3,7 +3,7 @@ import BackgroundSection from '@/components/BackgroundSection'
 import SectionSliderNewAuthors from '@/components/SectionSliderNewAuthors'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
 import { fetchAuthors } from '@/utils/serverApi'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 const defaultAvatar = {
@@ -15,11 +15,12 @@ const defaultAvatar = {
 
 interface Props {
   children: ReactNode
-  params: Promise<{ handle: string }>
+  params: Promise<{ locale: string; handle: string }>
 }
 
 const CategoryHandleLayout = async ({ children, params }: Props) => {
-  const { handle } = await params
+  const { locale, handle } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('search')
 
   let authors: any[] = []

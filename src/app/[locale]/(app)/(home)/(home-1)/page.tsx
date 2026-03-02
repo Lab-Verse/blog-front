@@ -9,7 +9,7 @@ import { transformPosts, transformCategories, transformCategoriesWithPosts } fro
 import { Divider } from '@/shared/divider'
 import JsonLd from '@/components/seo/JsonLd'
 import nextDynamic from 'next/dynamic'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 
 // Dynamic imports for below-the-fold sections
@@ -46,7 +46,9 @@ async function fetchWithConcurrencyLimit<T>(
 // Categories to exclude from the home page blocks (navigation-only categories)
 const EXCLUDED_CATEGORY_SLUGS = new Set(['more'])
 
-export async function generateMetadata() {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('home')
   return {
     title: t('metaTitle'),
@@ -55,7 +57,9 @@ export async function generateMetadata() {
   }
 }
 
-const Page = async () => {
+const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('home')
 
   // ── Step 1: Fetch hero/general posts + all categories in parallel ──

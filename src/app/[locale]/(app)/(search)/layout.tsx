@@ -5,7 +5,7 @@ import SectionSliderNewAuthors from '@/components/SectionSliderNewAuthors'
 import SectionSubscribe2 from '@/components/SectionSubscribe2'
 import { fetchAuthors, fetchCategories } from '@/utils/serverApi'
 import ButtonSecondary from '@/shared/ButtonSecondary'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 const defaultAvatar = {
@@ -17,9 +17,12 @@ const defaultAvatar = {
 
 interface Props {
   children: ReactNode
+  params: Promise<{ locale: string }>
 }
 
-const Layout: React.FC<Props> = async ({ children }) => {
+const Layout = async ({ children, params }: Props) => {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('search')
   const tc = await getTranslations('common')
 

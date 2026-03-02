@@ -5,14 +5,16 @@ import SectionStatistic from './SectionStatistic'
 import LeadershipCard from '@/components/leadership/LeadershipCard'
 import { fetchLeadershipMembers } from '@/utils/serverApi'
 import { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 import { Link } from '@/i18n/navigation'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
 
-export async function generateMetadata() {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('about')
   return {
     title: t('title'),
@@ -24,7 +26,9 @@ export async function generateMetadata() {
   }
 }
 
-const PageAbout = async () => {
+const PageAbout = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('about')
   const tLeadership = await getTranslations('leadership')
   const members = await fetchLeadershipMembers()

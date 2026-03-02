@@ -8,7 +8,7 @@ import { mapSortBy } from '@/utils/sortMapping'
 import { AllBookmarkIcon, FolderFavouriteIcon, LicenseIcon } from '@hugeicons/core-free-icons'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 import PageHeader from '../page-header'
 import SectionAds from '@/components/SectionAds'
@@ -16,9 +16,10 @@ import SectionAds from '@/components/SectionAds'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 const POSTS_PER_PAGE = 12
 
-export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; handle: string }> }): Promise<Metadata> {
   try {
-  const { handle } = await params
+  const { locale, handle } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('authorProfile')
   const result = await fetchAuthorByUsername(handle)
   if (!result?.user) {
@@ -59,10 +60,11 @@ const Page = async ({
   params,
   searchParams,
 }: {
-  params: Promise<{ handle: string }>
+  params: Promise<{ locale: string; handle: string }>
   searchParams: Promise<{ page?: string; 'sort-by'?: string }>
 }) => {
-  const { handle } = await params
+  const { locale, handle } = await params
+  setRequestLocale(locale)
   const { page: pageStr, 'sort-by': sortByParam } = await searchParams
   const t = await getTranslations('authorProfile')
   const ts = await getTranslations('search')

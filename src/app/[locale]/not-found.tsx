@@ -1,7 +1,9 @@
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, getLocale, setRequestLocale } from 'next-intl/server'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 
 export default async function NotFound() {
+  const locale = await getLocale()
+  setRequestLocale(locale)
   const t = await getTranslations('errors')
 
   return (

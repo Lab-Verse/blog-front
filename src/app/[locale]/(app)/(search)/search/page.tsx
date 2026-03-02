@@ -17,7 +17,7 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { Metadata } from 'next'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
@@ -25,7 +25,9 @@ const POSTS_PER_PAGE = 12
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 
-export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: SearchParams }): Promise<Metadata> {
+  const { locale } = await params
+  setRequestLocale(locale)
   const { query } = await searchParams
   const t = await getTranslations('search')
 
@@ -44,9 +46,11 @@ const PageSearch = async ({
   params,
   searchParams,
 }: {
-  params: Promise<{ query: string }>
+  params: Promise<{ locale: string }>
   searchParams: SearchParams
 }) => {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('search')
 
   const sortByOptions = [

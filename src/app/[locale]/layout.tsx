@@ -4,6 +4,7 @@ import { Be_Vietnam_Pro, Noto_Nastaliq_Urdu, Noto_Naskh_Arabic, Noto_Sans_SC, No
 import Script from 'next/script'
 import { Toaster } from 'sonner'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
+import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing, rtlLocales, type Locale } from '@/i18n/routing'
 import ThemeProvider from '../theme-provider'
@@ -77,12 +78,17 @@ const OG_LOCALE_MAP: Record<string, string> = {
   es: 'es_ES',
 }
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ locale: string }>
 }): Promise<Metadata> {
   const { locale } = await params
+  setRequestLocale(locale)
   const ogLocale = OG_LOCALE_MAP[locale] ?? 'en_US'
 
   return {
@@ -166,6 +172,8 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) {
     notFound()
   }
+
+  setRequestLocale(locale)
 
   const dir = rtlLocales.includes(locale as Locale) ? 'rtl' : 'ltr'
   const fontVarClass = getFontClassName(locale)
