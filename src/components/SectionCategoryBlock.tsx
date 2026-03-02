@@ -33,6 +33,8 @@ interface Props {
   category: CategoryBlockData
   /** Visual layout variant for design diversity */
   variant?: 'featured' | 'grid' | 'list' | 'spotlight' | 'compact'
+  /** Section index for editorial numbering (1-based) */
+  sectionIndex?: number
   className?: string
 }
 
@@ -56,7 +58,7 @@ function getColorScheme(color: string) {
 // Main Component
 // ═══════════════════════════════════════════════════════════════════════
 
-const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', className }) => {
+const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIndex, className }) => {
   // Build "All" tab: prefer allPosts (includes orphaned parent-level posts),
   // fallback to flatMapping child tabs
   const aggregatedPosts = category.allPosts && category.allPosts.length > 0
@@ -79,23 +81,35 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', className
 
   return (
     <section className={clsx('section-category-block', className)}>
-      {/* Header with tabs */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+      {/* Header with accent underline */}
+      <div className="mb-8">
+        <div className="flex items-end justify-between gap-4">
+          <div className="flex items-center gap-3">
+            {sectionIndex != null && (
+              <span className={clsx('text-4xl font-black opacity-15 lg:text-5xl', colors.text)}>
+                {String(sectionIndex).padStart(2, '0')}
+              </span>
+            )}
+            <Link
+              href={`/category/${category.slug}`}
+              className={clsx('text-2xl font-bold hover:underline lg:text-3xl', colors.text)}
+            >
+              {category.name}
+            </Link>
+          </div>
           <Link
             href={`/category/${category.slug}`}
-            className={clsx('text-2xl font-bold hover:underline lg:text-3xl', colors.text)}
+            className="group hidden items-center gap-1 text-sm font-medium text-neutral-500 hover:text-neutral-900 sm:flex dark:hover:text-white"
           >
-            {category.name}
+            View all
+            <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
           </Link>
         </div>
-        <Link
-          href={`/category/${category.slug}`}
-          className="group hidden items-center gap-1 text-sm font-medium text-neutral-500 hover:text-neutral-900 sm:flex dark:hover:text-white"
-        >
-          View all
-          <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
-        </Link>
+        {/* Accent underline */}
+        <div className="mt-3 flex items-center gap-2">
+          <div className={clsx('h-1 w-12 rounded-full', colors.pill)} />
+          <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
+        </div>
       </div>
 
       {/* Subcategory tabs */}

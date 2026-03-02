@@ -2,6 +2,7 @@ import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
 import Header2 from '@/components/Header/Header2'
 import TopBar from '@/components/Header/TopBar'
+import ReadingProgressBar from '@/components/ReadingProgressBar'
 import AsideSidebarNavigation from '@/components/aside-sidebar-navigation'
 import Banner from '@/shared/banner'
 import React, { ReactNode } from 'react'
@@ -24,6 +25,9 @@ const ApplicationLayout: React.FC<Props> = ({
 }) => {
   return (
     <>
+      {/* Reading progress indicator */}
+      <ReadingProgressBar />
+
       {/* Top utility bar with logo, language, date/time */}
       <TopBar />
       

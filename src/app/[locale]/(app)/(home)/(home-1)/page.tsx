@@ -2,6 +2,7 @@ import BackgroundSection from '@/components/BackgroundSection'
 import SectionAds from '@/components/SectionAds'
 import SectionMagazine9 from '@/components/SectionMagazine9'
 import HeroCarousel from '@/components/HeroCarousel'
+import TrendingTicker from '@/components/TrendingTicker'
 import SectionCategoryBlock from '@/components/SectionCategoryBlock'
 import type { CategoryBlockData } from '@/components/SectionCategoryBlock'
 import { fetchPosts, fetchCategories, buildCategoryTree } from '@/utils/serverApi'
@@ -187,6 +188,9 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
       {/* ═══ Hero Section ═══ */}
       <HeroCarousel posts={posts.slice(0, 8)} />
 
+      {/* ═══ Trending Strip ═══ */}
+      <TrendingTicker posts={posts.slice(0, 10)} label={t('trending')} />
+
       {/* ═══ Popular News ═══ */}
       <SectionMagazine9
         heading={t('popularNewsHeading')}
@@ -206,12 +210,14 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
               <SectionCategoryBlock
                 category={block}
                 variant={LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]}
+                sectionIndex={idx + 1}
               />
             </div>
           ) : (
             <SectionCategoryBlock
               category={block}
               variant={LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]}
+              sectionIndex={idx + 1}
             />
           )}
 
