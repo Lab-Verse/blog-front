@@ -3,7 +3,7 @@
 import FollowButton from '@/components/FollowButton'
 import ShareDropdown from '@/components/ShareDropdown'
 import VerifyIcon from '@/components/VerifyIcon'
-import { TAuthor } from '@/data/authors'
+import type { TAuthor } from '@/utils/dataTransformers'
 import Avatar from '@/shared/Avatar'
 import { Button } from '@/shared/Button'
 import ButtonCircle from '@/shared/ButtonCircle'

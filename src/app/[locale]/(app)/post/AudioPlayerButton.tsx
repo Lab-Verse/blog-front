@@ -1,7 +1,7 @@
 'use client'
 
 import ButtonPlayMusicPlayer from '@/components/ButtonPlayMusicPlayer'
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import playingIcon from '@/images/icon-playing.gif'
 import clsx from 'clsx'
 import Image from 'next/image'

@@ -1,4 +1,4 @@
-import { TCategory } from '@/data/categories'
+import type { TCategory } from '@/utils/dataTransformers'
 import { Badge } from '@/shared/Badge'
 import { Button } from '@/shared/Button'
 import { ArrowRightIcon } from '@heroicons/react/24/solid'

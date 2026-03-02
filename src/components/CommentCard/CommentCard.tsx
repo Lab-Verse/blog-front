@@ -1,6 +1,6 @@
 'use client'
 
-import { TComment } from '@/data/posts'
+import type { TComment } from '@/utils/dataTransformers'
 import Avatar from '@/shared/Avatar'
 import { Button } from '@/shared/Button'
 import Textarea from '@/shared/Textarea'

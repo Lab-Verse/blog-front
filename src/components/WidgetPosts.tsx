@@ -1,4 +1,4 @@
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import clsx from 'clsx'
 import { FC } from 'react'
 import Card3Small from './PostCards/Card3Small'

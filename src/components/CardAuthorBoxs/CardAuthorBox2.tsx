@@ -1,5 +1,5 @@
 import NcImage from '@/components/NcImage/NcImage'
-import { TAuthor } from '@/data/authors'
+import type { TAuthor } from '@/utils/dataTransformers'
 import Avatar from '@/shared/Avatar'
 import { Link } from '@/shared/link'
 import { ArrowRightIcon } from '@heroicons/react/20/solid'

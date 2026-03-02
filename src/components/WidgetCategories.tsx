@@ -1,4 +1,4 @@
-import { TCategory } from '@/data/categories'
+import type { TCategory } from '@/utils/dataTransformers'
 import clsx from 'clsx'
 import { FC } from 'react'
 import CardCategory1 from './CategoryCards/CardCategory1'

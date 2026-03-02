@@ -1,4 +1,4 @@
-import { TCategory } from '@/data/categories'
+import type { TCategory } from '@/utils/dataTransformers'
 import { Badge } from '@/shared/Badge'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'

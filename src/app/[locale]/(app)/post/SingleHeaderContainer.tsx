@@ -1,5 +1,5 @@
 import CategoryBadgeList from '@/components/CategoryBadgeList'
-import { TPostDetail } from '@/data/posts'
+import type { TPostDetail } from '@/utils/dataTransformers'
 import { Badge } from '@/shared/Badge'
 import { Divider } from '@/shared/divider'
 import clsx from 'clsx'

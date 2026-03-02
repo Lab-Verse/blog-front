@@ -1,7 +1,7 @@
 'use client'
 
 import { ThemeContext } from '@/app/theme-provider'
-import { TAuthor } from '@/data/authors'
+import type { TAuthor } from '@/utils/dataTransformers'
 import { useCarouselArrowButtons } from '@/hooks/use-carousel-arrow-buttons'
 import { HeadingWithSubProps } from '@/shared/Heading'
 import HeadingWithArrowBtns from '@/shared/HeadingWithArrowBtns'

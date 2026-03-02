@@ -1,10 +1,150 @@
 /**
  * Data transformers to bridge API types (from backend) to Theme types (used by UI components).
- * The purchased theme expects TPost, TCategory, TAuthor shapes from @/data/*.
+ * All theme-facing types (TPost, TCategory, TAuthor, etc.) are defined & exported here.
  * The API returns different shapes. These transformers map between them.
  */
 
 import type { ApiPost, ApiCategory, ApiTag, ApiUser, ApiUserProfile, ApiComment } from './serverApi'
+
+// ═══════════════════════════════════════════════════════════════════════
+// Theme Types — consumed by all UI components
+// ═══════════════════════════════════════════════════════════════════════
+
+export interface TImage {
+  src: string
+  alt: string
+  width: number
+  height: number
+}
+
+export interface TPostAuthor {
+  id: string
+  name: string
+  handle: string
+  avatar: TImage
+  description?: string
+}
+
+export interface TPostCategory {
+  id: string
+  name: string
+  handle: string
+  color: string
+}
+
+export interface TPostTag {
+  id: string
+  name: string
+  handle: string
+  color: string
+}
+
+export type TPostType = 'standard' | 'video' | 'gallery' | 'audio'
+
+/** Card-level post (no content) — returned by transformPost / transformPosts */
+export interface TPost {
+  id: string
+  title: string
+  handle: string
+  featuredImage: TImage
+  excerpt: string
+  date: string
+  readingTime: number
+  commentCount: number
+  viewCount: number
+  bookmarkCount: number
+  bookmarked: boolean
+  likeCount: number
+  liked: boolean
+  postType: TPostType
+  status: string
+  author: TPostAuthor
+  categories: TPostCategory[]
+  audioUrl?: string
+  videoUrl?: string
+  galleryImgs?: string[]
+}
+
+/** Full post detail (includes content, tags) — returned by transformPostDetail */
+export interface TPostDetail extends TPost {
+  content: string
+  tags: TPostTag[]
+  galleryImgs: string[]
+  videoUrl: string
+  audioUrl: string
+}
+
+/** Comment on a post — returned by transformComment */
+export interface TComment {
+  id: string
+  content: string
+  date: string
+  like: { count: number; isLiked: boolean }
+  repliesCount: number
+  author: TPostAuthor
+  parentId?: string | null
+  children?: TComment[]
+}
+
+/** Theme category — returned by transformCategory */
+export interface TCategory {
+  id: string
+  name: string
+  handle: string
+  description: string
+  color: string
+  count: number
+  date: string
+  thumbnail: TImage
+  posts?: TPost[]
+}
+
+/** Theme tag — returned by transformTag */
+export interface TTag {
+  id: string
+  name: string
+  handle: string
+  description: string
+  color: string
+  count: number
+  date: string
+  thumbnail: TImage
+  posts?: TPost[]
+}
+
+/** Theme author — returned by transformAuthor */
+export interface TAuthor {
+  id: string
+  name: string
+  handle: string
+  career: string
+  description: string
+  count: number
+  joinedDate: string
+  reviewCount: number
+  rating: number
+  avatar: TImage
+  cover: TImage
+  website?: string
+  socialLinks?: {
+    twitter?: string
+    facebook?: string
+    instagram?: string
+    linkedin?: string
+    youtube?: string
+  }
+}
+
+/** Generic navigation link */
+export interface CustomLink {
+  label: string
+  href: string
+  targetBlank?: boolean
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Internal helpers
+// ═══════════════════════════════════════════════════════════════════════
 
 const PLACEHOLDER_IMAGE = '/images/placeholder.png'
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'

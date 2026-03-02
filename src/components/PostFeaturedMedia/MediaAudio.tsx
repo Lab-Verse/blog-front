@@ -1,4 +1,4 @@
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
 import ButtonPlayMusicPlayer from '../ButtonPlayMusicPlayer'

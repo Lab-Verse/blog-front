@@ -1,5 +1,5 @@
 import NcImage from '@/components/NcImage/NcImage'
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import { NextPrev } from '@/shared/NextPrev'
 import clsx from 'clsx'
 import { Link } from '@/i18n/navigation'

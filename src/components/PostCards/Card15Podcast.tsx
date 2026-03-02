@@ -1,6 +1,6 @@
 'use client'
 
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import { PauseIcon, PlayIcon } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import Image from 'next/image'

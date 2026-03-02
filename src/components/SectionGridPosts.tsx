@@ -1,6 +1,6 @@
 'use client'
 
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import ButtonPrimary from '@/shared/ButtonPrimary'
 import HeadingWithSub from '@/shared/Heading'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'

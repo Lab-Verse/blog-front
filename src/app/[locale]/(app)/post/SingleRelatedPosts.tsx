@@ -1,7 +1,7 @@
 'use client'
 
 import SectionSliderPosts from '@/components/SectionSliderPosts'
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import { useTranslations } from 'next-intl'
 import { FC } from 'react'
 

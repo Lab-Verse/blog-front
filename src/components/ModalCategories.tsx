@@ -1,7 +1,7 @@
 'use client'
 
 import CardCategory1 from '@/components/CategoryCards/CardCategory1'
-import { TCategory } from '@/data/categories'
+import type { TCategory } from '@/utils/dataTransformers'
 import { Button } from '@/shared/Button'
 import { Dialog, DialogActions, DialogBody, DialogTitle } from '@/shared/dialog'
 import { Divider } from '@/shared/divider'

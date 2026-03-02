@@ -1,6 +1,6 @@
 'use client'
 
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import { createContext, useContext, useMemo, useReducer, useRef, useState } from 'react'
 
 interface PlayerState {

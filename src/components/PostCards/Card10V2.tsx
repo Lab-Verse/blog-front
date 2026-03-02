@@ -1,5 +1,5 @@
 'use client'
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import clsx from 'clsx'
 import { FC, useState } from 'react'
 import CategoryBadgeList from '../CategoryBadgeList'

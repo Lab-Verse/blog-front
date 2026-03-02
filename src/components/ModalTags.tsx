@@ -2,7 +2,7 @@
 
 import { FC } from 'react'
 
-import { TTag } from '@/data/categories'
+import type { TTag } from '@/utils/dataTransformers'
 import { Button } from '@/shared/Button'
 import Tag from '@/shared/Tag'
 import { Dialog, DialogActions, DialogBody, DialogTitle } from '@/shared/dialog'

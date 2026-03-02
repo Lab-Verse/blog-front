@@ -1,4 +1,4 @@
-import { TAuthor } from '@/data/authors'
+import type { TAuthor } from '@/utils/dataTransformers'
 import clsx from 'clsx'
 import { FC } from 'react'
 import CardAuthor from './CardAuthorBoxs/CardAuthor'

@@ -1,4 +1,4 @@
-import { CustomLink } from '@/data/types'
+import type { CustomLink } from '@/utils/dataTransformers'
 import { fetchCategories } from '@/utils/serverApi'
 import Logo from '@/shared/Logo'
 import SocialsList1 from '@/shared/SocialsList1'

@@ -2,7 +2,7 @@
 
 import FollowButton from '@/components/FollowButton'
 import ShareDropdown from '@/components/ShareDropdown'
-import { TTag } from '@/data/categories'
+import type { TTag } from '@/utils/dataTransformers'
 import { Badge } from '@/shared/Badge'
 import { Button } from '@/shared/Button'
 import ButtonCircle from '@/shared/ButtonCircle'

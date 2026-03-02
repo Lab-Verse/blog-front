@@ -1,4 +1,4 @@
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import Avatar from '@/shared/Avatar'
 import { Link } from '@/shared/link'
 import clsx from 'clsx'

@@ -1,5 +1,5 @@
 import NcImage from '@/components/NcImage/NcImage'
-import { TCategory } from '@/data/categories'
+import type { TCategory } from '@/utils/dataTransformers'
 import { Badge } from '@/shared/Badge'
 import { Link } from '@/shared/link'
 import clsx from 'clsx'

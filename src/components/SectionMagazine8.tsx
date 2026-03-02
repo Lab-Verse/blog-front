@@ -1,4 +1,4 @@
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import HeadingWithSub, { HeadingWithSubProps } from '@/shared/Heading'
 import clsx from 'clsx'
 import { FC } from 'react'

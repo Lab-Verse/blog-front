@@ -2,7 +2,7 @@
 
 import FollowButton from '@/components/FollowButton'
 import ShareDropdown from '@/components/ShareDropdown'
-import { TCategory } from '@/data/categories'
+import type { TCategory } from '@/utils/dataTransformers'
 import Avatar from '@/shared/Avatar'
 import { Badge } from '@/shared/Badge'
 import { Button } from '@/shared/Button'

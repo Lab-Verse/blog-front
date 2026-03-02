@@ -1,6 +1,6 @@
 'use client'
 
-import { TPost } from '@/data/posts'
+import type { TPost } from '@/utils/dataTransformers'
 import { Button } from '@/shared/Button'
 import ButtonCircle from '@/shared/ButtonCircle'
 import { Link } from '@/shared/link'

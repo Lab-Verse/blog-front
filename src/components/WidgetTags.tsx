@@ -1,4 +1,4 @@
-import { TTag } from '@/data/categories'
+import type { TTag } from '@/utils/dataTransformers'
 import Tag from '@/shared/Tag'
 import clsx from 'clsx'
 import { FC } from 'react'

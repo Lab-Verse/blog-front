@@ -1,4 +1,4 @@
-import { TCategory } from '@/data/categories'
+import type { TCategory } from '@/utils/dataTransformers'
 import HeadingWithSub, { HeadingWithSubProps } from '@/shared/Heading'
 import clsx from 'clsx'
 import CardCategory1 from './CategoryCards/CardCategory1'

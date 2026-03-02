@@ -1,5 +1,5 @@
 import NcImage from '@/components/NcImage/NcImage'
-import { TCategory } from '@/data/categories'
+import type { TCategory } from '@/utils/dataTransformers'
 import clsx from 'clsx'
 import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
