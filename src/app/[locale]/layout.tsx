@@ -207,7 +207,7 @@ export default async function LocaleLayout({
           </>
         )}
       </head>
-      <body className="bg-white text-base text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200">
+      <body className="bg-white text-base text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200" suppressHydrationWarning>
         {/* FOUC prevention: apply dark class synchronously before paint */}
         <script
           dangerouslySetInnerHTML={{

@@ -51,8 +51,8 @@ const Card17Podcast: FC<Props> = ({ className, post }) => {
             )}
 
             <div className="text-xs text-neutral-500 dark:text-neutral-400">
-              <time dateTime={date}>
-                {new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              <time dateTime={date || undefined} suppressHydrationWarning>
+                {date ? new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}
               </time>
               <span className="mx-1">/</span>
               <span> {readingTime} min read</span>

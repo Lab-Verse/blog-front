@@ -47,6 +47,24 @@ const nextConfig = {
         hostname: '*.r2.dev',
         pathname: '/**',
       },
+      // Specific R2 public bucket
+      {
+        protocol: 'https',
+        hostname: 'pub-b3abd4448aa7438db921404307c0e985.r2.dev',
+        pathname: '/**',
+      },
+      // Production site (self-referencing images)
+      {
+        protocol: 'https',
+        hostname: 'watt.com.pk',
+        pathname: '/**',
+      },
+      // Production API server
+      {
+        protocol: 'https',
+        hostname: 'api.watt.com.pk',
+        pathname: '/**',
+      },
       // Local API server
       {
         protocol: 'http',

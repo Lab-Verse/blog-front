@@ -20,6 +20,7 @@ export default function ResponsiveNav({ items, activeHref }: Props) {
   const outerRef = useRef<HTMLDivElement>(null)
   const measuringRef = useRef<HTMLUListElement>(null)
   const [visibleCount, setVisibleCount] = useState(items.length)
+  const [hasMeasured, setHasMeasured] = useState(false)
 
   const measure = useCallback(() => {
     const outer = outerRef.current
@@ -27,7 +28,7 @@ export default function ResponsiveNav({ items, activeHref }: Props) {
     if (!outer || !measuring) return
 
     const availableWidth = outer.clientWidth
-    const moreButtonWidth = 100 // Reserve space for "More" button
+    const moreButtonWidth = 110 // Reserve space for "More" button + padding
     const gap = 4 // gap-x-1 = 0.25rem = 4px
 
     let totalWidth = 0
@@ -37,26 +38,29 @@ export default function ResponsiveNav({ items, activeHref }: Props) {
     for (let i = 0; i < children.length; i++) {
       const child = children[i] as HTMLElement
       const childWidth = child.offsetWidth + gap
-      const wouldExceed = totalWidth + childWidth > availableWidth - (i < children.length - 1 ? moreButtonWidth : 0)
+      // Check if adding this item would exceed available width
+      // Always reserve space for "More" button unless we're fitting all items
+      const reserveMore = i < children.length - 1 ? moreButtonWidth : 0
 
-      if (wouldExceed && i < children.length - 1) {
-        // If adding this would exceed, but all items fit without "More", allow it
+      if (totalWidth + childWidth > availableWidth - reserveMore) {
         break
       }
       totalWidth += childWidth
       count++
     }
 
-    // If all items fit, show all
-    if (totalWidth <= availableWidth) {
-      count = items.length
+    // If all items fit without "More" button, show all
+    if (count === items.length) {
+      setVisibleCount(items.length)
+    } else {
+      setVisibleCount(Math.max(1, count))
     }
-
-    setVisibleCount(Math.max(1, count))
+    setHasMeasured(true)
   }, [items.length])
 
   useEffect(() => {
-    measure()
+    // Measure after a brief delay to let layout settle
+    const timer = requestAnimationFrame(() => measure())
 
     const observer = new ResizeObserver(() => {
       measure()
@@ -66,14 +70,19 @@ export default function ResponsiveNav({ items, activeHref }: Props) {
       observer.observe(outerRef.current)
     }
 
-    return () => observer.disconnect()
+    return () => {
+      cancelAnimationFrame(timer)
+      observer.disconnect()
+    }
   }, [measure])
+
+  if (!items.length) return null
 
   const visible = items.slice(0, visibleCount)
   const overflow = items.slice(visibleCount)
 
   return (
-    <div ref={outerRef} className="flex flex-1 items-center justify-center overflow-hidden">
+    <div ref={outerRef} className="flex flex-1 items-center justify-center min-w-0 overflow-hidden">
       {/* Hidden measuring row — all items rendered but invisible, for width measurement */}
       <ul
         ref={measuringRef}
@@ -90,8 +99,8 @@ export default function ResponsiveNav({ items, activeHref }: Props) {
         ))}
       </ul>
 
-      {/* Visible nav */}
-      <ul className="flex items-center gap-x-1">
+      {/* Visible nav — hide during first render to avoid flash of all items */}
+      <ul className={clsx('flex items-center gap-x-1', !hasMeasured && 'invisible')}>
         {visible.map((item) => (
           <li key={item.id}>
             <Link

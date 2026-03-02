@@ -48,7 +48,7 @@ const Card14: FC<Props> = ({ className, ratio = 'aspect-1/1', post }) => {
           <span className="mx-1.5">·</span>
           <span className="font-normal">
             <time dateTime={date}>
-              {new Date(date ?? '').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              {date ? new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}
             </time>
           </span>
           <span className="mx-1.5">/</span>

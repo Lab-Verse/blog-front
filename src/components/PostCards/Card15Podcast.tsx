@@ -53,7 +53,7 @@ const Card15Podcast: FC<Props> = ({ className, post }) => {
           <span>{author.name}</span>
           <span className="mx-1">·</span>
           <time dateTime={date}>
-            {new Date(date ?? '').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            {date ? new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}
           </time>
         </p>
 

@@ -15,12 +15,24 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = async ({ bottomBorder, className, activeCategory }) => {
-  const subNav = activeCategory ? await getSubNavigation(activeCategory) : null
-  const parentNav = await getParentNavigation()
+  let subNav: Awaited<ReturnType<typeof getSubNavigation>> = null
+  let parentNav: TNavigationItem[] = []
 
-  const isSubNavMode = subNav && subNav.children.length > 0
+  try {
+    const [subNavResult, parentNavResult] = await Promise.all([
+      activeCategory ? getSubNavigation(activeCategory) : Promise.resolve(null),
+      getParentNavigation(),
+    ])
+    subNav = subNavResult
+    parentNav = parentNavResult
+  } catch {
+    subNav = null
+    parentNav = []
+  }
 
-  const navItems = isSubNavMode ? subNav.children : parentNav
+  const isSubNavMode = subNav !== null && subNav.children.length > 0
+
+  const navItems = isSubNavMode ? subNav!.children : parentNav
   const activeHref = isSubNavMode ? `/category/${activeCategory}` : undefined
 
   return (
@@ -45,7 +57,7 @@ const Header: FC<HeaderProps> = async ({ bottomBorder, className, activeCategory
           </Link>
 
           {/* CNN-style: parent category label */}
-          {isSubNavMode && (
+          {isSubNavMode && subNav && (
             <>
               <div className="hidden lg:block h-6 w-px bg-neutral-300 dark:bg-neutral-600" />
               <Link

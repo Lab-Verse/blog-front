@@ -16,14 +16,26 @@ interface Props {
 
 const Header2: FC<Props> = async ({ bottomBorder, className, activeCategory }) => {
   // If on a category page, load subcategories for that category
-  const subNav = activeCategory ? await getSubNavigation(activeCategory) : null
-  // Always load parent categories for homepage / fallback
-  const parentNav = await getParentNavigation()
+  let subNav: Awaited<ReturnType<typeof getSubNavigation>> = null
+  let parentNav: TNavigationItem[] = []
 
-  const isSubNavMode = subNav && subNav.children.length > 0
+  try {
+    const [subNavResult, parentNavResult] = await Promise.all([
+      activeCategory ? getSubNavigation(activeCategory) : Promise.resolve(null),
+      getParentNavigation(),
+    ])
+    subNav = subNavResult
+    parentNav = parentNavResult
+  } catch {
+    // Gracefully degrade — show header without nav
+    subNav = null
+    parentNav = []
+  }
+
+  const isSubNavMode = subNav !== null && subNav.children.length > 0
 
   // Determine which items and which active href
-  const navItems = isSubNavMode ? subNav.children : parentNav
+  const navItems = isSubNavMode ? subNav!.children : parentNav
   const activeHref = isSubNavMode ? `/category/${activeCategory}` : undefined
 
   return (
@@ -48,7 +60,7 @@ const Header2: FC<Props> = async ({ bottomBorder, className, activeCategory }) =
         </Link>
 
         {/* CNN-style: parent category label next to logo on category pages */}
-        {isSubNavMode && (
+        {isSubNavMode && subNav && (
           <>
             <div className="hidden lg:block h-6 w-px bg-neutral-300 dark:bg-neutral-600" />
             <Link

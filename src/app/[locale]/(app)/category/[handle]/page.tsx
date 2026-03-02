@@ -38,29 +38,33 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
-  const { handle } = await params
-  const apiCategory = await fetchCategoryBySlug(handle)
-  const tCat = await getTranslations('category')
+  try {
+    const { handle } = await params
+    const apiCategory = await fetchCategoryBySlug(handle)
+    const tCat = await getTranslations('category')
 
-  if (!apiCategory) {
-    return { title: tCat('categoryNotFound'), description: tCat('categoryNotFoundDescription') }
-  }
+    if (!apiCategory) {
+      return { title: tCat('categoryNotFound'), description: tCat('categoryNotFoundDescription') }
+    }
 
-  const description = tCat('exploreArticles', { name: apiCategory.name })
-  return {
-    title: apiCategory.name,
-    description,
-    openGraph: {
+    const description = tCat('exploreArticles', { name: apiCategory.name })
+    return {
       title: apiCategory.name,
       description,
-      type: 'website',
-      url: `${SITE_URL}/category/${apiCategory.slug}`,
-    },
-    twitter: { card: 'summary', title: apiCategory.name, description },
-    alternates: {
-      canonical: `${SITE_URL}/category/${apiCategory.slug}`,
-      languages: generateAlternateLanguages(`/category/${apiCategory.slug}`),
-    },
+      openGraph: {
+        title: apiCategory.name,
+        description,
+        type: 'website',
+        url: `${SITE_URL}/category/${apiCategory.slug}`,
+      },
+      twitter: { card: 'summary', title: apiCategory.name, description },
+      alternates: {
+        canonical: `${SITE_URL}/category/${apiCategory.slug}`,
+        languages: generateAlternateLanguages(`/category/${apiCategory.slug}`),
+      },
+    }
+  } catch {
+    return { title: 'Category', description: '' }
   }
 }
 
