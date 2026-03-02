@@ -143,6 +143,8 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
         tabs.length > 0
           ? tabs
           : [{ id: parent.id, name: parent.name, slug: parent.slug, posts: parentTransformed }],
+      // Pass all posts (including those not matching any child) for a richer "All" tab
+      allPosts: parentTransformed,
     } satisfies CategoryBlockData
   })
 

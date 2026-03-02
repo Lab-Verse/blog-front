@@ -25,6 +25,8 @@ export interface CategoryBlockData {
   slug: string
   color: string
   tabs: CategoryBlockTab[]
+  /** All posts for this parent category (used to build the "All" tab, includes orphans) */
+  allPosts?: TPost[]
 }
 
 interface Props {
@@ -55,13 +57,19 @@ function getColorScheme(color: string) {
 // ═══════════════════════════════════════════════════════════════════════
 
 const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', className }) => {
+  // Build "All" tab: prefer allPosts (includes orphaned parent-level posts),
+  // fallback to flatMapping child tabs
+  const aggregatedPosts = category.allPosts && category.allPosts.length > 0
+    ? category.allPosts
+    : category.tabs.flatMap((t) => t.posts).filter(
+        (post, index, self) => self.findIndex((p) => p.id === post.id) === index
+      )
+
   const allTab: CategoryBlockTab = {
     id: 'all',
     name: 'All',
     slug: category.slug,
-    posts: category.tabs.flatMap((t) => t.posts).filter(
-      (post, index, self) => self.findIndex((p) => p.id === post.id) === index
-    ),
+    posts: aggregatedPosts,
   }
 
   const tabs = [allTab, ...category.tabs]
@@ -110,14 +118,20 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', className
         </div>
       )}
 
-      {/* Content — render based on variant */}
+      {/* Content — render based on variant, adapt for low post counts */}
       {activeTab.posts.length > 0 ? (
         <div className="min-h-[200px]">
-          {variant === 'featured' && <LayoutFeatured posts={activeTab.posts} />}
-          {variant === 'grid' && <LayoutGrid posts={activeTab.posts} />}
-          {variant === 'list' && <LayoutList posts={activeTab.posts} colors={colors} />}
-          {variant === 'spotlight' && <LayoutSpotlight posts={activeTab.posts} />}
-          {variant === 'compact' && <LayoutCompact posts={activeTab.posts} />}
+          {activeTab.posts.length < 3 ? (
+            <LayoutAdaptive posts={activeTab.posts} />
+          ) : (
+            <>
+              {variant === 'featured' && <LayoutFeatured posts={activeTab.posts} />}
+              {variant === 'grid' && <LayoutGrid posts={activeTab.posts} />}
+              {variant === 'list' && <LayoutList posts={activeTab.posts} colors={colors} />}
+              {variant === 'spotlight' && <LayoutSpotlight posts={activeTab.posts} />}
+              {variant === 'compact' && <LayoutCompact posts={activeTab.posts} />}
+            </>
+          )}
         </div>
       ) : (
         <div className="flex min-h-[200px] items-center justify-center rounded-2xl bg-neutral-50 dark:bg-neutral-800/50">
@@ -131,6 +145,27 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', className
 // ═══════════════════════════════════════════════════════════════════════
 // Layout Variants
 // ═══════════════════════════════════════════════════════════════════════
+
+/**
+ * Adaptive: Graceful layout for 1-2 posts (prevents empty grid gaps)
+ */
+function LayoutAdaptive({ posts }: { posts: TPost[] }) {
+  if (posts.length === 1) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <Card2 size="large" className="h-full" post={posts[0]} />
+      </div>
+    )
+  }
+  // 2 posts — side by side
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      {posts.map((post) => (
+        <Card2 key={post.id} size="large" className="h-full" post={post} />
+      ))}
+    </div>
+  )
+}
 
 /**
  * Featured: 1 large card left + 2 smaller cards right (CNN / BBC style)

@@ -82,7 +82,7 @@ export default function ResponsiveNav({ items, activeHref }: Props) {
   const overflow = items.slice(visibleCount)
 
   return (
-    <div ref={outerRef} className="flex flex-1 items-center justify-center min-w-0 overflow-hidden">
+    <div ref={outerRef} className="flex flex-1 items-center justify-center min-w-0">
       {/* Hidden measuring row — all items rendered but invisible, for width measurement */}
       <ul
         ref={measuringRef}
