@@ -1,7 +1,7 @@
 import BackgroundSection from '@/components/BackgroundSection'
 import SectionAds from '@/components/SectionAds'
 import SectionMagazine9 from '@/components/SectionMagazine9'
-import SectionMagazine10 from '@/components/SectionMagazine10'
+import HeroCarousel from '@/components/HeroCarousel'
 import SectionCategoryBlock from '@/components/SectionCategoryBlock'
 import type { CategoryBlockData } from '@/components/SectionCategoryBlock'
 import { fetchPosts, fetchCategories, buildCategoryTree } from '@/utils/serverApi'
@@ -185,7 +185,7 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
       />
 
       {/* ═══ Hero Section ═══ */}
-      <SectionMagazine10 posts={posts.slice(0, 8)} />
+      <HeroCarousel posts={posts.slice(0, 8)} />
 
       {/* ═══ Popular News ═══ */}
       <SectionMagazine9

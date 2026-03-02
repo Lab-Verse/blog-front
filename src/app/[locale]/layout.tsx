@@ -1,6 +1,6 @@
 import '@/styles/tailwind.css'
 import { Metadata } from 'next'
-import { Be_Vietnam_Pro, Noto_Nastaliq_Urdu, Noto_Naskh_Arabic, Noto_Sans_SC, Noto_Sans_KR } from 'next/font/google'
+import { Be_Vietnam_Pro, Playfair_Display, Noto_Nastaliq_Urdu, Noto_Naskh_Arabic, Noto_Sans_SC, Noto_Sans_KR } from 'next/font/google'
 import Script from 'next/script'
 import { Toaster } from 'sonner'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
@@ -15,6 +15,14 @@ const beVietnamPro = Be_Vietnam_Pro({
   display: 'swap',
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-primary',
+})
+
+// ── Serif heading font (editorial style) ───────────────
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-heading',
 })
 
 // ── Urdu font (Nastaliq) ───────────────────────────────
@@ -181,6 +189,7 @@ export default async function LocaleLayout({
   // All font variables for CSS custom properties
   const allFontVars = [
     beVietnamPro.variable,
+    playfairDisplay.variable,
     notoNastaliqUrdu.variable,
     notoNaskhArabic.variable,
     notoSansSC.variable,
