@@ -9,6 +9,12 @@ import MagazineViewer from '@/components/e-magazine/MagazineViewer'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 
+/** Allow on-demand rendering for magazine slugs not returned by generateStaticParams */
+export const dynamicParams = true
+
+/** Revalidate magazine pages every 5 minutes via ISR */
+export const revalidate = 300
+
 export async function generateStaticParams() {
   try {
     const { magazines } = await fetchEMagazines({ limit: 100 })

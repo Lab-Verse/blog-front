@@ -35,6 +35,12 @@ import SingleRelatedPosts from '../SingleRelatedPosts'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
 
+/** Allow on-demand rendering for post slugs not returned by generateStaticParams */
+export const dynamicParams = true
+
+/** Revalidate post pages every 5 minutes via ISR */
+export const revalidate = 300
+
 /** Pre-generate pages for the most recent posts at build time */
 export async function generateStaticParams() {
   try {

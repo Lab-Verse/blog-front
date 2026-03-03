@@ -27,6 +27,12 @@ import PageHeader from '../page-header'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 const POSTS_PER_PAGE = 12
 
+/** Allow on-demand rendering for category slugs not returned by generateStaticParams */
+export const dynamicParams = true
+
+/** Revalidate category pages every 5 minutes via ISR */
+export const revalidate = 300
+
 /** Pre-generate pages for all categories at build time */
 export async function generateStaticParams() {
   try {

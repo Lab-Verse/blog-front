@@ -27,6 +27,12 @@ import { generateAlternateLanguages } from '@/utils/seo'
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'
 const POSTS_PER_PAGE = 12
 
+/** Allow on-demand rendering for tag slugs not returned by generateStaticParams */
+export const dynamicParams = true
+
+/** Revalidate tag pages every 5 minutes via ISR */
+export const revalidate = 300
+
 /** Pre-generate pages for all tags at build time */
 export async function generateStaticParams() {
   try {
