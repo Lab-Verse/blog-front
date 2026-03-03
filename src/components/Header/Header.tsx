@@ -36,7 +36,7 @@ const Header: FC<HeaderProps> = async ({ bottomBorder, className, activeCategory
   const activeHref = isSubNavMode ? `/category/${activeCategory}` : undefined
 
   return (
-    <div className={clsx('relative z-20', className)}>
+    <div className={clsx('relative z-20 bg-white/80 backdrop-blur-md shadow-sm dark:bg-neutral-900/90', className)}>
       <div className="container">
         <div
           className={clsx(
