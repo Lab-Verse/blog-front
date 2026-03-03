@@ -57,10 +57,10 @@ export default function TopBar() {
         {/* Left — TWA small logo */}
         <div className="flex items-center gap-3">
           <Image
-            src="/images/twa.png"
+            src="/images/twa-logo.svg"
             alt="TWA"
-            width={300}
-            height={100}
+            width={900}
+            height={300}
             className="h-6 w-auto"
           />
         </div>
