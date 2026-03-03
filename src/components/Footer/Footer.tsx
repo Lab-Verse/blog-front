@@ -116,6 +116,7 @@ const Footer: React.FC = async () => {
         { href: '/privacy-policy', label: t('privacyPolicy') },
         { href: '/terms-of-service', label: t('termsOfService') },
         { href: '/cookie-policy', label: t('cookiePolicy') },
+        { href: '/ai-policy', label: t('aiPolicy') },
       ],
     },
   ]
@@ -178,6 +179,7 @@ const Footer: React.FC = async () => {
           <div className="flex gap-x-6 text-sm text-neutral-500 dark:text-neutral-400">
             <Link href="/privacy-policy" className="hover:text-neutral-700 dark:hover:text-neutral-200">{t('privacy')}</Link>
             <Link href="/terms-of-service" className="hover:text-neutral-700 dark:hover:text-neutral-200">{t('terms')}</Link>
+            <Link href="/ai-policy" className="hover:text-neutral-700 dark:hover:text-neutral-200">{t('aiPolicy')}</Link>
             <Link href="/contact" className="hover:text-neutral-700 dark:hover:text-neutral-200">{t('contact')}</Link>
           </div>
         </div>

@@ -6,6 +6,8 @@ interface Props extends ImageProps {
   containerClassName?: string
 }
 
+const PLACEHOLDER = '/images/placeholder.png'
+
 const NcImage: FC<Props> = ({
   containerClassName = 'relative',
   alt,
@@ -14,9 +16,16 @@ const NcImage: FC<Props> = ({
   src,
   ...args
 }) => {
+  const isPlaceholder = !src || src === PLACEHOLDER
   return (
-    <div className={clsx('', containerClassName)}>
-      {src ? <Image className={className} alt={alt} sizes={sizes} src={src} {...args} /> : null}
+    <div className={clsx('bg-neutral-100 dark:bg-neutral-800', containerClassName)}>
+      {src && !isPlaceholder ? (
+        <Image className={className} alt={alt} sizes={sizes} src={src} {...args} />
+      ) : (
+        <div className="flex size-full items-center justify-center text-lg font-semibold text-neutral-400 dark:text-neutral-500">
+          {alt ? alt.charAt(0).toUpperCase() : ''}
+        </div>
+      )}
     </div>
   )
 }
