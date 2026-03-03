@@ -36,6 +36,7 @@ export interface User {
   role_id?: string;
   status: UserStatus;
   avatar?: string;
+  profile?: UserProfile;
   created_at: string;
   updated_at: string;
 }
