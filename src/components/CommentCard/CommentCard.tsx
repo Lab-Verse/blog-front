@@ -227,7 +227,7 @@ const CommentCard: FC<Props> = ({ className, comment, postId, onDeleted }) => {
                 <div key={reply.id} className="flex gap-2">
                   <Avatar
                     className="size-6 shrink-0 rounded-full"
-                    src={reply.user?.avatar || ''}
+                    src={reply.user?.profile?.profile_picture || reply.user?.avatar || ''}
                     width={24}
                     height={24}
                     sizes="24px"

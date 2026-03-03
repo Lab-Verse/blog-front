@@ -130,7 +130,7 @@ const SearchModal: FC<Props> = ({ type = 'type1' }) => {
             name: p.user?.display_name || p.user?.username || 'Author',
             handle: p.user?.username || '',
             avatar: {
-              src: p.user?.profile?.profile_picture_url || '/images/placeholder.png',
+              src: p.user?.profile?.profile_picture || p.user?.avatar || '/images/placeholder.png',
               alt: p.user?.display_name || 'Author',
               width: 128,
               height: 128,

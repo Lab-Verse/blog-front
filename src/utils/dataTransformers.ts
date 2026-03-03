@@ -292,7 +292,7 @@ export function transformComment(comment: ApiComment) {
           id: comment.user.id,
           name: comment.user.display_name || comment.user.username,
           handle: comment.user.username,
-          avatar: makeImage(comment.user.avatar, comment.user.username),
+          avatar: makeImage(comment.user.profile?.profile_picture || comment.user.avatar, comment.user.username),
         }
       : {
           id: 'anonymous',

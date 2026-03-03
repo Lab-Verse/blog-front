@@ -62,6 +62,11 @@ export const selectUserProfilePictureUrl = createSelector(
   [selectUserProfile],
   (profile: UserProfile | null) => {
     if (!profile?.profile_picture) return null;
+    // profile_picture is already a full URL (R2) — return as-is
+    if (profile.profile_picture.startsWith('http')) {
+      return profile.profile_picture;
+    }
+    // Fallback for legacy local uploads
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
     return `${baseUrl}/uploads/profile-pictures/${profile.profile_picture}`;
   }

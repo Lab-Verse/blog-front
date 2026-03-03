@@ -27,8 +27,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   }
   const name = result.user.display_name || result.user.username
   const description = result.user.bio || t('articlesBy', { name })
-  const avatar = result.user.avatar
-    ? (result.user.avatar.startsWith('http') ? result.user.avatar : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/${result.user.avatar}`)
+  const profilePic = result.user.profile?.profile_picture || result.user.avatar
+  const avatar = profilePic
+    ? (profilePic.startsWith('http') ? profilePic : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/${profilePic}`)
     : undefined
   return {
     title: name,

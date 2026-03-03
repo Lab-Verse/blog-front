@@ -61,9 +61,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [logoutMutation] = useLogoutMutation()
 
   const profilePic =
-    user?.avatar && user.avatar !== 'default-avatar.png'
-      ? user.avatar
-      : '/images/musicWave.png'
+    (user as any)?.profile?.profile_picture
+      || (user?.avatar && user.avatar !== 'default-avatar.png' ? user.avatar : null)
+      || '/images/musicWave.png'
 
   const accessToken = cookies.getAccessToken()
 

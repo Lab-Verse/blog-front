@@ -67,7 +67,7 @@ const Layout = async ({ children, params }: Props) => {
       reviewCount: 0,
       rating: 0,
       avatar: {
-        src: user.avatar || user.profile?.profile_picture_url || defaultAvatar.src,
+        src: user.profile?.profile_picture || user.avatar || defaultAvatar.src,
         alt: user.display_name || user.username || 'Avatar',
         width: 128,
         height: 128,
