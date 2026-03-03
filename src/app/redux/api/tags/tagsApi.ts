@@ -57,7 +57,15 @@ export const tagsApi = baseApi.injectEndpoints({
 
     createTag: builder.mutation<Tag, CreateTagDto>({
       query: (body) => ({ url: '/tags', method: 'POST', body }),
-      transformResponse: (res: ApiEnvelope<Tag>) => res.data ?? ({} as Tag),
+      transformResponse: (res: unknown) => {
+        // Backend returns tag directly or in an envelope
+        if (res && typeof res === 'object') {
+          const obj = res as Record<string, unknown>
+          if (obj.data && typeof obj.data === 'object') return obj.data as Tag
+          if (obj.id) return res as Tag
+        }
+        return {} as Tag
+      },
       invalidatesTags: [{ type: 'Tag', id: 'LIST' }],
     }),
 

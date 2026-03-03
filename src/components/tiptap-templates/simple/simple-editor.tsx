@@ -77,7 +77,7 @@ import { useRouter } from 'next/navigation'
 // --- API & Auth ---
 import { useCreatePostMutation } from '@/app/redux/api/posts/postsApi'
 import { useGetAllCategoriesQuery } from '@/app/redux/api/categories/categoriesApi'
-import { useGetAllTagsQuery } from '@/app/redux/api/tags/tagsApi'
+import { useGetAllTagsQuery, useCreateTagMutation } from '@/app/redux/api/tags/tagsApi'
 import { PostStatus } from '@/app/redux/types/posts/postTypes'
 import { cookies } from '@/app/redux/utils/cookies'
 import { jwtDecode } from 'jwt-decode'
@@ -183,6 +183,7 @@ export function SimpleEditor() {
 
   // --- API hooks ---
   const [createPost, { isLoading: isSubmitting }] = useCreatePostMutation()
+  const [createTag] = useCreateTagMutation()
   const { data: categories = [] } = useGetAllCategoriesQuery()
   const { data: tagsData = [] } = useGetAllTagsQuery()
 
@@ -373,7 +374,27 @@ export function SimpleEditor() {
     }
 
     if (selectedTags.length > 0) {
-      selectedTags.forEach((tag) => formData.append('tag_ids[]', tag.id))
+      // Resolve any newly-created tags (non-UUID ids) by creating them on the backend first
+      const isUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+      for (const tag of selectedTags) {
+        if (isUUID(tag.id)) {
+          formData.append('tag_ids[]', tag.id)
+        } else {
+          // New tag — create on backend to get a real UUID
+          try {
+            const created = await createTag({ name: tag.name, slug: slugify(tag.name) }).unwrap()
+            if (created?.id) {
+              formData.append('tag_ids[]', created.id)
+            }
+          } catch {
+            // Tag might already exist — try to find it from cached tags
+            const existing = tagsData.find((t: any) => t.name.toLowerCase() === tag.name.toLowerCase())
+            if (existing?.id) {
+              formData.append('tag_ids[]', existing.id)
+            }
+          }
+        }
+      }
     }
 
     try {

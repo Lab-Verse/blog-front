@@ -21,7 +21,7 @@ const TrendingTicker: FC<Props> = ({ posts, label = 'Trending', className }) => 
   return (
     <div
       className={clsx(
-        'trending-ticker flex items-center gap-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 dark:border-neutral-700 dark:bg-neutral-900',
+        'trending-ticker flex items-center gap-4 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-2.5 dark:border-neutral-700 dark:bg-neutral-900 mt-5',
         className,
       )}
     >

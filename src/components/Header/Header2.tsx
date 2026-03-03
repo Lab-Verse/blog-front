@@ -41,7 +41,7 @@ const Header2: FC<Props> = async ({ bottomBorder, className, activeCategory }) =
   return (
     <div
       className={clsx(
-        'header-2 sticky top-0 z-40 border-neutral-200 bg-white/95 backdrop-blur-md shadow-sm dark:border-neutral-700 dark:bg-neutral-900/95 mb-5',
+        'header-2 sticky top-0 z-40 border-neutral-200 bg-white/95 backdrop-blur-md shadow-sm dark:border-neutral-700 dark:bg-neutral-900/95',
         bottomBorder && 'border-b',
         className
       )}
