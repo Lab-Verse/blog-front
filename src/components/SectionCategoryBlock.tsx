@@ -89,8 +89,7 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
           <div className="text-center">
             <Link
               href={`/category/${category.slug}`}
-              className="inline-block text-3xl font-bold text-neutral-900 hover:underline sm:text-4xl lg:text-5xl dark:text-neutral-100"
-              style={{ fontFamily: 'var(--font-serif)' }}
+              className="heading-serif inline-block text-3xl font-bold text-neutral-900 hover:underline sm:text-4xl lg:text-5xl dark:text-neutral-100"
             >
               {category.name}
             </Link>
@@ -130,13 +129,13 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
             <div className="flex items-end justify-between gap-4">
               <div className="flex items-center gap-3">
                 {sectionIndex != null && (
-                  <span className={clsx('text-4xl font-black opacity-15 lg:text-5xl', colors.text)}>
+                  <span className={clsx('heading-serif text-4xl font-black opacity-15 lg:text-5xl', colors.text)}>
                     {String(sectionIndex).padStart(2, '0')}
                   </span>
                 )}
                 <Link
                   href={`/category/${category.slug}`}
-                  className={clsx('text-2xl font-bold hover:underline lg:text-3xl', colors.text)}
+                  className={clsx('heading-serif text-2xl font-bold hover:underline lg:text-3xl', colors.text)}
                 >
                   {category.name}
                 </Link>

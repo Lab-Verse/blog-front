@@ -40,8 +40,7 @@ const HeroEditorial: FC<Props> = ({ posts, className }) => {
           </Link>
         )}
         <h1
-          className="mx-auto max-w-4xl text-2xl leading-tight font-bold text-neutral-900 sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.25rem] xl:leading-[1.15] dark:text-neutral-100"
-          style={{ fontFamily: 'var(--font-serif)' }}
+          className="heading-serif mx-auto max-w-4xl text-2xl leading-tight font-bold text-neutral-900 sm:text-3xl md:text-4xl lg:text-5xl xl:text-[3.25rem] xl:leading-[1.15] dark:text-neutral-100"
         >
           <Link
             href={`/post/${hero.handle}`}

@@ -73,8 +73,9 @@
     font-family: var(--font-sans);
   }
 
-  /* Editorial serif headings */
-  h1, h2, h3, h4 {
+  /* Editorial serif — applied explicitly to section-level headings.
+     Card-level titles (text-base and smaller) stay sans for readability. */
+  .heading-serif {
     font-family: var(--font-serif);
   }
 

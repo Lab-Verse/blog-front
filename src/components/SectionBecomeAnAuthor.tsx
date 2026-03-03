@@ -29,7 +29,7 @@ const SectionBecomeAnAuthor: FC<Props> = ({ className, rightImg = rightImgDemo }
         <span className="text-xs font-semibold tracking-widest text-primary-400 uppercase">
           {t('superChangeYourPlanningPowers')}
         </span>
-        <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">{t('becomeAnAuthorHeading')}</h2>
+        <h2 className="heading-serif mt-3 text-3xl font-semibold sm:text-4xl">{t('becomeAnAuthorHeading')}</h2>
         <span className="mt-8 block text-neutral-300">
           {t('becomeAnAuthorDescription')}
         </span>
