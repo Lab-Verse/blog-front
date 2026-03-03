@@ -153,6 +153,7 @@ export interface ApiUser {
   bio?: string
   created_at?: string
   updated_at?: string
+  profile?: ApiUserProfile
 }
 
 export interface ApiUserProfile {

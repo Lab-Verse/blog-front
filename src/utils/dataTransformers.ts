@@ -111,7 +111,7 @@ export function transformPost(post: ApiPost) {
           id: post.user.id,
           name: post.user.display_name || post.user.username,
           handle: post.user.username,
-          avatar: makeImage(post.user.avatar, post.user.username),
+          avatar: makeImage(post.user.profile?.profile_picture || post.user.avatar, post.user.username),
         }
       : {
           id: 'unknown',
@@ -154,7 +154,7 @@ export function transformPostDetail(
     // Enrich author with description from profile
     author: {
       ...base.author,
-      description: post.user?.bio || '',
+      description: post.user?.profile?.bio || post.user?.bio || '',
     },
     galleryImgs: post.gallery_images || [],
     videoUrl: post.video_url || '',

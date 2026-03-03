@@ -75,14 +75,14 @@ import { TagsInput } from '@/shared/TagsInput'
 import { useRouter } from 'next/navigation'
 
 // --- API & Auth ---
-import { useCreatePostMutation } from '@/app/redux/api/posts/postsApi'
+import { useCreatePostMutation, useUpdatePostMutation, useGetPostByIdQuery } from '@/app/redux/api/posts/postsApi'
 import { useGetAllCategoriesQuery } from '@/app/redux/api/categories/categoriesApi'
 import { useGetAllTagsQuery, useCreateTagMutation } from '@/app/redux/api/tags/tagsApi'
 import { PostStatus } from '@/app/redux/types/posts/postTypes'
 import { cookies } from '@/app/redux/utils/cookies'
 import { jwtDecode } from 'jwt-decode'
-import Select from '@/shared/Select'
 import { toast } from 'sonner'
+import { useSearchParams } from 'next/navigation'
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -181,11 +181,19 @@ export function SimpleEditor() {
     }
   }, [])
 
+  // --- Edit mode ---
+  const searchParams = useSearchParams()
+  const editId = searchParams.get('id') || ''
+  const isEditMode = Boolean(editId)
+
   // --- API hooks ---
-  const [createPost, { isLoading: isSubmitting }] = useCreatePostMutation()
+  const [createPost, { isLoading: isCreating }] = useCreatePostMutation()
+  const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation()
   const [createTag] = useCreateTagMutation()
   const { data: categories = [] } = useGetAllCategoriesQuery()
   const { data: tagsData = [] } = useGetAllTagsQuery()
+  const { data: existingPost, isLoading: isLoadingPost } = useGetPostByIdQuery(editId, { skip: !editId })
+  const isSubmitting = isCreating || isUpdating
 
   // Map API tags to TagsInput format
   const topicsSuggestions = React.useMemo(
@@ -200,7 +208,9 @@ export function SimpleEditor() {
   const [selectedTags, setSelectedTags] = React.useState<typeof topicsSuggestions>([])
   const [featuredImageUrl, setFeaturedImageUrl] = React.useState('')
   const [isOpenPreview, setIsOpenPreview] = React.useState(false)
-  const [selectedCategoryId, setSelectedCategoryId] = React.useState('')
+  const [selectedCategories, setSelectedCategories] = React.useState<{ id: string; name: string }[]>([])
+  const [categoryQuery, setCategoryQuery] = React.useState('')
+  const [editPopulated, setEditPopulated] = React.useState(false)
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -320,6 +330,53 @@ export function SimpleEditor() {
     content: '<h1></h1>',
   })
 
+  // --- Populate editors in edit mode ---
+  React.useEffect(() => {
+    if (!isEditMode || !existingPost || editPopulated) return
+    if (!editor || !titleEditor) return
+
+    // Set title
+    if (existingPost.title) {
+      titleEditor.commands.setContent(`<h1>${existingPost.title}</h1>`)
+    }
+
+    // Set content
+    if (existingPost.content) {
+      editor.commands.setContent(existingPost.content)
+    }
+
+    // Set featured image
+    if (existingPost.featured_image) {
+      setFeaturedImageUrl(existingPost.featured_image)
+      if (featuredImageEditor) {
+        featuredImageEditor.commands.setContent(
+          `<img src="${existingPost.featured_image}" alt="Featured image" />`
+        )
+      }
+    }
+
+    // Set tags from post.tags (PostTag[] with nested tag)
+    if (existingPost.tags && existingPost.tags.length > 0) {
+      const mapped = existingPost.tags
+        .filter((pt: any) => pt.tag)
+        .map((pt: any) => ({ id: pt.tag.id, name: pt.tag.name }))
+      setSelectedTags(mapped)
+    }
+
+    // Set categories from post.postCategories (with nested category)
+    if (existingPost.postCategories && existingPost.postCategories.length > 0) {
+      const mapped = existingPost.postCategories
+        .filter((pc: any) => pc.category)
+        .map((pc: any) => ({ id: pc.category.id, name: pc.category.name }))
+      setSelectedCategories(mapped)
+    } else if (existingPost.category) {
+      // Fallback: single legacy category
+      setSelectedCategories([{ id: existingPost.category.id, name: existingPost.category.name }])
+    }
+
+    setEditPopulated(true)
+  }, [isEditMode, existingPost, editor, titleEditor, featuredImageEditor, editPopulated])
+
   const getTitle = () => {
     if (!titleEditor) return ''
     const content = titleEditor.getJSON()
@@ -340,8 +397,8 @@ export function SimpleEditor() {
       toast.error('Please add some content to your post.')
       return
     }
-    if (!selectedCategoryId) {
-      toast.error('Please select a category.')
+    if (selectedCategories.length === 0) {
+      toast.error('Please select at least one category.')
       return
     }
     if (!userId) {
@@ -354,8 +411,14 @@ export function SimpleEditor() {
     formData.append('slug', slugify(title))
     formData.append('content', htmlContent)
     formData.append('user_id', userId)
-    formData.append('category_id', selectedCategoryId)
+    // Legacy single category_id (first selected)
+    formData.append('category_id', selectedCategories[0].id)
     formData.append('status', status)
+
+    // Multi-category support
+    for (const cat of selectedCategories) {
+      formData.append('category_ids[]', cat.id)
+    }
 
     if (featuredImageUrl) {
       // If it's a base64 data URL, convert to a File for upload
@@ -369,7 +432,10 @@ export function SimpleEditor() {
           formData.append('featured_image', featuredImageUrl)
         }
       } else {
-        formData.append('featured_image', featuredImageUrl)
+        // In edit mode, don't re-send existing URL as featured_image unless it changed
+        if (!isEditMode || featuredImageUrl !== existingPost?.featured_image) {
+          formData.append('featured_image', featuredImageUrl)
+        }
       }
     }
 
@@ -398,17 +464,22 @@ export function SimpleEditor() {
     }
 
     try {
-      const result = await createPost(formData).unwrap()
-      if (status === PostStatus.PUBLISHED) {
-        // Backend may downgrade to PENDING if user lacks can_publish permission
-        const resultStatus = (result as any)?.status as string | undefined
-        if (resultStatus === 'pending' || resultStatus === PostStatus.PENDING) {
-          toast.success('Your post has been submitted for review. It will be published once approved by an admin.')
-        } else {
-          toast.success('Post published successfully!')
-        }
+      if (isEditMode) {
+        await updatePost({ id: editId, data: formData }).unwrap()
+        toast.success('Post updated successfully!')
       } else {
-        toast.success('Post saved as draft!')
+        const result = await createPost(formData).unwrap()
+        if (status === PostStatus.PUBLISHED) {
+          // Backend may downgrade to PENDING if user lacks can_publish permission
+          const resultStatus = (result as any)?.status as string | undefined
+          if (resultStatus === 'pending' || resultStatus === PostStatus.PENDING) {
+            toast.success('Your post has been submitted for review. It will be published once approved by an admin.')
+          } else {
+            toast.success('Post published successfully!')
+          }
+        } else {
+          toast.success('Post saved as draft!')
+        }
       }
       router.push('/dashboard/posts')
     } catch (err: any) {
@@ -423,6 +494,21 @@ export function SimpleEditor() {
       setMobileView('main')
     }
   }, [isMobile, mobileView])
+
+  if (isEditMode && isLoadingPost) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-neutral-500">Loading post...</p>
+      </div>
+    )
+  }
+
+  // Filtered categories for searchable multi-select
+  const filteredCategories = categories.filter((cat: any) => {
+    const isAlreadySelected = selectedCategories.some((s) => s.id === cat.id)
+    const matchesQuery = cat.name.toLowerCase().includes(categoryQuery.toLowerCase())
+    return !isAlreadySelected && matchesQuery
+  })
 
   return (
     <EditorContext.Provider value={{ editor }}>
@@ -442,7 +528,7 @@ export function SimpleEditor() {
               {isSubmitting ? 'Saving...' : 'Save Draft'}
             </Button>
             <Button data-style="ghost" onClick={() => setIsOpenPreview(true)}>
-              Publish
+              {isEditMode ? 'Update' : 'Publish'}
             </Button>
             <SwitchDarkMode iconSize="size-4.5" className="size-8!" />
           </div>
@@ -493,23 +579,60 @@ export function SimpleEditor() {
 
       {/* Publish / Preview Dialog */}
       <Dialog className="mt-4" size="4xl" open={isOpenPreview} onClose={setIsOpenPreview}>
-        <DialogTitle>Review &amp; Publish</DialogTitle>
+        <DialogTitle>{isEditMode ? 'Review & Update' : 'Review & Publish'}</DialogTitle>
         <DialogBody>
           <div className="flex flex-col gap-5 text-sm/6">
-            {/* Category Select */}
+            {/* Searchable multi-category select (chips) */}
             <div className="flex flex-col gap-2">
-              <div className="font-medium text-neutral-700 dark:text-neutral-300">Category *</div>
-              <Select
-                value={selectedCategoryId}
-                onChange={(e) => setSelectedCategoryId(e.target.value)}
-              >
-                <option value="">-- Select a category --</option>
-                {categories.map((cat: any) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </Select>
+              <div className="font-medium text-neutral-700 dark:text-neutral-300">Categories *</div>
+              <div className="relative">
+                <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-neutral-300 px-2 py-1.5 focus-within:ring-2 focus-within:ring-indigo-500 dark:border-neutral-600 dark:bg-neutral-800">
+                  {selectedCategories.map((cat) => (
+                    <span
+                      key={cat.id}
+                      className="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200"
+                    >
+                      {cat.name}
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCategories(selectedCategories.filter((c) => c.id !== cat.id))}
+                        className="hover:text-red-600 focus:outline-none"
+                        aria-label={`Remove ${cat.name}`}
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    className="min-w-32 flex-1 border-none bg-transparent px-0 py-0.5 text-sm outline-none placeholder:text-neutral-500 focus:ring-0 dark:text-white dark:placeholder:text-neutral-400"
+                    placeholder={selectedCategories.length > 0 ? 'Add more...' : 'Search categories...'}
+                    value={categoryQuery}
+                    onChange={(e) => setCategoryQuery(e.target.value)}
+                  />
+                </div>
+                {categoryQuery && filteredCategories.length > 0 && (
+                  <ul className="absolute z-50 mt-1 max-h-48 w-full overflow-auto rounded-lg border bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+                    {filteredCategories.map((cat: any) => (
+                      <li
+                        key={cat.id}
+                        className="cursor-pointer px-3 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-white/10"
+                        onClick={() => {
+                          setSelectedCategories([...selectedCategories, { id: cat.id, name: cat.name }])
+                          setCategoryQuery('')
+                        }}
+                      >
+                        {cat.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {categoryQuery && filteredCategories.length === 0 && (
+                  <div className="absolute z-50 mt-1 w-full rounded-lg border bg-white p-2 text-sm text-neutral-500 shadow-lg dark:border-neutral-700 dark:bg-neutral-800">
+                    No categories found
+                  </div>
+                )}
+              </div>
             </div>
             <Divider />
 
@@ -555,7 +678,7 @@ export function SimpleEditor() {
             onClick={() => handlePublish(PostStatus.PUBLISHED)}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Publishing...' : 'Publish'}
+            {isSubmitting ? (isEditMode ? 'Updating...' : 'Publishing...') : (isEditMode ? 'Update' : 'Publish')}
           </SharedButton>
         </DialogActions>
       </Dialog>

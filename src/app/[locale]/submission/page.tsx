@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { Suspense } from 'react'
 import '@/styles/_tiptap-keyframe-animations.scss'
 import '@/styles/_tiptap-variables.scss'
 
@@ -18,9 +19,9 @@ const SimpleEditor = dynamic(
 
 const Page = () => {
   return (
-    <>
+    <Suspense fallback={<div className="flex h-[60vh] items-center justify-center"><div className="text-neutral-500">Loading editor...</div></div>}>
       <SimpleEditor />
-    </>
+    </Suspense>
   )
 }
 

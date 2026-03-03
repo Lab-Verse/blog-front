@@ -45,6 +45,7 @@ export interface Post {
   media?: PostMedia[];
   tags?: PostTag[];
   reactions?: Reaction[];
+  postCategories?: { post_id: string; category_id: string; category?: Category }[];
 }
 
 
@@ -62,7 +63,7 @@ export interface PostTag {
   post_id: string;
   tag_id: string;
   created_at: Date | string;
-  // Add other tag fields
+  tag?: { id: string; name: string; slug?: string };
 }
 
 // DTOs

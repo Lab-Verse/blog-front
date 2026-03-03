@@ -37,7 +37,10 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
     const dispatch = useAppDispatch()
     const { selectedPosts, dashboardFilters, bulkActionInProgress } = useAppSelector((state) => state.posts)
 
-    const { data: posts = [], isLoading, error, refetch } = useGetUserPostsQuery({ userId, filters: dashboardFilters })
+    const { data: posts = [], isLoading, error, refetch } = useGetUserPostsQuery(
+        { userId, filters: dashboardFilters },
+        { skip: !userId }
+    )
     const [deletePost] = useDeletePostMutation()
     const [bulkDelete] = useBulkDeletePostsMutation()
     const [bulkUpdateStatus] = useBulkUpdatePostStatusMutation()

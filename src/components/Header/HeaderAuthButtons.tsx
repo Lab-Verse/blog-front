@@ -1,6 +1,7 @@
 'use client'
 
 import { cookies } from '@/app/redux/utils/cookies'
+import { useGetUserProfileQuery } from '@/app/redux/api/users/usersApi'
 import Avatar from '@/shared/Avatar'
 import { Button } from '@/shared/Button'
 import ButtonCircle from '@/shared/ButtonCircle'
@@ -20,8 +21,9 @@ import {
   Notification02Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { jwtDecode } from 'jwt-decode'
 
 export default function HeaderAuthButtons() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -105,11 +107,32 @@ function AvatarMenu() {
     window.location.href = '/'
   }
 
+  // Decode JWT to get userId for profile fetch
+  const userId = useMemo(() => {
+    try {
+      const token = cookies.getAccessToken()
+      if (token) {
+        const decoded: { sub?: string } = jwtDecode(token)
+        return decoded?.sub || ''
+      }
+    } catch { /* ignore */ }
+    return ''
+  }, [])
+
+  const { data: userProfile } = useGetUserProfileQuery(userId, { skip: !userId })
+  const avatarSrc = useMemo(() => {
+    if (!userProfile) return null
+    // Handle both direct object and envelope { data: ... }
+    const p = (userProfile as any)?.profile_picture ?? (userProfile as any)?.data?.profile_picture ?? null
+    return p || null
+  }, [userProfile])
+
   return (
     <Popover>
       <PopoverButton as={ButtonCircle} aria-label="User menu" className="relative" plain>
         <Avatar
           alt="avatar"
+          src={avatarSrc}
           width={32}
           height={32}
           className="size-8 rounded-full object-cover"
