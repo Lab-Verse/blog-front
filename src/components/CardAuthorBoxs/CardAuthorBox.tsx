@@ -20,7 +20,7 @@ const CardAuthorBox: FC<Props> = ({ className, author }) => {
       )}
     >
       <Link href={`/author/${handle}`} className="absolute inset-0" />
-      <Avatar className="size-20" src={avatar.src || ''} width={80} height={80} sizes="80px" />
+      <Avatar className="size-20" src={avatar?.src || ''} width={80} height={80} sizes="80px" />
       <div className="mt-3">
         <h2 className={`text-sm font-medium sm:text-base`}>
           <span className="line-clamp-1">{name}</span>

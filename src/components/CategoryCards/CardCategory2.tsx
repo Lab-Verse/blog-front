@@ -27,7 +27,7 @@ const CardCategory2: FC<Props> = ({ className, category, badge }) => {
       )}
       <NcImage
         containerClassName="relative shrink-0 size-20 "
-        src={thumbnail || ''}
+        src={thumbnail?.src || ''}
         fill
         sizes="80px"
         alt={name}

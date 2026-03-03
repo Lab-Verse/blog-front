@@ -20,7 +20,7 @@ const CardCategory5: FC<Props> = ({ className = '', category }) => {
         <Image
           fill
           alt={name}
-          src={thumbnail || ''}
+          src={thumbnail?.src || ''}
           className="rounded-2xl object-cover brightness-75"
           sizes="(min-width: 1024px) 20rem, (min-width: 640px) 16rem, 12rem"
         />

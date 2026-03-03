@@ -14,7 +14,7 @@ const CardCategory3: FC<Props> = ({ className = '', category }) => {
     <Link href={`/category/${handle}`} className={`card-category-3 flex flex-col ${className}`}>
       <div className="group aspect-w-5 relative h-0 w-full shrink-0 overflow-hidden rounded-2xl aspect-h-5">
         <Image
-          src={thumbnail || ''}
+          src={thumbnail?.src || ''}
           className="h-full w-full rounded-2xl object-cover"
           sizes="(min-width: 1024px) 20rem, (min-width: 640px) 16rem, 12rem"
           fill

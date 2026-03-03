@@ -39,7 +39,7 @@ const CardAuthorBox2: FC<Props> = ({ className, author }) => {
       <div className="mx-6 -mt-8 pb-7 text-center">
         <Avatar
           className="relative size-16 ring-2 ring-white"
-          src={avatar.src || ''}
+          src={avatar?.src || ''}
           width={64}
           height={64}
           sizes="64px"

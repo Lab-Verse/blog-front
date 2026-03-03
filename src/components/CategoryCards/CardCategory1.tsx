@@ -20,7 +20,7 @@ const CardCategory1: FC<Props> = ({ className, size = 'normal', category }) => {
           'relative me-4 shrink-0 overflow-hidden rounded-lg',
           size === 'large' ? 'size-20' : 'size-12'
         )}
-        src={thumbnail || ''}
+        src={thumbnail?.src || ''}
         fill
         className="object-cover"
         sizes="80px"

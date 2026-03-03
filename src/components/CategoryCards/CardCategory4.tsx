@@ -41,7 +41,7 @@ const CardCategory4: FC<Props> = ({ className = '', category, badge }) => {
         <Image
           alt={`${name} thumbnail`}
           fill
-          src={thumbnail || ''}
+          src={thumbnail?.src || ''}
           className="size-full rounded-3xl object-cover brightness-100 transition-[filter] duration-300 group-hover:brightness-75"
           sizes="(min-width: 1024px) 20rem, (min-width: 640px) 16rem, 12rem"
         />
