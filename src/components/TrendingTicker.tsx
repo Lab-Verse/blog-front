@@ -13,10 +13,12 @@ interface Props {
 
 /**
  * Horizontal trending-now ticker strip.
- * Shows a "Trending" label followed by a scrollable row of post titles.
+ * Shows a "Trending" label followed by a continuously scrolling row of post titles.
  */
 const TrendingTicker: FC<Props> = ({ posts, label = 'Trending', className }) => {
   if (!posts.length) return null
+
+  const items = posts.slice(0, 10)
 
   return (
     <div
@@ -26,22 +28,37 @@ const TrendingTicker: FC<Props> = ({ posts, label = 'Trending', className }) => 
       )}
     >
       {/* Label */}
-      <span className="shrink-0 rounded-md bg-primary-600 px-2.5 py-1 text-xs font-bold tracking-wide text-white uppercase">
+      <span className="shrink-0 rounded-md bg-primary-600 px-2.5 py-1 text-xs font-bold tracking-wide text-white uppercase z-10">
         {label}
       </span>
 
-      {/* Scrolling titles */}
-      <div className="trending-ticker__track flex min-w-0 gap-6 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {posts.slice(0, 10).map((post, i) => (
-          <Link
-            key={post.id}
-            href={`/post/${post.handle}`}
-            className="flex shrink-0 items-center gap-2 text-sm text-neutral-700 transition-colors hover:text-primary-600 dark:text-neutral-300 dark:hover:text-primary-400"
-          >
-            <span className="font-semibold text-primary-500">{String(i + 1).padStart(2, '0')}</span>
-            <span className="max-w-[260px] truncate font-medium">{post.title}</span>
-          </Link>
-        ))}
+      {/* Scrolling track — duplicated content for seamless loop */}
+      <div className="relative min-w-0 flex-1 overflow-hidden">
+        <div className="trending-ticker__track flex w-max animate-ticker gap-6 hover:[animation-play-state:paused]">
+          {/* First set */}
+          {items.map((post, i) => (
+            <Link
+              key={post.id}
+              href={`/post/${post.handle}`}
+              className="flex shrink-0 items-center gap-2 text-sm text-neutral-700 transition-colors hover:text-primary-600 dark:text-neutral-300 dark:hover:text-primary-400"
+            >
+              <span className="font-semibold text-primary-500">{String(i + 1).padStart(2, '0')}</span>
+              <span className="max-w-[260px] truncate font-medium">{post.title}</span>
+            </Link>
+          ))}
+          {/* Duplicate set for seamless loop */}
+          {items.map((post, i) => (
+            <Link
+              key={`dup-${post.id}`}
+              href={`/post/${post.handle}`}
+              className="flex shrink-0 items-center gap-2 text-sm text-neutral-700 transition-colors hover:text-primary-600 dark:text-neutral-300 dark:hover:text-primary-400"
+              aria-hidden="true"
+            >
+              <span className="font-semibold text-primary-500">{String(i + 1).padStart(2, '0')}</span>
+              <span className="max-w-[260px] truncate font-medium">{post.title}</span>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   )
