@@ -59,7 +59,7 @@ export default function TopBar() {
             <li key={code}>
               <button
                 onClick={() => switchLocale(code)}
-                className={`flex items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-800 ${
+                className={`flex items-center gap-1 rounded-md px-1.5 py-1 transition-colors hover:bg-neutral-200 dark:hover:bg-neutral-800 ${
                   code === locale
                     ? 'bg-neutral-200 font-semibold text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
                     : ''
