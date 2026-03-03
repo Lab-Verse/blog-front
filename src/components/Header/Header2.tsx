@@ -50,7 +50,7 @@ const Header2: FC<Props> = async ({ bottomBorder, className, activeCategory }) =
         {/* Logo — always visible */}
         <Link href="/" className="inline-flex shrink-0 items-center">
           <Image
-            src="/images/twa-logo.png"
+            src="/images/twa-svg.png"
             alt="TWA - The World Ambassador"
             width={200}
             height={60}
