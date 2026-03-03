@@ -206,6 +206,7 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
               <div className="relative -mx-4 rounded-3xl px-4 py-10 lg:-mx-8 lg:px-8 lg:py-14">
                 <BackgroundSection />
                 <SectionCategoryBlock
+                  className="relative z-10"
                   category={block}
                   variant={blockVariant}
                   headerStyle={blockHeaderStyle}
@@ -231,6 +232,7 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
       <div className="relative py-16 lg:py-20">
         <BackgroundSection />
         <SectionSliderNewAuthors
+          className="relative z-10"
           heading={t('topEliteAuthorsHeading')}
           subHeading={t('topEliteAuthorsSubHeading')}
           authors={authors.slice(0, 10)}
