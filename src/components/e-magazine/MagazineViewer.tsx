@@ -4,6 +4,20 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import HTMLFlipBook from 'react-pageflip'
 import { useTranslations } from 'next-intl'
 
+// CDN base for pdfjs-dist — loaded at runtime to avoid webpack ESM bundling issues
+const PDFJS_VERSION = '5.4.624'
+const PDFJS_CDN = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/build`
+
+// R2 public base URL — rewritten through Next.js to avoid CORS
+const R2_PUBLIC_BASE = 'https://pub-b3abd4448aa7438db921404307c0e985.r2.dev'
+
+function proxyR2Url(url: string): string {
+  if (url.startsWith(R2_PUBLIC_BASE)) {
+    return url.replace(R2_PUBLIC_BASE, '/r2-proxy')
+  }
+  return url
+}
+
 interface MagazineViewerProps {
   pdfUrl: string
 }
@@ -59,15 +73,17 @@ export default function MagazineViewer({ pdfUrl }: MagazineViewerProps) {
         setIsLoading(true)
         setError(null)
 
-        // Dynamic import to avoid SSR issues
-        const pdfjsLib = await import('pdfjs-dist')
+        // Dynamic import from CDN to avoid webpack ESM bundling issues with pdfjs-dist v5
+        const pdfjsLib = await import(
+          /* webpackIgnore: true */ `${PDFJS_CDN}/pdf.min.mjs`
+        )
 
-        // Set up worker — use CDN for the matching version
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`
+        // Set up worker from the same CDN
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_CDN}/pdf.worker.min.mjs`
 
         const loadingTask = pdfjsLib.getDocument({
-          url: pdfUrl,
-          cMapUrl: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/cmaps/`,
+          url: proxyR2Url(pdfUrl),
+          cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/cmaps/`,
           cMapPacked: true,
         })
 

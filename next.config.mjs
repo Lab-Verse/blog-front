@@ -18,6 +18,12 @@ const nextConfig = {
       'react-stately',
     ],
   },
+  webpack: (config) => {
+    // pdfjs-dist optionally depends on 'canvas' (Node.js native); disable it
+    config.resolve.alias.canvas = false
+    return config
+  },
+  serverExternalPackages: ['pdfjs-dist'],
   images: {
     minimumCacheTTL: 2678400 * 6, // 3 months
     remotePatterns: [
@@ -73,6 +79,15 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/r2-proxy/:path*',
+        destination:
+          'https://pub-b3abd4448aa7438db921404307c0e985.r2.dev/:path*',
+      },
+    ]
   },
 }
 
