@@ -187,7 +187,7 @@ export function transformCategory(category: ApiCategory, posts?: ApiPost[]) {
     color: getCategoryColor(category.name),
     count: category.posts_count || 0,
     date: category.created_at,
-    thumbnail: makeImage(null, category.name),
+    thumbnail: makeImage(category.image_url, category.name),
     ...(posts && { posts: transformPosts(posts) }),
   }
 }

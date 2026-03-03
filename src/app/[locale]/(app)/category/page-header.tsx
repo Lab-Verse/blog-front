@@ -9,6 +9,7 @@ import { Button } from '@/shared/Button'
 import ButtonCircle from '@/shared/ButtonCircle'
 import { Dialog, DialogActions, DialogBody, DialogTitle } from '@/shared/dialog'
 import { Dropdown, DropdownButton, DropdownItem, DropdownMenu } from '@/shared/dropdown'
+import Image from 'next/image'
 import {
   CopyLinkIcon,
   Fire03Icon,
@@ -33,9 +34,25 @@ const PageHeader = ({
 }) => {
   const { name, description, handle, thumbnail, count, color } = category
 
+  const hasImage = thumbnail?.src && !thumbnail.src.includes('placeholder')
+
   return (
     <div className={clsx('w-full', className)}>
-      <div className="relative h-32 w-full bg-neutral-100 md:h-48 dark:bg-white/10" />
+      <div className="relative h-32 w-full overflow-hidden bg-neutral-100 md:h-48 dark:bg-white/10">
+        {hasImage && (
+          <>
+            <Image
+              src={thumbnail.src}
+              alt={name}
+              fill
+              className="object-cover"
+              sizes="100vw"
+              priority
+            />
+            <div className="absolute inset-0 bg-black/20" />
+          </>
+        )}
+      </div>
       <div className="container -mt-16">
         <div className="relative flex flex-col items-start gap-6 rounded-3xl border border-transparent bg-white p-5 shadow-xl md:flex-row md:rounded-4xl lg:p-8 lg:px-9 dark:border-neutral-700 dark:bg-neutral-900">
           {/* AVATAR */}
