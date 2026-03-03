@@ -173,6 +173,7 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
         <Select value={statusFilter} onChange={(e) => handleStatusFilter(e.target.value)} className="sm:w-48">
           <option value="all">All Status</option>
           <option value={PostStatus.PUBLISHED}>Published</option>
+          <option value={PostStatus.PENDING}>Pending Approval</option>
           <option value={PostStatus.DRAFT}>Draft</option>
           <option value={PostStatus.ARCHIVED}>Archived</option>
         </Select>
@@ -286,12 +287,14 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
                           color={
                             post.status === PostStatus.PUBLISHED
                               ? 'green'
-                              : post.status === PostStatus.DRAFT
-                                ? 'yellow'
-                                : 'zinc'
+                              : post.status === PostStatus.PENDING
+                                ? 'amber'
+                                : post.status === PostStatus.DRAFT
+                                  ? 'yellow'
+                                  : 'zinc'
                           }
                         >
-                          {post.status}
+                          {post.status === PostStatus.PENDING ? 'Pending Approval' : post.status}
                         </Badge>
                       </td>
                       <td className="px-3 py-5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">

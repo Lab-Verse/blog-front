@@ -398,12 +398,18 @@ export function SimpleEditor() {
     }
 
     try {
-      await createPost(formData).unwrap()
-      toast.success(
-        status === PostStatus.PUBLISHED
-          ? 'Post published successfully!'
-          : 'Post saved as draft!'
-      )
+      const result = await createPost(formData).unwrap()
+      if (status === PostStatus.PUBLISHED) {
+        // Backend may downgrade to PENDING if user lacks can_publish permission
+        const resultStatus = (result as any)?.status as string | undefined
+        if (resultStatus === 'pending' || resultStatus === PostStatus.PENDING) {
+          toast.success('Your post has been submitted for review. It will be published once approved by an admin.')
+        } else {
+          toast.success('Post published successfully!')
+        }
+      } else {
+        toast.success('Post saved as draft!')
+      }
       router.push('/dashboard/posts')
     } catch (err: any) {
       const message =

@@ -64,7 +64,15 @@ export const postsApi = baseApi.injectEndpoints({
           body,
         };
       },
-      transformResponse: (res: ApiEnvelope<Post>) => res.data ?? ({} as Post),
+      transformResponse: (res: unknown) => {
+        // Backend returns post directly or in an envelope
+        if (res && typeof res === 'object') {
+          const obj = res as Record<string, unknown>
+          if (obj.data && typeof obj.data === 'object') return obj.data as Post
+          if (obj.id) return res as Post
+        }
+        return {} as Post
+      },
       invalidatesTags: [{ type: 'Post', id: 'LIST' }, { type: 'UserPosts', id: 'LIST' }],
     }),
 

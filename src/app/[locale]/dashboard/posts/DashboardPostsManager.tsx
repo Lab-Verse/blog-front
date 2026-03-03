@@ -180,6 +180,7 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
                 >
                     <option value="all">{t('allStatus')}</option>
                     <option value={PostStatus.PUBLISHED}>{t('published')}</option>
+                    <option value={PostStatus.PENDING}>{t('pendingApproval')}</option>
                     <option value={PostStatus.DRAFT}>{t('draft')}</option>
                     <option value={PostStatus.ARCHIVED}>{t('archived')}</option>
                 </Select>
@@ -274,8 +275,8 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
                                                 <div className="mt-1 text-gray-500 dark:text-gray-400">{t('comments', { count: post.comments_count })}</div>
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-5 text-sm">
-                                                <Badge color={post.status === PostStatus.PUBLISHED ? 'green' : post.status === PostStatus.DRAFT ? 'yellow' : 'zinc'}>
-                                                    {post.status}
+                                                <Badge color={post.status === PostStatus.PUBLISHED ? 'green' : post.status === PostStatus.PENDING ? 'amber' : post.status === PostStatus.DRAFT ? 'yellow' : 'zinc'}>
+                                                    {post.status === PostStatus.PENDING ? t('pendingApproval') : post.status}
                                                 </Badge>
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 dark:text-gray-400"> {new Date(post.created_at).toLocaleDateString()}

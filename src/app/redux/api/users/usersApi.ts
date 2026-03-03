@@ -120,7 +120,8 @@ export const usersApi = baseApi.injectEndpoints({
     }),
 
     // ---------- Content ----------
-    getUserPosts: b.query<Post[], string>({
+    // NOTE: Renamed from getUserPosts to avoid collision with postsApi.getUserPosts
+    getUserPostsSimple: b.query<Post[], string>({
       query: (userId) => `/users/${userId}/posts`,
       transformResponse: (res: any) => (Array.isArray(res) ? res : (res.data ?? [])),
     }),
@@ -174,7 +175,7 @@ export const {
   useUpdateUserProfileMutation,
   useUploadProfilePictureMutation,
   useDeleteUserProfileMutation,
-  useGetUserPostsQuery,
+  useGetUserPostsSimpleQuery,
   useGetUserDraftsQuery,
   useGetUserBookmarksQuery,
   useGetUserFollowersQuery,
