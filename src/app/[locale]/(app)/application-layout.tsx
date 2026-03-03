@@ -1,3 +1,4 @@
+import BackToTopButton from '@/components/BackToTopButton'
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
 import Header2 from '@/components/Header/Header2'
@@ -46,6 +47,8 @@ const ApplicationLayout: React.FC<Props> = ({
       <Footer />
       {/* aside sidebar navigation */}
       <AsideSidebarNavigation />
+      {/* Floating back to top button */}
+      <BackToTopButton />
     </>
   )
 }

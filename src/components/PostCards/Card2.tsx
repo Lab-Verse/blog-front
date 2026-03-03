@@ -33,7 +33,7 @@ const Card2: FC<Props> = ({ className, size = 'normal', post }) => {
   } = post
 
   return (
-    <div className={clsx('group post-card-2 relative flex flex-col', className)}>
+    <div className={clsx('group post-card-2 relative flex flex-col transition-[transform] duration-300 hover:-translate-y-1', className)}>
       <div className="relative z-0 block h-0 w-full shrink-0 grow pt-[75%] sm:pt-[55%]">
         <Image
           fill

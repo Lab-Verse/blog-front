@@ -31,7 +31,7 @@ const Card3: FC<Props> = ({ className, post }) => {
   } = post
 
   return (
-    <div className={clsx('group post-card-3 flex flex-wrap items-center gap-x-7 gap-y-5 sm:flex-nowrap', className)}>
+    <div className={clsx('group post-card-3 flex flex-wrap items-center gap-x-7 gap-y-5 transition-[transform] duration-300 hover:-translate-y-0.5 sm:flex-nowrap', className)}>
       <div className="flex grow flex-col">
         <div className="space-y-3.5">
           <CategoryBadgeList categories={categories} />

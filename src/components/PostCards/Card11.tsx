@@ -25,7 +25,7 @@ const Card11: FC<Props> = ({ className, post, hiddenAuthor = false, ratio = 'asp
 
   return (
     <div
-      className={clsx('group post-card-11 relative flex flex-col rounded-3xl bg-white dark:bg-white/5', className)}
+      className={clsx('group post-card-11 relative flex flex-col rounded-3xl bg-white transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-white/5', className)}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >

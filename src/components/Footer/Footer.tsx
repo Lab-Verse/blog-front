@@ -143,7 +143,10 @@ const Footer: React.FC = async () => {
   }
 
   return (
-    <footer className="nc-Footer relative border-t border-neutral-200 dark:border-neutral-700">
+    <footer className="nc-Footer relative border-t-0">
+      {/* Accent gradient top border */}
+      <div className="h-1 bg-linear-to-r from-primary-500 via-secondary-400 to-primary-600" />
+
       <div className="container py-16 lg:py-28">
         <div className="grid grid-cols-2 gap-x-5 gap-y-10 sm:gap-x-8 md:grid-cols-4 lg:grid-cols-5 lg:gap-x-10">
           {/* Logo + tagline + socials */}
