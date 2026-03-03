@@ -201,30 +201,39 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
       <SectionAds />
 
       {/* ═══ Category Blocks with Subcategory Tabs ═══ */}
-      {categoryBlocks.map((block, idx) => (
-        <div key={block.id}>
-          {/* Alternate: every other block gets a subtle background */}
-          {idx % 2 === 1 ? (
-            <div className="relative -mx-4 rounded-3xl px-4 py-10 lg:-mx-8 lg:px-8 lg:py-14">
-              <BackgroundSection />
+      {categoryBlocks.map((block, idx) => {
+        // World category gets the magazine layout with centered header
+        const isWorld = block.slug === 'world'
+        const blockVariant = isWorld ? 'magazine' as const : LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]
+        const blockHeaderStyle = isWorld ? 'centered' as const : 'default' as const
+
+        return (
+          <div key={block.id}>
+            {/* Alternate: every other block gets a subtle background */}
+            {idx % 2 === 1 ? (
+              <div className="relative -mx-4 rounded-3xl px-4 py-10 lg:-mx-8 lg:px-8 lg:py-14">
+                <BackgroundSection />
+                <SectionCategoryBlock
+                  category={block}
+                  variant={blockVariant}
+                  headerStyle={blockHeaderStyle}
+                  sectionIndex={isWorld ? undefined : idx + 1}
+                />
+              </div>
+            ) : (
               <SectionCategoryBlock
                 category={block}
-                variant={LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]}
-                sectionIndex={idx + 1}
+                variant={blockVariant}
+                headerStyle={blockHeaderStyle}
+                sectionIndex={isWorld ? undefined : idx + 1}
               />
-            </div>
-          ) : (
-            <SectionCategoryBlock
-              category={block}
-              variant={LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]}
-              sectionIndex={idx + 1}
-            />
-          )}
+            )}
 
-          {/* Insert ads every 3 blocks */}
-          {(idx + 1) % 3 === 0 && idx < categoryBlocks.length - 1 && <SectionAds className="mt-20 lg:mt-28" />}
-        </div>
-      ))}
+            {/* Insert ads every 3 blocks */}
+            {(idx + 1) % 3 === 0 && idx < categoryBlocks.length - 1 && <SectionAds className="mt-20 lg:mt-28" />}
+          </div>
+        )
+      })}
 
       {/* ═══ Top Authors ═══ */}
       <div className="relative py-16 lg:py-20">

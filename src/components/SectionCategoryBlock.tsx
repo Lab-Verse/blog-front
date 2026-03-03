@@ -32,9 +32,11 @@ export interface CategoryBlockData {
 interface Props {
   category: CategoryBlockData
   /** Visual layout variant for design diversity */
-  variant?: 'featured' | 'grid' | 'list' | 'spotlight' | 'compact'
+  variant?: 'featured' | 'grid' | 'list' | 'spotlight' | 'compact' | 'magazine'
   /** Section index for editorial numbering (1-based) */
   sectionIndex?: number
+  /** Header style: 'default' = left-aligned accent, 'centered' = large centered title */
+  headerStyle?: 'default' | 'centered'
   className?: string
 }
 
@@ -58,7 +60,7 @@ function getColorScheme(color: string) {
 // Main Component
 // ═══════════════════════════════════════════════════════════════════════
 
-const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIndex, className }) => {
+const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIndex, headerStyle = 'default', className }) => {
   // Build "All" tab: prefer allPosts (includes orphaned parent-level posts),
   // fallback to flatMapping child tabs
   const aggregatedPosts = category.allPosts && category.allPosts.length > 0
@@ -81,55 +83,99 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
 
   return (
     <section className={clsx('section-category-block', className)}>
-      {/* Header with accent underline */}
-      <div className="mb-8">
-        <div className="flex items-end justify-between gap-4">
-          <div className="flex items-center gap-3">
-            {sectionIndex != null && (
-              <span className={clsx('text-4xl font-black opacity-15 lg:text-5xl', colors.text)}>
-                {String(sectionIndex).padStart(2, '0')}
-              </span>
-            )}
+      {headerStyle === 'centered' ? (
+        /* ── Centered header: large title + centered tabs ── */
+        <div className="mb-10">
+          <div className="text-center">
             <Link
               href={`/category/${category.slug}`}
-              className={clsx('text-2xl font-bold hover:underline lg:text-3xl', colors.text)}
+              className="inline-block text-3xl font-bold text-neutral-900 hover:underline sm:text-4xl lg:text-5xl dark:text-neutral-100"
+              style={{ fontFamily: 'var(--font-serif)' }}
             >
               {category.name}
             </Link>
           </div>
-          <Link
-            href={`/category/${category.slug}`}
-            className="group hidden items-center gap-1 text-sm font-medium text-neutral-500 hover:text-neutral-900 sm:flex dark:hover:text-white"
-          >
-            View all
-            <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
-          </Link>
-        </div>
-        {/* Accent underline */}
-        <div className="mt-3 flex items-center gap-2">
-          <div className={clsx('h-1 w-12 rounded-full', colors.pill)} />
-          <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
-        </div>
-      </div>
 
-      {/* Subcategory tabs */}
-      {tabs.length > 1 && (
-        <div className="mb-6 flex flex-wrap gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTabId(tab.id)}
-              className={clsx(
-                'rounded-full px-4 py-1.5 text-sm font-medium transition-all',
-                activeTabId === tab.id
-                  ? colors.pill
-                  : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
-              )}
-            >
-              {tab.name}
-            </button>
-          ))}
+          {/* Subcategory tabs — centered */}
+          {tabs.length > 1 && (
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTabId(tab.id)}
+                  className={clsx(
+                    'rounded-full px-4 py-1.5 text-sm font-medium transition-all',
+                    activeTabId === tab.id
+                      ? colors.pill
+                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                  )}
+                >
+                  {tab.name}
+                </button>
+              ))}
+              <Link
+                href={`/category/${category.slug}`}
+                className="group ms-4 hidden items-center gap-1 text-sm font-medium text-neutral-500 hover:text-neutral-900 sm:inline-flex dark:hover:text-white"
+              >
+                View all
+                <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
+              </Link>
+            </div>
+          )}
         </div>
+      ) : (
+        /* ── Default header: left-aligned with accent underline ── */
+        <>
+          <div className="mb-8">
+            <div className="flex items-end justify-between gap-4">
+              <div className="flex items-center gap-3">
+                {sectionIndex != null && (
+                  <span className={clsx('text-4xl font-black opacity-15 lg:text-5xl', colors.text)}>
+                    {String(sectionIndex).padStart(2, '0')}
+                  </span>
+                )}
+                <Link
+                  href={`/category/${category.slug}`}
+                  className={clsx('text-2xl font-bold hover:underline lg:text-3xl', colors.text)}
+                >
+                  {category.name}
+                </Link>
+              </div>
+              <Link
+                href={`/category/${category.slug}`}
+                className="group hidden items-center gap-1 text-sm font-medium text-neutral-500 hover:text-neutral-900 sm:flex dark:hover:text-white"
+              >
+                View all
+                <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
+              </Link>
+            </div>
+            {/* Accent underline */}
+            <div className="mt-3 flex items-center gap-2">
+              <div className={clsx('h-1 w-12 rounded-full', colors.pill)} />
+              <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
+            </div>
+          </div>
+
+          {/* Subcategory tabs */}
+          {tabs.length > 1 && (
+            <div className="mb-6 flex flex-wrap gap-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTabId(tab.id)}
+                  className={clsx(
+                    'rounded-full px-4 py-1.5 text-sm font-medium transition-all',
+                    activeTabId === tab.id
+                      ? colors.pill
+                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                  )}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Content — render based on variant, adapt for low post counts */}
@@ -144,6 +190,7 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
               {variant === 'list' && <LayoutList posts={activeTab.posts} colors={colors} />}
               {variant === 'spotlight' && <LayoutSpotlight posts={activeTab.posts} />}
               {variant === 'compact' && <LayoutCompact posts={activeTab.posts} />}
+              {variant === 'magazine' && <LayoutMagazine posts={activeTab.posts} />}
             </>
           )}
         </div>
@@ -250,6 +297,39 @@ function LayoutCompact({ posts }: { posts: TPost[] }) {
       {posts.slice(0, 6).map((post) => (
         <Card3 key={post.id} post={post} />
       ))}
+    </div>
+  )
+}
+
+/**
+ * Magazine: 2 small cards left | 1 large card center | 2 small cards right
+ * (Newspaper broadsheet / NYT-style spread)
+ */
+function LayoutMagazine({ posts }: { posts: TPost[] }) {
+  const [hero, ...rest] = posts
+  const leftPosts = rest.slice(0, 2)
+  const rightPosts = rest.slice(2, 4)
+
+  return (
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-4 lg:gap-8">
+      {/* Left column — 2 small cards stacked */}
+      <div className="flex flex-col gap-6 md:col-span-1">
+        {leftPosts.map((post) => (
+          <Card11 key={post.id} post={post} ratio="aspect-4/3" />
+        ))}
+      </div>
+
+      {/* Center — 1 large hero card */}
+      <div className="md:col-span-2">
+        {hero && <Card2 size="large" className="h-full" post={hero} />}
+      </div>
+
+      {/* Right column — 2 small cards stacked */}
+      <div className="flex flex-col gap-6 md:col-span-1">
+        {rightPosts.map((post) => (
+          <Card11 key={post.id} post={post} ratio="aspect-4/3" />
+        ))}
+      </div>
     </div>
   )
 }
