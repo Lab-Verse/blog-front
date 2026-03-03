@@ -1,7 +1,6 @@
 import BackgroundSection from '@/components/BackgroundSection'
 import SectionAds from '@/components/SectionAds'
-import SectionMagazine9 from '@/components/SectionMagazine9'
-import HeroCarousel from '@/components/HeroCarousel'
+import HeroEditorial from '@/components/HeroEditorial'
 import TrendingTicker from '@/components/TrendingTicker'
 import SectionCategoryBlock from '@/components/SectionCategoryBlock'
 import type { CategoryBlockData } from '@/components/SectionCategoryBlock'
@@ -185,18 +184,11 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
         }}
       />
 
-      {/* ═══ Hero Section ═══ */}
-      <HeroCarousel posts={posts.slice(0, 8)} />
-
-      {/* ═══ Trending Strip ═══ */}
+      {/* ═══ Trending Ticker ═══ */}
       <TrendingTicker posts={posts.slice(0, 10)} label={t('trending')} />
 
-      {/* ═══ Popular News ═══ */}
-      <SectionMagazine9
-        heading={t('popularNewsHeading')}
-        subHeading={t('popularNewsSubHeading')}
-        posts={posts.slice(0, 18)}
-      />
+      {/* ═══ CNN-style Editorial Hero ═══ */}
+      <HeroEditorial posts={posts.slice(0, 11)} />
 
       <SectionAds />
 

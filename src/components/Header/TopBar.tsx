@@ -59,8 +59,8 @@ export default function TopBar() {
           <Image
             src="/images/twa.png"
             alt="TWA"
-            width={100}
-            height={30}
+            width={300}
+            height={100}
             className="h-6 w-auto"
           />
         </div>
