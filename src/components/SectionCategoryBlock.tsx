@@ -3,6 +3,7 @@
 import type { TPost } from '@/utils/dataTransformers'
 import { FC, useState } from 'react'
 import clsx from 'clsx'
+import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import Card11 from './PostCards/Card11'
@@ -32,11 +33,11 @@ export interface CategoryBlockData {
 interface Props {
   category: CategoryBlockData
   /** Visual layout variant for design diversity */
-  variant?: 'featured' | 'grid' | 'list' | 'spotlight' | 'compact' | 'magazine'
+  variant?: 'featured' | 'grid' | 'list' | 'spotlight' | 'compact' | 'magazine' | 'editorial'
   /** Section index for editorial numbering (1-based) */
   sectionIndex?: number
-  /** Header style: 'default' = left-aligned accent, 'centered' = large centered title */
-  headerStyle?: 'default' | 'centered'
+  /** Header style: 'default' = left-aligned accent, 'centered' = large centered title, 'editorial' = FT-style centered uppercase with text nav */
+  headerStyle?: 'default' | 'centered' | 'editorial'
   className?: string
 }
 
@@ -82,8 +83,40 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
   const colors = getColorScheme(category.color)
 
   return (
-    <section className={clsx('section-category-block', className)}>
-      {headerStyle === 'centered' ? (
+    <section className={clsx('section-category-block', className, headerStyle === 'editorial' && 'rounded-3xl bg-[#FFF1E5] px-4 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16 dark:bg-neutral-900')}>
+      {headerStyle === 'editorial' ? (
+        /* ── Editorial header: FT-style centered uppercase title + text nav tabs ── */
+        <div className="mb-10">
+          <div className="text-center">
+            <Link
+              href={`/category/${category.slug}`}
+              className="heading-serif inline-block text-xl font-bold tracking-widest text-neutral-900 uppercase hover:underline sm:text-2xl dark:text-neutral-100"
+            >
+              {category.name}
+            </Link>
+          </div>
+
+          {/* Subcategory text links — FT style */}
+          {tabs.length > 1 && (
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-b border-neutral-300 py-3 dark:border-neutral-700">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTabId(tab.id)}
+                  className={clsx(
+                    'text-xs font-bold tracking-wider uppercase transition-colors sm:text-sm',
+                    activeTabId === tab.id
+                      ? 'text-neutral-900 dark:text-white'
+                      : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                  )}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : headerStyle === 'centered' ? (
         /* ── Centered header: large title + centered tabs ── */
         <div className="mb-10">
           <div className="text-center">
@@ -190,6 +223,7 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
               {variant === 'spotlight' && <LayoutSpotlight posts={activeTab.posts} />}
               {variant === 'compact' && <LayoutCompact posts={activeTab.posts} />}
               {variant === 'magazine' && <LayoutMagazine posts={activeTab.posts} />}
+              {variant === 'editorial' && <LayoutEditorial posts={activeTab.posts} colors={colors} />}
             </>
           )}
         </div>
@@ -330,6 +364,92 @@ function LayoutMagazine({ posts }: { posts: TPost[] }) {
         ))}
       </div>
     </div>
+  )
+}
+
+/**
+ * Editorial: FT-inspired clean layout — 2 large cards on top + 3 smaller cards below.
+ * Each card shows: image → category label in accent → serif title (no social buttons).
+ */
+function LayoutEditorial({ posts, colors }: { posts: TPost[]; colors: { text: string } }) {
+  const topPosts = posts.slice(0, 2)
+  const bottomPosts = posts.slice(2, 5)
+
+  return (
+    <div className="space-y-8">
+      {/* Top row: 2 large cards */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8">
+        {topPosts.map((post) => (
+          <EditorialCard key={post.id} post={post} colors={colors} size="large" />
+        ))}
+      </div>
+
+      {/* Bottom row: 3 smaller cards */}
+      {bottomPosts.length > 0 && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+          {bottomPosts.map((post) => (
+            <EditorialCard key={post.id} post={post} colors={colors} size="small" />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** FT-style editorial card: image + category label + serif title */
+function EditorialCard({
+  post,
+  colors,
+  size,
+}: {
+  post: TPost
+  colors: { text: string }
+  size: 'large' | 'small'
+}) {
+  const { title, handle, featuredImage, categories } = post
+  const primaryCategory = categories[0]
+
+  return (
+    <article className="group flex flex-col">
+      {/* Image */}
+      <Link href={`/post/${handle}`} className="relative block overflow-hidden">
+        <div className={clsx('relative w-full', size === 'large' ? 'aspect-16/10' : 'aspect-16/10')}>
+          <Image
+            src={featuredImage}
+            alt={title}
+            fill
+            sizes={size === 'large' ? '(max-width: 640px) 100vw, 50vw' : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'}
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+      </Link>
+
+      {/* Category label */}
+      <div className="mt-4 text-center">
+        {primaryCategory && (
+          <Link
+            href={`/category/${primaryCategory.handle}`}
+            className={clsx('text-xs font-bold tracking-wider uppercase sm:text-sm', colors.text)}
+          >
+            {primaryCategory.name}
+          </Link>
+        )}
+      </div>
+
+      {/* Title */}
+      <h3
+        className={clsx(
+          'heading-serif mt-2 text-center font-bold text-neutral-900 dark:text-neutral-100',
+          size === 'large'
+            ? 'text-base leading-snug sm:text-lg md:text-xl'
+            : 'text-sm leading-snug sm:text-base'
+        )}
+      >
+        <Link href={`/post/${handle}`} className="line-clamp-3 hover:underline">
+          {title}
+        </Link>
+      </h3>
+    </article>
   )
 }
 

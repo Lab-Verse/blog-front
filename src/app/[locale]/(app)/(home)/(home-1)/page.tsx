@@ -149,9 +149,19 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
   })
 
   // Filter out categories with no posts at all
-  const categoryBlocks = categoryBlocksData.filter((block) =>
+  const categoryBlocksRaw = categoryBlocksData.filter((block) =>
     block.tabs.some((tab) => tab.posts.length > 0),
   )
+
+  // Ensure Embassy & Consulates appears right after Pakistan
+  const pakistanIdx = categoryBlocksRaw.findIndex((b) => b.slug === 'pakistan')
+  const embassyIdx = categoryBlocksRaw.findIndex((b) => b.slug === 'embassy-consulates')
+  const categoryBlocks = [...categoryBlocksRaw]
+  if (pakistanIdx !== -1 && embassyIdx !== -1 && embassyIdx !== pakistanIdx + 1) {
+    const [embassyBlock] = categoryBlocks.splice(embassyIdx, 1)
+    const newPakIdx = categoryBlocks.findIndex((b) => b.slug === 'pakistan')
+    categoryBlocks.splice(newPakIdx + 1, 0, embassyBlock)
+  }
 
   // ── Step 3: Widget data — reuse already-fetched posts ──
   const parentPostsMap = new Map<string, typeof apiPosts>()
@@ -196,13 +206,30 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
       {categoryBlocks.map((block, idx) => {
         // World category gets the magazine layout with centered header
         const isWorld = block.slug === 'world'
-        const blockVariant = isWorld ? 'magazine' as const : LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]
-        const blockHeaderStyle = isWorld ? 'centered' as const : 'default' as const
+        // Embassy & Consulates gets the FT-style editorial layout
+        const isEmbassy = block.slug === 'embassy-consulates'
+        const blockVariant = isEmbassy
+          ? 'editorial' as const
+          : isWorld
+            ? 'magazine' as const
+            : LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]
+        const blockHeaderStyle = isEmbassy
+          ? 'editorial' as const
+          : isWorld
+            ? 'centered' as const
+            : 'default' as const
 
         return (
           <div key={block.id}>
-            {/* Alternate: every other block gets a subtle background */}
-            {idx % 2 === 1 ? (
+            {/* Embassy & Consulates: editorial style with its own background */}
+            {isEmbassy ? (
+              <SectionCategoryBlock
+                category={block}
+                variant={blockVariant}
+                headerStyle={blockHeaderStyle}
+              />
+            ) : /* Alternate: every other block gets a subtle background */
+            idx % 2 === 1 ? (
               <div className="relative -mx-4 rounded-3xl px-4 py-10 lg:-mx-8 lg:px-8 lg:py-14">
                 <BackgroundSection />
                 <SectionCategoryBlock
@@ -210,7 +237,7 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
                   category={block}
                   variant={blockVariant}
                   headerStyle={blockHeaderStyle}
-                  sectionIndex={isWorld ? undefined : idx + 1}
+                  sectionIndex={isWorld || isEmbassy ? undefined : idx + 1}
                 />
               </div>
             ) : (
@@ -218,7 +245,7 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
                 category={block}
                 variant={blockVariant}
                 headerStyle={blockHeaderStyle}
-                sectionIndex={isWorld ? undefined : idx + 1}
+                sectionIndex={isWorld || isEmbassy ? undefined : idx + 1}
               />
             )}
 
