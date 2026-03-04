@@ -20,7 +20,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { generateAlternateLanguages } from '@/utils/seo'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://twa.com.pk'
 const POSTS_PER_PAGE = 12
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>

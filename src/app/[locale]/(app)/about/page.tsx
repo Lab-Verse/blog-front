@@ -10,7 +10,7 @@ import { generateAlternateLanguages } from '@/utils/seo'
 import { Link } from '@/i18n/navigation'
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'TWA Blog'
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://twa.com.pk'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params

@@ -19,7 +19,7 @@ const SectionSliderNewAuthors = nextDynamic(() => import('@/components/SectionSl
 
 export const revalidate = 60 // ISR: revalidate every 60 seconds
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://watt.com.pk'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://twa.com.pk'
 
 // Rotating color palette for category blocks
 const CATEGORY_COLORS = ['blue', 'red', 'green', 'purple', 'teal', 'pink', 'indigo', 'yellow']

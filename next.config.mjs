@@ -62,13 +62,13 @@ const nextConfig = {
       // Production site (self-referencing images)
       {
         protocol: 'https',
-        hostname: 'watt.com.pk',
+        hostname: 'twa.com.pk',
         pathname: '/**',
       },
       // Production API server
       {
         protocol: 'https',
-        hostname: 'api.watt.com.pk',
+        hostname: 'api.twa.com.pk',
         pathname: '/**',
       },
       // Local API server
