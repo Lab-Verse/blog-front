@@ -228,7 +228,7 @@ export default async function LocaleLayout({
         {/* FOUC prevention: apply dark class synchronously before paint */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark-mode'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()`
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark-mode'){document.documentElement.classList.add('dark')}}catch(e){}})()`
           }}
         />
         {/* Skip to content link for accessibility */}
