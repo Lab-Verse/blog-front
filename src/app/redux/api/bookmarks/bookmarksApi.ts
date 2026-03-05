@@ -1,5 +1,6 @@
 import { baseApi } from "../baseApi";
 import type { ApiEnvelope } from "../../types/auth/authTypes";
+import { extractArrayFromResponse, extractObjectFromResponse } from "@/utils/apiHelpers";
 import type {
   Bookmark,
   CreateBookmarkDto,
@@ -10,8 +11,8 @@ export const bookmarksApi = baseApi.injectEndpoints({
     // ---------- Bookmarks ----------
     createBookmark: builder.mutation<Bookmark, CreateBookmarkDto>({
       query: (body) => ({ url: '/bookmarks', method: 'POST', body }),
-      transformResponse: (res: ApiEnvelope<Bookmark>) => 
-        res.data ?? ({} as Bookmark),
+      transformResponse: (res: unknown) =>
+        extractObjectFromResponse<Bookmark>(res) ?? ({} as Bookmark),
       invalidatesTags: (_result, _error, { user_id }) => [
         { type: 'Bookmark', id: 'LIST' },
         { type: 'BookmarksByUser', id: user_id },
@@ -23,7 +24,7 @@ export const bookmarksApi = baseApi.injectEndpoints({
         url: `/bookmarks/user/${userId}`, 
         method: 'GET' 
       }),
-      transformResponse: (res: ApiEnvelope<Bookmark[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Bookmark>(res),
       providesTags: (result, _error, userId) =>
         result
           ? [

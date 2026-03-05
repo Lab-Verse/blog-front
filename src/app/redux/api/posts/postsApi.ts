@@ -93,7 +93,7 @@ export const postsApi = baseApi.injectEndpoints({
           body: data,
         };
       },
-      transformResponse: (res: ApiEnvelope<Post>) => res.data ?? ({} as Post),
+      transformResponse: (res: unknown) => extractObjectFromResponse<Post>(res) ?? ({} as Post),
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Post', id },
         { type: 'Post', id: 'LIST' },
@@ -121,7 +121,7 @@ export const postsApi = baseApi.injectEndpoints({
 
     getPostMedia: builder.query<PostMedia[], string>({
       query: (postId) => ({ url: `/posts/${postId}/media`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<PostMedia[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<PostMedia>(res),
       providesTags: (_result, _error, postId) => [
         { type: 'PostMedia', id: postId },
       ],
@@ -129,7 +129,7 @@ export const postsApi = baseApi.injectEndpoints({
 
     getPostTags: builder.query<PostTag[], string>({
       query: (postId) => ({ url: `/posts/${postId}/tags`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<PostTag[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<PostTag>(res),
       providesTags: (_result, _error, postId) => [
         { type: 'PostTags', id: postId },
       ],
@@ -137,7 +137,7 @@ export const postsApi = baseApi.injectEndpoints({
 
     getPostReactions: builder.query<Reaction[], string>({
       query: (postId) => ({ url: `/posts/${postId}/reactions`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Reaction[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Reaction>(res),
       providesTags: (_result, _error, postId) => [
         { type: 'PostReactions', id: postId },
       ],
@@ -250,8 +250,9 @@ export const postsApi = baseApi.injectEndpoints({
     // ---------- Dashboard Stats ----------
     getPostStats: builder.query<import('../../types/posts/postTypes').PostStats, string>({
       query: (userId) => ({ url: `/posts/stats?userId=${userId}`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<import('../../types/posts/postTypes').PostStats>) =>
-        res.data ?? {
+      transformResponse: (res: unknown) => {
+        const stats = extractObjectFromResponse<import('../../types/posts/postTypes').PostStats>(res);
+        return stats ?? {
           totalPosts: 0,
           totalViews: 0,
           totalLikes: 0,
@@ -262,7 +263,8 @@ export const postsApi = baseApi.injectEndpoints({
           avgViewsPerPost: 0,
           avgLikesPerPost: 0,
           avgCommentsPerPost: 0,
-        },
+        };
+      },
       providesTags: (_result, _error, userId) => [
         { type: 'UserPosts', id: `stats-${userId}` },
       ],

@@ -44,7 +44,8 @@
     "darkTheme": "Dark theme",
     "help": "Help",
     "logOut": "Log out",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "more": "More"
   },
   "topBar": {
     "languages": {
@@ -455,7 +456,11 @@
     "dontMissThese": "Don't miss these",
     "moreFromAuthor": "More from author",
     "postNotFound": "Post not found",
-    "postNotFoundDescription": "Post not found"
+    "postNotFoundDescription": "Post not found",
+    "disclaimer": {
+      "title": "Disclaimer",
+      "text": "The views, opinions, and content expressed in this article are solely those of the author and do not necessarily reflect the official policy or position of The World Ambassador (TWA). TWA does not assume any responsibility or liability for the accuracy, completeness, or authenticity of the information presented. Under the Prevention of Electronic Crimes Act (PECA), 2016, readers are encouraged to verify facts independently."
+    }
   },
   "category": {
     "categoryNotFound": "Category not found",

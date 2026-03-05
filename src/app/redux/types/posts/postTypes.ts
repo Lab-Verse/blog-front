@@ -32,6 +32,7 @@ export interface Post {
   user_id: string;
   category_id: string;
   status: PostStatus;
+  post_type?: string;
   featured_image?: string;
   views_count: number;
   likes_count: number;
@@ -74,6 +75,7 @@ export interface CreatePostDto {
   user_id: string;
   category_id: string;
   status?: PostStatus;
+  post_type?: string;
   featured_image?: string;
   published_at?: string;
   excerpt?: string;

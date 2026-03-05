@@ -1,5 +1,6 @@
 import { baseApi } from "../baseApi";
 import type { ApiEnvelope } from "../../types/auth/authTypes";
+import { extractArrayFromResponse, extractObjectFromResponse } from "@/utils/apiHelpers";
 import type {
   Media,
   CreateMediaDto,
@@ -11,7 +12,7 @@ export const mediaApi = baseApi.injectEndpoints({
     // ---------- Media CRUD ----------
     getAllMedia: builder.query<Media[], void>({
       query: () => ({ url: '/media', method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Media[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Media>(res),
       providesTags: (result) =>
         result
           ? [
@@ -23,15 +24,15 @@ export const mediaApi = baseApi.injectEndpoints({
 
     getMediaById: builder.query<Media, string>({
       query: (id) => ({ url: `/media/${id}`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Media>) =>
-        res.data ?? ({} as Media),
+      transformResponse: (res: unknown) =>
+        extractObjectFromResponse<Media>(res) ?? ({} as Media),
       providesTags: (_result, _error, id) => [{ type: 'Media', id }],
     }),
 
     createMedia: builder.mutation<Media, CreateMediaDto>({
       query: (body) => ({ url: '/media', method: 'POST', body }),
-      transformResponse: (res: ApiEnvelope<Media>) =>
-        res.data ?? ({} as Media),
+      transformResponse: (res: unknown) =>
+        extractObjectFromResponse<Media>(res) ?? ({} as Media),
       invalidatesTags: [{ type: 'Media', id: 'LIST' }],
     }),
 
@@ -41,8 +42,8 @@ export const mediaApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-      transformResponse: (res: ApiEnvelope<Media>) =>
-        res.data ?? ({} as Media),
+      transformResponse: (res: unknown) =>
+        extractObjectFromResponse<Media>(res) ?? ({} as Media),
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Media', id },
         { type: 'Media', id: 'LIST' },
@@ -63,7 +64,7 @@ export const mediaApi = baseApi.injectEndpoints({
         url: `/media/user/${userId}`,
         method: 'GET'
       }),
-      transformResponse: (res: ApiEnvelope<Media[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Media>(res),
       providesTags: (result, _error, userId) =>
         result
           ? [
@@ -113,7 +114,7 @@ export const mediaApi = baseApi.injectEndpoints({
           method: 'GET',
         };
       },
-      transformResponse: (res: ApiEnvelope<Media[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Media>(res),
       providesTags: (result) =>
         result
           ? [

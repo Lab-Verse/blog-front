@@ -1,6 +1,7 @@
 // apps/web/src/redux/services/users.api.ts
 import type { ApiEnvelope } from '../../types/auth/authTypes'
 import { baseApi } from '../baseApi'
+import { extractArrayFromResponse, extractObjectFromResponse } from '@/utils/apiHelpers'
 import type {
   Bookmark,
   CreateUserDto,
@@ -21,7 +22,7 @@ export const usersApi = baseApi.injectEndpoints({
     // ---------- Users ----------
     getAllUsers: b.query<User[], void>({
       query: () => ({ url: '/users', method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<User[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<User>(res),
       providesTags: (result) =>
         result
           ? [{ type: 'User' as const, id: 'LIST' }, ...result.map(({ id }) => ({ type: 'User' as const, id }))]
@@ -30,13 +31,13 @@ export const usersApi = baseApi.injectEndpoints({
 
     getUserById: b.query<User, string>({
       query: (id) => ({ url: `/users/${id}`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<User>) => res.data ?? ({} as User),
+      transformResponse: (res: unknown) => extractObjectFromResponse<User>(res) ?? ({} as User),
       providesTags: (_res, _err, id) => [{ type: 'User' as const, id }],
     }),
 
     createUser: b.mutation<User, CreateUserDto>({
       query: (body) => ({ url: '/users', method: 'POST', body }),
-      transformResponse: (res: ApiEnvelope<User>) => res.data ?? ({} as User),
+      transformResponse: (res: unknown) => extractObjectFromResponse<User>(res) ?? ({} as User),
       invalidatesTags: [{ type: 'User' as const, id: 'LIST' }],
     }),
 
@@ -46,7 +47,7 @@ export const usersApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-      transformResponse: (res: ApiEnvelope<User>) => res.data ?? ({} as User),
+      transformResponse: (res: unknown) => extractObjectFromResponse<User>(res) ?? ({} as User),
       invalidatesTags: (_res, _err, { id }) => [
         { type: 'User' as const, id },
         { type: 'User' as const, id: 'LIST' },
@@ -83,7 +84,7 @@ export const usersApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      transformResponse: (res: ApiEnvelope<UserProfile>) => res.data ?? ({} as UserProfile),
+      transformResponse: (res: unknown) => extractObjectFromResponse<UserProfile>(res) ?? ({} as UserProfile),
       invalidatesTags: (_res, _err, { userId }) => [{ type: 'UserProfile' as const, id: userId }],
     }),
 
@@ -93,7 +94,7 @@ export const usersApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-      transformResponse: (res: ApiEnvelope<UserProfile>) => res.data ?? ({} as UserProfile),
+      transformResponse: (res: unknown) => extractObjectFromResponse<UserProfile>(res) ?? ({} as UserProfile),
       invalidatesTags: (_res, _err, { userId }) => [{ type: 'UserProfile' as const, id: userId }],
     }),
 
@@ -107,7 +108,7 @@ export const usersApi = baseApi.injectEndpoints({
           body: formData,
         }
       },
-      transformResponse: (res: ApiEnvelope<UserProfile>) => res.data ?? ({} as UserProfile),
+      transformResponse: (res: unknown) => extractObjectFromResponse<UserProfile>(res) ?? ({} as UserProfile),
       invalidatesTags: (_res, _err, { userId }) => [{ type: 'UserProfile' as const, id: userId }],
     }),
 
@@ -128,26 +129,26 @@ export const usersApi = baseApi.injectEndpoints({
 
     getUserDrafts: b.query<Draft[], string>({
       query: (userId) => ({ url: `/users/${userId}/drafts`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Draft[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Draft>(res),
       providesTags: (_res, _err, userId) => [{ type: 'UserDrafts' as const, id: userId }],
     }),
 
     getUserBookmarks: b.query<Bookmark[], string>({
       query: (userId) => ({ url: `/users/${userId}/bookmarks`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Bookmark[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Bookmark>(res),
       providesTags: (_res, _err, userId) => [{ type: 'UserBookmarks' as const, id: userId }],
     }),
 
     // ---------- Social ----------
     getUserFollowers: b.query<Follower[], string>({
       query: (userId) => ({ url: `/users/${userId}/followers`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Follower[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Follower>(res),
       providesTags: (_res, _err, userId) => [{ type: 'UserFollowers' as const, id: userId }],
     }),
 
     getUserFollowing: b.query<Following, string>({
       query: (userId) => ({ url: `/users/${userId}/following`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Following>) => res.data ?? ({} as Following),
+      transformResponse: (res: unknown) => extractObjectFromResponse<Following>(res) ?? ({} as Following),
       providesTags: (_res, _err, userId) => [{ type: 'UserFollowing' as const, id: userId }],
     }),
 
@@ -157,7 +158,7 @@ export const usersApi = baseApi.injectEndpoints({
         url: `/users/${userId}/notifications`,
         method: 'GET',
       }),
-      transformResponse: (res: ApiEnvelope<Notification[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Notification>(res),
       providesTags: (_res, _err, userId) => [{ type: 'UserNotifications' as const, id: userId }],
     }),
   }),

@@ -4,7 +4,6 @@ import type { TPost } from '@/utils/dataTransformers'
 import clsx from 'clsx'
 import { Link } from '@/i18n/navigation'
 import { FC, useState } from 'react'
-import CategoryBadgeList from '../CategoryBadgeList'
 import PostCardCommentBtn from '../PostCardCommentBtn'
 import PostCardLikeBtn from '../PostCardLikeBtn'
 import PostCardMeta from '../PostCardMeta/PostCardMeta'
@@ -18,28 +17,38 @@ interface Props {
   hiddenAuthor?: boolean
 }
 
-const Card11: FC<Props> = ({ className, post, hiddenAuthor = false, ratio = 'aspect-4/3' }) => {
+const Card11: FC<Props> = ({ className, post, hiddenAuthor = false, ratio = 'aspect-16/9' }) => {
   const { title, handle, categories, date, likeCount, liked, commentCount, readingTime, bookmarked } = post
+  const primaryCategory = categories?.[0]
 
   const [isHover, setIsHover] = useState(false)
 
   return (
     <div
-      className={clsx('group post-card-11 relative flex flex-col rounded-3xl bg-white transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-white/5', className)}
+      className={clsx('group post-card-11 relative flex flex-col rounded-lg bg-white dark:bg-white/5', className)}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
-      <div className={clsx('relative w-full shrink-0 overflow-hidden rounded-t-3xl', ratio)}>
-        <PostFeaturedMedia post={post} isHover={isHover} />
-      </div>
-      <div className="absolute inset-x-3 top-3">
-        <CategoryBadgeList categories={categories} />
+      <div className={clsx('relative w-full shrink-0 overflow-hidden rounded-t-lg', ratio)}>
+        <PostFeaturedMedia post={post} isHover={isHover} className="transition-transform duration-500 group-hover:scale-[1.02]" />
+        <div className="absolute bottom-2 start-2 flex flex-wrap gap-1.5">
+          {post.postType === 'opinion' && (
+            <span className="rounded bg-primary-700 px-2.5 py-1 text-[11px] font-bold tracking-wider text-white uppercase">
+              Opinion
+            </span>
+          )}
+          {primaryCategory && (
+            <span className="rounded bg-primary-600 px-2.5 py-1 text-xs font-bold tracking-wide text-white uppercase">
+              {primaryCategory.name}
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="flex grow flex-col gap-y-3 rounded-b-3xl border p-4">
+      <div className="flex grow flex-col gap-y-3 rounded-b-lg border p-4">
         {!hiddenAuthor ? <PostCardMeta meta={post} /> : <span className="text-xs text-neutral-500">{date}</span>}
-        <h3 className="nc-card-title block text-base font-semibold text-neutral-900 dark:text-neutral-100">
-          <Link href={`/post/${post.handle}`} className="line-clamp-2" title={title}>
+        <h3 className="heading-serif nc-card-title block text-base font-bold text-neutral-900 dark:text-neutral-100">
+          <Link href={`/post/${post.handle}`} className="line-clamp-2 hover:underline decoration-1 underline-offset-2" title={title}>
             {title}
           </Link>
         </h3>

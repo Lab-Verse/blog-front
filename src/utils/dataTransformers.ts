@@ -109,7 +109,9 @@ export function transformPost(post: ApiPost) {
     author: post.user
       ? {
           id: post.user.id,
-          name: post.user.display_name || post.user.username,
+          name: (post.user.profile?.first_name || post.user.profile?.last_name
+            ? `${post.user.profile.first_name || ''} ${post.user.profile.last_name || ''}`.trim()
+            : null) || post.user.display_name || post.user.username,
           handle: post.user.username,
           avatar: makeImage(post.user.profile?.profile_picture || post.user.avatar, post.user.username),
         }
@@ -155,6 +157,7 @@ export function transformPostDetail(
     author: {
       ...base.author,
       description: post.user?.profile?.bio || post.user?.bio || '',
+      role: post.user?.role || '',
     },
     galleryImgs: post.gallery_images || [],
     videoUrl: post.video_url || '',
@@ -333,8 +336,15 @@ function estimateReadingTime(content: string): number {
 /** Detect post type based on content/metadata */
 function detectPostType(
   post: ApiPost
-): 'standard' | 'audio' | 'video' | 'gallery' {
-  // Check if post slug or content hints at audio/video
+): 'standard' | 'audio' | 'video' | 'gallery' | 'opinion' {
+  // Check explicit post_type field from API first
+  if (post.post_type === 'opinion') return 'opinion'
+  if (post.post_type === 'audio') return 'audio'
+  if (post.post_type === 'video') return 'video'
+  if (post.post_type === 'gallery') return 'gallery'
+  if (post.post_type === 'standard') return 'standard'
+
+  // Fallback: heuristic detection from content
   const title = post.title?.toLowerCase() || ''
   const content = post.content?.toLowerCase() || ''
 

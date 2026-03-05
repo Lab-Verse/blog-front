@@ -1,5 +1,6 @@
 import { baseApi } from "../baseApi";
 import type { ApiEnvelope } from "../../types/auth/authTypes";
+import { extractArrayFromResponse, extractObjectFromResponse } from "@/utils/apiHelpers";
 import type {
   Notification,
   CreateNotificationDto,
@@ -10,8 +11,8 @@ export const notificationsApi = baseApi.injectEndpoints({
     // ---------- Notifications ----------
     createNotification: builder.mutation<Notification, CreateNotificationDto>({
       query: (body) => ({ url: "/notifications", method: "POST", body }),
-      transformResponse: (res: ApiEnvelope<Notification>) =>
-        res.data ?? ({} as Notification),
+      transformResponse: (res: unknown) =>
+        extractObjectFromResponse<Notification>(res) ?? ({} as Notification),
       invalidatesTags: (_result, _error, { user_id }) => [
         { type: "Notification", id: "LIST" },
         { type: "NotificationsByUser", id: user_id },
@@ -23,7 +24,7 @@ export const notificationsApi = baseApi.injectEndpoints({
         url: `/notifications/user/${userId}`,
         method: "GET",
       }),
-      transformResponse: (res: ApiEnvelope<Notification[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Notification>(res),
       providesTags: (result, _error, userId) =>
         result
           ? [
@@ -41,8 +42,8 @@ export const notificationsApi = baseApi.injectEndpoints({
         url: `/notifications/${id}/read`,
         method: "PATCH",
       }),
-      transformResponse: (res: ApiEnvelope<Notification>) =>
-        res.data ?? ({} as Notification),
+      transformResponse: (res: unknown) =>
+        extractObjectFromResponse<Notification>(res) ?? ({} as Notification),
       invalidatesTags: (_result, _error, id) => [{ type: "Notification", id }],
       // Optimistic update
       async onQueryStarted(id, { dispatch, queryFulfilled }) {

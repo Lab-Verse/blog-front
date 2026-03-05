@@ -44,7 +44,8 @@
     "darkTheme": "الوضع الداكن",
     "help": "مساعدة",
     "logOut": "تسجيل الخروج",
-    "signOut": "تسجيل الخروج"
+    "signOut": "تسجيل الخروج",
+    "more": "المزيد"
   },
   "topBar": {
     "languages": {
@@ -451,7 +452,11 @@
     "dontMissThese": "لا تفوت هذه",
     "moreFromAuthor": "المزيد من الكاتب",
     "postNotFound": "المقال غير موجود",
-    "postNotFoundDescription": "المقال غير موجود"
+    "postNotFoundDescription": "المقال غير موجود",
+    "disclaimer": {
+      "title": "إخلاء مسؤولية",
+      "text": "الآراء والمحتوى المعبر عنها في هذا المقال تخص الكاتب حصراً ولا تعكس بالضرورة السياسة أو الموقف الرسمي لـ The World Ambassador (TWA). لا تتحمل TWA أي مسؤولية عن دقة أو اكتمال أو صحة المعلومات المقدمة. يُشجع القراء على التحقق من الحقائق بشكل مستقل."
+    }
   },
   "category": {
     "categoryNotFound": "الفئة غير موجودة",

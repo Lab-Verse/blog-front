@@ -12,7 +12,7 @@ interface Props {
   avatarSize?: string
 }
 
-const PostCardMeta: FC<Props> = ({ className, meta, hiddenAvatar = false, avatarSize = 'size-7' }) => {
+const PostCardMeta: FC<Props> = ({ className, meta, hiddenAvatar = true, avatarSize = 'size-7' }) => {
   const { date, author } = meta
 
   return (

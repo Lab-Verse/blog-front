@@ -44,7 +44,8 @@
     "darkTheme": "Modo oscuro",
     "help": "Ayuda",
     "logOut": "Cerrar sesión",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "more": "Más"
   },
   "topBar": {
     "languages": {
@@ -451,7 +452,11 @@
     "dontMissThese": "No te pierdas estos",
     "moreFromAuthor": "Más del autor",
     "postNotFound": "Publicación no encontrada",
-    "postNotFoundDescription": "Publicación no encontrada"
+    "postNotFoundDescription": "Publicación no encontrada",
+    "disclaimer": {
+      "title": "Descargo de responsabilidad",
+      "text": "Las opiniones y el contenido expresados en este artículo son exclusivamente del autor y no reflejan necesariamente la política o posición oficial de The World Ambassador (TWA). TWA no asume ninguna responsabilidad por la precisión, integridad o autenticidad de la información presentada. Se recomienda a los lectores verificar los hechos de forma independiente."
+    }
   },
   "category": {
     "categoryNotFound": "Categoría no encontrada",

@@ -123,6 +123,7 @@ export interface ApiPost {
   user_id: string
   category_id: string
   status: string
+  post_type?: string
   featured_image?: string
   views_count: number
   likes_count: number
@@ -176,6 +177,7 @@ export interface ApiUserProfile {
   posts_count: number
   followers_count: number
   following_count: number
+  is_columnist?: boolean
   created_at: string
   updated_at: string
   user?: ApiUser
@@ -190,6 +192,7 @@ export interface ApiCategory {
   followers_count: number
   is_active: boolean
   image_url?: string | null
+  display_order?: number
   created_at: string
   updated_at: string
   parent?: ApiCategory
@@ -227,6 +230,7 @@ export async function fetchPosts(filters?: {
   sortBy?: string
   sortOrder?: 'ASC' | 'DESC'
   search?: string
+  postType?: string
 }): Promise<ApiPost[]> {
   const params = new URLSearchParams()
   if (filters?.category) params.append('category', filters.category)
@@ -236,6 +240,7 @@ export async function fetchPosts(filters?: {
   if (filters?.sortBy) params.append('sortBy', filters.sortBy)
   if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder)
   if (filters?.search) params.append('search', filters.search)
+  if (filters?.postType) params.append('postType', filters.postType)
   const query = params.toString() ? `?${params.toString()}` : ''
 
   try {
@@ -455,6 +460,20 @@ export async function fetchTagPosts(tagId: string): Promise<ApiPost[]> {
 export async function fetchAuthors(): Promise<ApiUser[]> {
   try {
     const data = await serverFetch<ApiUser[]>('/users?limit=100')
+    const result = Array.isArray(data) ? data : (data as any)?.items || []
+    return result
+  } catch {
+    return []
+  }
+}
+
+/** Fetch users flagged as columnists */
+export async function fetchColumnists(): Promise<ApiUser[]> {
+  try {
+    const data = await serverFetch<ApiUser[] | { items: ApiUser[] }>('/users?limit=50&is_columnist=true', {
+      revalidate: 120,
+      tags: ['columnists'],
+    })
     const result = Array.isArray(data) ? data : (data as any)?.items || []
     return result
   } catch {

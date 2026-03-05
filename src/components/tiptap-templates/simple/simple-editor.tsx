@@ -69,7 +69,6 @@ import { SingleImageDocument } from '@/components/tiptap-extension/single-image-
 import { Button as SharedButton } from '@/shared/Button'
 import { Dialog, DialogActions, DialogBody, DialogTitle } from '@/shared/dialog'
 import { Divider } from '@/shared/divider'
-import Logo from '@/shared/Logo'
 import SwitchDarkMode from '@/shared/SwitchDarkMode'
 import { TagsInput } from '@/shared/TagsInput'
 import { useRouter } from 'next/navigation'
@@ -78,6 +77,7 @@ import { useRouter } from 'next/navigation'
 import { useCreatePostMutation, useUpdatePostMutation, useGetPostByIdQuery } from '@/app/redux/api/posts/postsApi'
 import { useGetAllCategoriesQuery } from '@/app/redux/api/categories/categoriesApi'
 import { useGetAllTagsQuery, useCreateTagMutation } from '@/app/redux/api/tags/tagsApi'
+import { useGetUserByIdQuery } from '@/app/redux/api/users/usersApi'
 import { PostStatus } from '@/app/redux/types/posts/postTypes'
 import { cookies } from '@/app/redux/utils/cookies'
 import { jwtDecode } from 'jwt-decode'
@@ -193,7 +193,13 @@ export function SimpleEditor() {
   const { data: categories = [] } = useGetAllCategoriesQuery()
   const { data: tagsData = [] } = useGetAllTagsQuery()
   const { data: existingPost, isLoading: isLoadingPost } = useGetPostByIdQuery(editId, { skip: !editId })
+  const { data: currentUser } = useGetUserByIdQuery(userId, { skip: !userId })
   const isSubmitting = isCreating || isUpdating
+
+  // Determine if the user can write opinion posts (columnist or admin)
+  const isColumnist = currentUser?.profile?.is_columnist === true
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'super_admin'
+  const canWriteOpinion = isColumnist || isAdmin
 
   // Map API tags to TagsInput format
   const topicsSuggestions = React.useMemo(
@@ -211,6 +217,7 @@ export function SimpleEditor() {
   const [selectedCategories, setSelectedCategories] = React.useState<{ id: string; name: string }[]>([])
   const [categoryQuery, setCategoryQuery] = React.useState('')
   const [editPopulated, setEditPopulated] = React.useState(false)
+  const [postType, setPostType] = React.useState<string>('standard')
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -374,6 +381,11 @@ export function SimpleEditor() {
       setSelectedCategories([{ id: existingPost.category.id, name: existingPost.category.name }])
     }
 
+    // Set post type
+    if (existingPost.post_type) {
+      setPostType(existingPost.post_type)
+    }
+
     setEditPopulated(true)
   }, [isEditMode, existingPost, editor, titleEditor, featuredImageEditor, editPopulated])
 
@@ -414,6 +426,11 @@ export function SimpleEditor() {
     // Legacy single category_id (first selected)
     formData.append('category_id', selectedCategories[0].id)
     formData.append('status', status)
+
+    // Post type (only send opinion if user has permission)
+    if (postType && postType !== 'standard') {
+      formData.append('post_type', postType)
+    }
 
     // Multi-category support
     for (const cat of selectedCategories) {
@@ -513,31 +530,38 @@ export function SimpleEditor() {
   return (
     <EditorContext.Provider value={{ editor }}>
       <>
-        <div className="sticky top-0 z-10 flex h-[var(--tt-toolbar-height)] items-center gap-2 border-b border-neutral-200 bg-[var(--tt-toolbar-bg-color)] px-2 dark:border-neutral-800">
-          <div className="flex items-center gap-1">
-            <Button data-style="ghost" onClick={() => router.push('/')}>
+        <div className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b border-neutral-200 bg-white/95 backdrop-blur-sm px-4 dark:border-neutral-800 dark:bg-neutral-950/95">
+          <div className="flex items-center gap-2">
+            <Button data-style="ghost" onClick={() => router.push('/dashboard/posts')}>
               <ArrowLeftIcon className="tiptap-button-icon" />
-              <span className="text-nowrap">Exit editor</span>
+              <span className="text-nowrap text-sm font-medium">Exit editor</span>
             </Button>
-            <span className="me-2 hidden font-light text-neutral-500 sm:block dark:text-neutral-400">/</span>
-            <Logo size="size-6" className="hidden! sm:block!" />
           </div>
 
-          <div className="ml-auto flex items-center gap-2">
-            <Button data-style="ghost" onClick={() => handlePublish(PostStatus.DRAFT)} disabled={isSubmitting}>
+          <div className="ml-auto flex items-center gap-1">
+            <Button
+              data-style="ghost"
+              onClick={() => handlePublish(PostStatus.DRAFT)}
+              disabled={isSubmitting}
+              className="text-sm!"
+            >
               {isSubmitting ? 'Saving...' : 'Save Draft'}
             </Button>
-            <Button data-style="ghost" onClick={() => setIsOpenPreview(true)}>
+            <Button
+              data-style="ghost"
+              onClick={() => setIsOpenPreview(true)}
+              className="text-sm! rounded-lg! bg-neutral-900! text-white! hover:bg-neutral-800! dark:bg-white! dark:text-neutral-900! dark:hover:bg-neutral-200! px-4! py-1.5!"
+            >
               {isEditMode ? 'Update' : 'Publish'}
             </Button>
             <SwitchDarkMode iconSize="size-4.5" className="size-8!" />
           </div>
         </div>
 
-        <div className="title-wrapper container mt-8 sm:mt-12">
+        <div className="title-wrapper container mt-10 sm:mt-14">
           <div className="mx-auto max-w-screen-md">
             <ImageUploadButton
-              className="h-10! ring-2 ring-neutral-200 dark:ring-neutral-600"
+              className="h-10! rounded-lg! ring-1! ring-neutral-300! hover:ring-neutral-400! dark:ring-neutral-600! dark:hover:ring-neutral-500! transition-all"
               text={featuredImageUrl ? 'Update featured image' : 'Add featured image'}
               editor={featuredImageEditor}
             />
@@ -545,7 +569,7 @@ export function SimpleEditor() {
           <EditorContent editor={featuredImageEditor} role="presentation" />
           <EditorContent editor={titleEditor} role="presentation" />
 
-          <div className="mx-auto mt-4 max-w-screen-md sm:mt-8">
+          <div className="mx-auto mt-5 max-w-screen-md sm:mt-8">
             <TagsInput
               value={selectedTags}
               suggestions={topicsSuggestions}
@@ -557,7 +581,7 @@ export function SimpleEditor() {
           </div>
         </div>
 
-        <Toolbar ref={toolbarRef} className="my-8 sm:my-12">
+        <Toolbar ref={toolbarRef} className="my-6 sm:my-10">
           {mobileView === 'main' ? (
             <MainToolbarContent
               onHighlighterClick={() => setMobileView('highlighter')}
@@ -572,7 +596,7 @@ export function SimpleEditor() {
           )}
         </Toolbar>
 
-        <div className="content-wrapper container">
+        <div className="content-wrapper container pb-20">
           <EditorContent editor={editor} role="presentation" className="simple-editor-content" />
         </div>
       </>
@@ -634,6 +658,25 @@ export function SimpleEditor() {
                 )}
               </div>
             </div>
+
+            {/* Post Type selector — only show if author has Opinion access */}
+            {canWriteOpinion && (
+              <>
+                <Divider />
+                <div className="flex flex-col gap-2">
+                  <div className="font-medium text-neutral-700 dark:text-neutral-300">Post Type</div>
+                  <select
+                    value={postType}
+                    onChange={(e) => setPostType(e.target.value)}
+                    className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500 dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+                  >
+                    <option value="standard">Standard</option>
+                    <option value="opinion">Opinion</option>
+                  </select>
+                </div>
+              </>
+            )}
+
             <Divider />
 
             <div className="flex flex-wrap gap-2.5">

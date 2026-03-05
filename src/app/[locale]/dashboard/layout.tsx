@@ -65,9 +65,8 @@ export default function Layout({ children }: { children: ReactNode }) {
       || (user?.avatar && user.avatar !== 'default-avatar.png' ? user.avatar : null)
       || '/images/musicWave.png'
 
-  const accessToken = cookies.getAccessToken()
-
   useEffect(() => {
+    const accessToken = cookies.getAccessToken()
     if (accessToken) {
       try {
         const decoded: { sub?: string } = jwtDecode(accessToken)
@@ -76,7 +75,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         setUserId('')
       }
     }
-  }, [accessToken])
+  }, [])
 
   const handleSignOut = async () => {
     const refreshToken = cookies.getRefreshToken()
@@ -112,15 +111,12 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div className="flex h-16 shrink-0 items-center px-4">
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/images/twa.png"
-            alt="TWA"
-            width={40}
-            height={40}
-            className="h-8 w-8 rounded"
+            src="/images/twa-logo.svg"
+            alt="Logo"
+            width={900}
+            height={300}
+            className="h-20 w-auto"
           />
-          {(!sidebarCollapsed || mobile) && (
-            <span className="text-lg font-bold tracking-tight">TWA</span>
-          )}
         </Link>
       </div>
 

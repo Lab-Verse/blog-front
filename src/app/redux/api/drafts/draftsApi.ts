@@ -1,5 +1,6 @@
 import { baseApi } from "../baseApi";
 import type { ApiEnvelope } from "../../types/auth/authTypes";
+import { extractArrayFromResponse, extractObjectFromResponse } from "@/utils/apiHelpers";
 import type {
   Draft,
   CreateDraftDto,
@@ -11,7 +12,7 @@ export const draftsApi = baseApi.injectEndpoints({
     // ---------- Drafts CRUD ----------
     getAllDrafts: builder.query<Draft[], void>({
       query: () => ({ url: '/drafts', method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Draft[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Draft>(res),
       providesTags: (result) =>
         result
           ? [
@@ -23,15 +24,15 @@ export const draftsApi = baseApi.injectEndpoints({
 
     getDraftById: builder.query<Draft, string>({
       query: (id) => ({ url: `/drafts/${id}`, method: 'GET' }),
-      transformResponse: (res: ApiEnvelope<Draft>) => 
-        res.data ?? ({} as Draft),
+      transformResponse: (res: unknown) => 
+        extractObjectFromResponse<Draft>(res) ?? ({} as Draft),
       providesTags: (_result, _error, id) => [{ type: 'Draft', id }],
     }),
 
     createDraft: builder.mutation<Draft, CreateDraftDto>({
       query: (body) => ({ url: '/drafts', method: 'POST', body }),
-      transformResponse: (res: ApiEnvelope<Draft>) => 
-        res.data ?? ({} as Draft),
+      transformResponse: (res: unknown) => 
+        extractObjectFromResponse<Draft>(res) ?? ({} as Draft),
       invalidatesTags: [{ type: 'Draft', id: 'LIST' }],
     }),
 
@@ -41,8 +42,8 @@ export const draftsApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body: data,
       }),
-      transformResponse: (res: ApiEnvelope<Draft>) => 
-        res.data ?? ({} as Draft),
+      transformResponse: (res: unknown) => 
+        extractObjectFromResponse<Draft>(res) ?? ({} as Draft),
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Draft', id },
         { type: 'Draft', id: 'LIST' },
@@ -63,7 +64,7 @@ export const draftsApi = baseApi.injectEndpoints({
         url: `/drafts/user/${userId}`, 
         method: 'GET' 
       }),
-      transformResponse: (res: ApiEnvelope<Draft[]>) => res.data ?? [],
+      transformResponse: (res: unknown) => extractArrayFromResponse<Draft>(res),
       providesTags: (result, _error, userId) =>
         result
           ? [

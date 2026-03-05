@@ -15,6 +15,7 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { FC, useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import ShareDropdown from '@/components/ShareDropdown'
+import PostDisclaimer from '@/components/PostDisclaimer'
 import TheContent from './TheContent'
 import { useCreateCommentMutation, useGetCommentsByPostQuery } from '@/app/redux/api/comments/commentsApi'
 import { cookies } from '@/app/redux/utils/cookies'
@@ -133,6 +134,11 @@ const SingleContentContainer: FC<Props> = ({ post, comments: ssrComments, classN
         >
           <TheContent content={content} />
         </div>
+
+        {/* PECA DISCLAIMER — show only for non-admin author posts */}
+        {author.role && !['admin', 'super_admin'].includes(author.role) && (
+          <PostDisclaimer />
+        )}
 
         {/* TAGS */}
         <div className="mx-auto flex max-w-(--breakpoint-md) flex-wrap">

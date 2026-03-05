@@ -17,6 +17,7 @@ export interface TPostAuthor {
   handle: string
   avatar: TPostImage
   description?: string
+  role?: string
 }
 
 export interface TPostCategory {
@@ -33,7 +34,7 @@ export interface TPostTag {
   color: string
 }
 
-export type TPostType = 'standard' | 'video' | 'gallery' | 'audio'
+export type TPostType = 'standard' | 'video' | 'gallery' | 'audio' | 'opinion'
 
 /** Card-level post (no content) — returned by transformPost / transformPosts */
 export interface TPost {

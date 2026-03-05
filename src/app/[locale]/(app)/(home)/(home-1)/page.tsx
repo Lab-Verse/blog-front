@@ -21,10 +21,21 @@ export const revalidate = 60 // ISR: revalidate every 60 seconds
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://twa.com.pk'
 
-// Rotating color palette for category blocks
-const CATEGORY_COLORS = ['blue', 'red', 'green', 'purple', 'teal', 'pink', 'indigo', 'yellow']
-// Rotating layout variants for visual diversity
-const LAYOUT_VARIANTS = ['featured', 'grid', 'list', 'spotlight', 'compact'] as const
+// Layout variants mapped per category position for visual diversity.
+// Positions 1 (World→magazine) and 2 (Embassy→editorial) are force-overridden,
+// so those slots below are unused but kept for clarity.
+const LAYOUT_VARIANTS = [
+  'featured',  // 0 Pakistan
+  'magazine',  // 1 World (overridden)
+  'editorial', // 2 Embassy (overridden)
+  'grid',      // 3 Business
+  'spotlight',  // 4 Sports
+  'compact',   // 5 Women
+  'list',      // 6 Science & Tech
+  'featured',  // 7 Travel
+  'grid',      // 8 Health
+  'editorial', // 9 Opinion (overridden)
+] as const
 
 // Limit concurrent API requests to avoid overwhelming the backend
 const CONCURRENCY_LIMIT = 3
@@ -137,7 +148,7 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
       id: parent.id,
       name: parent.name,
       slug: parent.slug,
-      color: CATEGORY_COLORS[idx % CATEGORY_COLORS.length],
+      color: 'neutral',
       // Use child tabs if available; fall back to a single parent tab
       tabs:
         tabs.length > 0
@@ -149,19 +160,11 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
   })
 
   // Filter out categories with no posts at all
-  const categoryBlocksRaw = categoryBlocksData.filter((block) =>
+  const categoryBlocks = categoryBlocksData.filter((block) =>
     block.tabs.some((tab) => tab.posts.length > 0),
   )
 
-  // Ensure Embassy & Consulates appears right after Pakistan
-  const pakistanIdx = categoryBlocksRaw.findIndex((b) => b.slug === 'pakistan')
-  const embassyIdx = categoryBlocksRaw.findIndex((b) => b.slug === 'embassy-consulates')
-  const categoryBlocks = [...categoryBlocksRaw]
-  if (pakistanIdx !== -1 && embassyIdx !== -1 && embassyIdx !== pakistanIdx + 1) {
-    const [embassyBlock] = categoryBlocks.splice(embassyIdx, 1)
-    const newPakIdx = categoryBlocks.findIndex((b) => b.slug === 'pakistan')
-    categoryBlocks.splice(newPakIdx + 1, 0, embassyBlock)
-  }
+  // Categories are now ordered by display_order from the API
 
   // ── Step 3: Widget data — reuse already-fetched posts ──
   const parentPostsMap = new Map<string, typeof apiPosts>()
@@ -208,12 +211,14 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
         const isWorld = block.slug === 'world'
         // Embassy & Consulates gets the FT-style editorial layout
         const isEmbassy = block.slug === 'embassy-consulates'
-        const blockVariant = isEmbassy
+        // Opinion gets the editorial layout with its own visual treatment
+        const isOpinion = block.slug === 'opinion'
+        const blockVariant = isEmbassy || isOpinion
           ? 'editorial' as const
           : isWorld
             ? 'magazine' as const
             : LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]
-        const blockHeaderStyle = isEmbassy
+        const blockHeaderStyle = isEmbassy || isOpinion
           ? 'editorial' as const
           : isWorld
             ? 'centered' as const
@@ -221,8 +226,8 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
 
         return (
           <div key={block.id}>
-            {/* Embassy & Consulates: editorial style with its own background */}
-            {isEmbassy ? (
+            {/* Embassy & Consulates / Opinion: editorial style with its own background */}
+            {isEmbassy || isOpinion ? (
               <SectionCategoryBlock
                 category={block}
                 variant={blockVariant}
@@ -237,7 +242,6 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
                   category={block}
                   variant={blockVariant}
                   headerStyle={blockHeaderStyle}
-                  sectionIndex={isWorld || isEmbassy ? undefined : idx + 1}
                 />
               </div>
             ) : (
@@ -245,7 +249,6 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
                 category={block}
                 variant={blockVariant}
                 headerStyle={blockHeaderStyle}
-                sectionIndex={isWorld || isEmbassy ? undefined : idx + 1}
               />
             )}
 

@@ -6,9 +6,11 @@ import React from 'react'
 interface Props {
   className?: string
   size?: string
+  /** When true, use a light/inverted version for dark backgrounds */
+  inverted?: boolean
 }
 
-const Logo: React.FC<Props> = ({ className, size }) => {
+const Logo: React.FC<Props> = ({ className, size, inverted }) => {
   return (
     <Link
       href="/"
@@ -19,11 +21,11 @@ const Logo: React.FC<Props> = ({ className, size }) => {
       )}
     >
       <Image
-        src="/images/twa.png"
+        src="/images/twa-logo.svg"
         alt="TWA - The World Ambassador"
         width={900}
         height={300}
-        className="h-20 max-h-20 w-auto"
+        className={clsx('h-20 max-h-20 w-auto', inverted && 'brightness-0 invert')}
         priority
       />
     </Link>

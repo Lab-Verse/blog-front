@@ -63,6 +63,7 @@ export interface UserProfile {
   posts_count: number;
   followers_count: number;
   following_count: number;
+  is_columnist?: boolean;
   created_at: string;
   updated_at: string;
   user?: User;

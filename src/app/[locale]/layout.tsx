@@ -8,6 +8,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing, rtlLocales, type Locale } from '@/i18n/routing'
 import ThemeProvider from '../theme-provider'
+import WhatsAppButton from '@/components/WhatsAppButton'
 
 // ── Latin font (EN, ES) ────────────────────────────────
 const beVietnamPro = Be_Vietnam_Pro({
@@ -132,6 +133,13 @@ export async function generateMetadata({
         'max-snippet': -1,
       },
     },
+    icons: {
+      icon: [
+        { url: '/images/twa-logo.svg', type: 'image/svg+xml' },
+        { url: '/images/twa-svg.png', type: 'image/png' },
+      ],
+      apple: '/images/twa-svg.png',
+    },
     openGraph: {
       type: 'website',
       locale: ogLocale,
@@ -140,21 +148,12 @@ export async function generateMetadata({
       title: `${SITE_NAME} - News, Articles & Insights`,
       description:
         'Your go-to source for the latest news, in-depth articles, and expert insights.',
-      images: [
-        {
-          url: `${SITE_URL}/images/twa.png`,
-          width: 1200,
-          height: 630,
-          alt: SITE_NAME,
-        },
-      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: `${SITE_NAME} - News, Articles & Insights`,
       description:
         'Your go-to source for the latest news, in-depth articles, and expert insights.',
-      images: [`${SITE_URL}/images/twa.png`],
     },
     alternates: {
       canonical: SITE_URL,
@@ -242,6 +241,7 @@ export default async function LocaleLayout({
           <ThemeProvider>
             <Toaster richColors position={dir === 'rtl' ? 'top-left' : 'top-right'} closeButton />
             <div>{children}</div>
+            <WhatsAppButton />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

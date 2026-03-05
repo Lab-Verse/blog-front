@@ -7,7 +7,6 @@ import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import Card11 from './PostCards/Card11'
-import Card4 from './PostCards/Card4'
 import Card9 from './PostCards/Card9'
 import Card2 from './PostCards/Card2'
 import Card3 from './PostCards/Card3'
@@ -42,19 +41,16 @@ interface Props {
 }
 
 // ─── Accent color mapping ────────────────────────────────────────────
-const COLOR_MAP: Record<string, { bg: string; text: string; pill: string; border: string }> = {
-  red: { bg: 'bg-red-50 dark:bg-red-950/30', text: 'text-red-600 dark:text-red-400', pill: 'bg-red-600 text-white', border: 'border-red-500' },
-  blue: { bg: 'bg-blue-50 dark:bg-blue-950/30', text: 'text-blue-600 dark:text-blue-400', pill: 'bg-blue-600 text-white', border: 'border-blue-500' },
-  green: { bg: 'bg-green-50 dark:bg-green-950/30', text: 'text-green-600 dark:text-green-400', pill: 'bg-green-600 text-white', border: 'border-green-500' },
-  yellow: { bg: 'bg-yellow-50 dark:bg-yellow-950/30', text: 'text-yellow-600 dark:text-yellow-400', pill: 'bg-yellow-600 text-white', border: 'border-yellow-500' },
-  purple: { bg: 'bg-purple-50 dark:bg-purple-950/30', text: 'text-purple-600 dark:text-purple-400', pill: 'bg-purple-600 text-white', border: 'border-purple-500' },
-  pink: { bg: 'bg-pink-50 dark:bg-pink-950/30', text: 'text-pink-600 dark:text-pink-400', pill: 'bg-pink-600 text-white', border: 'border-pink-500' },
-  indigo: { bg: 'bg-indigo-50 dark:bg-indigo-950/30', text: 'text-indigo-600 dark:text-indigo-400', pill: 'bg-indigo-600 text-white', border: 'border-indigo-500' },
-  teal: { bg: 'bg-teal-50 dark:bg-teal-950/30', text: 'text-teal-600 dark:text-teal-400', pill: 'bg-teal-600 text-white', border: 'border-teal-500' },
+// Unified neutral + primary palette (no per-category colors)
+const NEUTRAL_COLORS = {
+  bg: 'bg-neutral-50 dark:bg-neutral-900/50',
+  text: 'text-neutral-900 dark:text-neutral-100',
+  pill: 'bg-primary-600 text-white',
+  border: 'border-primary-600',
 }
 
-function getColorScheme(color: string) {
-  return COLOR_MAP[color] || COLOR_MAP.blue
+function getColorScheme(_color: string) {
+  return NEUTRAL_COLORS
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -83,7 +79,7 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
   const colors = getColorScheme(category.color)
 
   return (
-    <section className={clsx('section-category-block', className, headerStyle === 'editorial' && 'rounded-3xl bg-[#FFF1E5] px-4 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16 dark:bg-neutral-900')}>
+    <section className={clsx('section-category-block', className, headerStyle === 'editorial' && 'rounded-3xl bg-neutral-50 px-4 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16 dark:bg-neutral-900')}>
       {headerStyle === 'editorial' ? (
         /* ── Editorial header: FT-style centered uppercase title + text nav tabs ── */
         <div className="mb-10">
@@ -162,13 +158,13 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
             <div className="flex items-end justify-between gap-4">
               <div className="flex items-center gap-3">
                 {sectionIndex != null && (
-                  <span className={clsx('heading-serif text-4xl font-black opacity-15 lg:text-5xl', colors.text)}>
+                  <span className={clsx('heading-serif text-4xl font-black opacity-15 lg:text-5xl text-neutral-300 dark:text-neutral-600')}>
                     {String(sectionIndex).padStart(2, '0')}
                   </span>
                 )}
                 <Link
                   href={`/category/${category.slug}`}
-                  className={clsx('heading-serif text-2xl font-bold hover:underline lg:text-3xl', colors.text)}
+                  className={clsx('heading-serif text-2xl font-bold hover:underline lg:text-3xl text-neutral-900 dark:text-neutral-100')}
                 >
                   {category.name}
                 </Link>
@@ -183,7 +179,7 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
             </div>
             {/* Accent underline */}
             <div className="mt-3 flex items-center gap-2">
-              <div className={clsx('h-1 w-12 rounded-full', colors.pill)} />
+              <div className={clsx('h-1 w-12 rounded-full bg-primary-600')} />
               <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-700" />
             </div>
           </div>
@@ -293,14 +289,19 @@ function LayoutGrid({ posts }: { posts: TPost[] }) {
 /**
  * List: Horizontal rows with image thumbnail left + text right (Guardian style)
  */
-function LayoutList({ posts, colors }: { posts: TPost[]; colors: { border: string } }) {
+function LayoutList({ posts }: { posts: TPost[]; colors: { border: string } }) {
   return (
-    <div className={clsx('divide-y divide-neutral-200 border-t-4 pt-2 dark:divide-neutral-700', colors.border)}>
-      {posts.slice(0, 5).map((post) => (
-        <div key={post.id} className="py-4">
-          <Card4 post={post} />
-        </div>
-      ))}
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+      {/* Left — large hero card spanning 3 cols */}
+      <div className="lg:col-span-3">
+        {posts[0] && <Card2 size="large" className="h-full" post={posts[0]} />}
+      </div>
+      {/* Right — stacked horizontal rows */}
+      <div className="flex flex-col gap-4 lg:col-span-2">
+        {posts.slice(1, 5).map((post) => (
+          <Card3 key={post.id} post={post} />
+        ))}
+      </div>
     </div>
   )
 }
@@ -412,14 +413,14 @@ function EditorialCard({
   return (
     <article className="group flex flex-col">
       {/* Image */}
-      <Link href={`/post/${handle}`} className="relative block overflow-hidden">
-        <div className={clsx('relative w-full', size === 'large' ? 'aspect-16/10' : 'aspect-16/10')}>
+      <Link href={`/post/${handle}`} className="relative block overflow-hidden rounded-lg">
+        <div className={clsx('relative w-full', size === 'large' ? 'aspect-16/9' : 'aspect-16/9')}>
           <Image
             src={featuredImage}
             alt={title}
             fill
             sizes={size === 'large' ? '(max-width: 640px) 100vw, 50vw' : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'}
-            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
           />
         </div>
       </Link>
@@ -429,7 +430,7 @@ function EditorialCard({
         {primaryCategory && (
           <Link
             href={`/category/${primaryCategory.handle}`}
-            className={clsx('text-xs font-bold tracking-wider uppercase sm:text-sm', colors.text)}
+            className="text-xs font-bold tracking-wider text-primary-600 uppercase hover:underline dark:text-primary-400 sm:text-sm"
           >
             {primaryCategory.name}
           </Link>

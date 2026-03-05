@@ -18,6 +18,14 @@ const PostTypeFeaturedIcon: FC<Props> = ({
   iconSize = 'size-6',
 }) => {
   const renderMediaIcon = () => {
+    if (postType === 'opinion') {
+      return (
+        <span className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider">
+          Opinion
+        </span>
+      )
+    }
+
     if (postType === 'video') {
       return (
         <svg className={iconSize} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -111,8 +119,10 @@ const PostTypeFeaturedIcon: FC<Props> = ({
       {!!postType && postType !== 'standard' ? (
         <span
           className={clsx(
-            'flex items-center justify-center rounded-full border border-white bg-neutral-900/60 text-xl text-white rtl:rotate-180',
-            wrapSize
+            'flex items-center justify-center rounded-full border border-white text-white',
+            postType === 'opinion'
+              ? 'bg-primary-700/90 text-xs'
+              : `bg-neutral-900/60 text-xl ${wrapSize}`
           )}
         >
           {renderMediaIcon()}

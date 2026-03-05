@@ -4,6 +4,7 @@ import { TNavigationItem } from '@/data/navigation'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { Link } from '@/i18n/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   items: TNavigationItem[]
@@ -12,6 +13,7 @@ interface Props {
 export default function MoreDropdown({ items }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLLIElement>(null)
+  const t = useTranslations('header')
 
   // Close on outside click
   useEffect(() => {
@@ -55,7 +57,7 @@ export default function MoreDropdown({ items }: Props) {
         aria-haspopup="true"
         className="flex items-center rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-200"
       >
-        More
+        {t('more')}
         <ChevronDownIcon
           className={`ms-1 -me-1 size-4 text-neutral-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           aria-hidden="true"

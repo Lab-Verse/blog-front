@@ -4,26 +4,27 @@ import { cookies } from '@/app/redux/utils/cookies'
 import { jwtDecode } from 'jwt-decode'
 import { useRouter } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import DashboardProfileEditor from './DashboardProfileEditor'
 
 const Page = () => {
   const t = useTranslations('profile')
   const router = useRouter()
-  const token = cookies.getAccessToken()
-  const userId = useMemo(() => {
-    if (!token) return ''
-    try {
-      const decoded: { sub?: string } = jwtDecode(token)
-      return decoded?.sub || ''
-    } catch { return '' }
-  }, [token])
+  const [userId, setUserId] = useState('')
 
   useEffect(() => {
+    const token = cookies.getAccessToken()
     if (!token) {
       router.push('/login')
+      return
     }
-  }, [token, router])
+    try {
+      const decoded: { sub?: string } = jwtDecode(token)
+      setUserId(decoded?.sub || '')
+    } catch {
+      router.push('/login')
+    }
+  }, [router])
 
   if (!userId) {
     return (

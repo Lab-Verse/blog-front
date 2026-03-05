@@ -4,7 +4,6 @@ import clsx from 'clsx'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
-import CategoryBadgeList from '../CategoryBadgeList'
 import PostCardCommentBtn from '../PostCardCommentBtn'
 import PostCardLikeBtn from '../PostCardLikeBtn'
 import PostCardSaveBtn from '../PostCardSaveBtn'
@@ -29,14 +28,22 @@ const Card3: FC<Props> = ({ className, post }) => {
     commentCount,
     bookmarked,
   } = post
+  const primaryCategory = categories?.[0]
 
   return (
-    <div className={clsx('group post-card-3 flex flex-wrap items-center gap-x-7 gap-y-5 transition-[transform] duration-300 hover:-translate-y-0.5 sm:flex-nowrap', className)}>
+    <div className={clsx('group post-card-3 flex flex-wrap items-center gap-x-7 gap-y-5 sm:flex-nowrap', className)}>
       <div className="flex grow flex-col">
         <div className="space-y-3.5">
-          <CategoryBadgeList categories={categories} />
-          <h2 className="nc-card-title block text-base font-medium sm:font-semibold xl:text-lg">
-            <Link href={`/post/${handle}`} className="line-clamp-2" title={title}>
+          {primaryCategory && (
+            <Link
+              href={`/category/${primaryCategory.handle}`}
+              className="text-xs font-bold tracking-wider text-primary-600 uppercase hover:underline dark:text-primary-400"
+            >
+              {primaryCategory.name}
+            </Link>
+          )}
+          <h2 className="heading-serif nc-card-title block text-base font-bold xl:text-lg text-neutral-900 dark:text-neutral-100">
+            <Link href={`/post/${handle}`} className="line-clamp-2 hover:underline decoration-1 underline-offset-2" title={title}>
               {title}
             </Link>
           </h2>
@@ -51,11 +58,11 @@ const Card3: FC<Props> = ({ className, post }) => {
         </div>
       </div>
 
-      <div className="relative aspect-1/1 w-56 shrink-0">
+      <div className="relative aspect-16/9 w-64 shrink-0 overflow-hidden rounded-lg">
         <Image
           src={featuredImage}
           alt={title}
-          className="w-full rounded-3xl object-cover brightness-100 transition-[filter] duration-300 group-hover:brightness-75"
+          className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
           fill
         />
         <PostTypeFeaturedIcon

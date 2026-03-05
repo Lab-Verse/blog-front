@@ -100,10 +100,10 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({ userId }) => {
                         <p className="font-medium">{t('managePosts')}</p>
                     </Link>
                     <Link
-                        href="/dashboard/categories"
+                        href="/dashboard/bookmarks"
                         className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-center hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
                     >
-                        <p className="font-medium">{t('manageCategories')}</p>
+                        <p className="font-medium">{t('bookmarks')}</p>
                     </Link>
                     <Link
                         href="/dashboard/media"

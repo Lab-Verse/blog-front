@@ -44,7 +44,8 @@
     "darkTheme": "深色模式",
     "help": "帮助",
     "logOut": "退出登录",
-    "signOut": "退出登录"
+    "signOut": "退出登录",
+    "more": "更多"
   },
   "topBar": {
     "languages": {
@@ -451,7 +452,11 @@
     "dontMissThese": "不要错过这些",
     "moreFromAuthor": "作者的更多文章",
     "postNotFound": "未找到文章",
-    "postNotFoundDescription": "未找到文章"
+    "postNotFoundDescription": "未找到文章",
+    "disclaimer": {
+      "title": "免责声明",
+      "text": "本文所表达的观点、意见和内容仅代表作者本人，不一定反映 The World Ambassador (TWA) 的官方政策或立场。TWA 不对所提供信息的准确性、完整性或真实性承担任何责任。鼓励读者独立核实事实。"
+    }
   },
   "category": {
     "categoryNotFound": "未找到分类",

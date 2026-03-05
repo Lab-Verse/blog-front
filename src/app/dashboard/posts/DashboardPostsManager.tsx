@@ -257,7 +257,7 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
                           className="h-4 w-4 rounded border-gray-300 dark:border-gray-600"
                         />
                       </td>
-                      <td className="px-3 py-5 text-sm whitespace-nowrap">
+                      <td className="px-3 py-5 text-sm max-w-xs">
                         <div className="flex items-center gap-3">
                           {post.featured_image && (
                             <div className="relative h-12 w-12 flex-shrink-0">
@@ -270,10 +270,10 @@ const DashboardPostsManager: React.FC<DashboardPostsManagerProps> = ({ userId })
                               />
                             </div>
                           )}
-                          <div>
-                            <div className="font-medium">{post.title}</div>
+                          <div className="min-w-0">
+                            <div className="font-medium line-clamp-2">{post.title}</div>
                             {post.category && (
-                              <div className="mt-1 text-gray-500 dark:text-gray-400">{post.category.name}</div>
+                              <div className="mt-1 text-gray-500 dark:text-gray-400 truncate">{post.category.name}</div>
                             )}
                           </div>
                         </div>

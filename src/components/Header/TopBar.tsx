@@ -52,9 +52,9 @@ export default function TopBar() {
 
   return (
     <div className="border-b border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
-      <div className="container flex h-25 items-center justify-between gap-4">
+      <div className="container flex h-14 md:h-25 items-center justify-between gap-4">
         {/* Left — Language list */}
-        <ol className="flex items-center gap-1.5 text-sm text-neutral-700 dark:text-neutral-300">
+        <ol className="flex items-center gap-1 md:gap-1.5 text-sm text-neutral-700 dark:text-neutral-300 overflow-x-auto">
           {locales.map((code) => (
             <li key={code}>
               <button
@@ -73,8 +73,8 @@ export default function TopBar() {
           ))}
         </ol>
 
-        {/* Center — TWA logo */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center">
+        {/* Center — TWA logo (hidden on mobile — already visible in Header2) */}
+        <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center">
           <Image
             src="/images/twa-logo.svg"
             alt="TWA"
