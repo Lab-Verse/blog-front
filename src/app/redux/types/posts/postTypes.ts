@@ -34,6 +34,8 @@ export interface Post {
   status: PostStatus;
   post_type?: string;
   featured_image?: string;
+  excerpt?: string;
+  description?: string;
   views_count: number;
   likes_count: number;
   comments_count: number;

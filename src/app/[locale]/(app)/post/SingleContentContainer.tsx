@@ -17,6 +17,7 @@ import { useTranslations } from 'next-intl'
 import ShareDropdown from '@/components/ShareDropdown'
 import PostDisclaimer from '@/components/PostDisclaimer'
 import TheContent from './TheContent'
+import ListenButton from './ListenButton'
 import { useCreateCommentMutation, useGetCommentsByPostQuery } from '@/app/redux/api/comments/commentsApi'
 import { cookies } from '@/app/redux/utils/cookies'
 import { jwtDecode } from 'jwt-decode'
@@ -126,6 +127,9 @@ const SingleContentContainer: FC<Props> = ({ post, comments: ssrComments, classN
   return (
     <div className={`relative ${className}`}>
       <div className="single-content space-y-10">
+        {/* LISTEN TO ARTICLE */}
+        <ListenButton content={content} />
+
         {/* ENTRY CONTENT */}
         <div
           id="single-entry-content"

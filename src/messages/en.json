@@ -460,6 +460,15 @@
     "disclaimer": {
       "title": "Disclaimer",
       "text": "The views, opinions, and content expressed in this article are solely those of the author and do not necessarily reflect the official policy or position of The World Ambassador (TWA). TWA does not assume any responsibility or liability for the accuracy, completeness, or authenticity of the information presented. Under the Prevention of Electronic Crimes Act (PECA), 2016, readers are encouraged to verify facts independently."
+    },
+    "listen": {
+      "listen": "Listen to this article",
+      "playing": "Playing...",
+      "paused": "Paused",
+      "resume": "Resume",
+      "pause": "Pause",
+      "stop": "Stop",
+      "speed": "Playback speed"
     }
   },
   "category": {

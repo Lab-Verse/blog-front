@@ -218,6 +218,7 @@ export function SimpleEditor() {
   const [categoryQuery, setCategoryQuery] = React.useState('')
   const [editPopulated, setEditPopulated] = React.useState(false)
   const [postType, setPostType] = React.useState<string>('standard')
+  const [excerpt, setExcerpt] = React.useState('')
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -381,6 +382,11 @@ export function SimpleEditor() {
       setSelectedCategories([{ id: existingPost.category.id, name: existingPost.category.name }])
     }
 
+    // Set excerpt
+    if (existingPost.excerpt) {
+      setExcerpt(existingPost.excerpt)
+    }
+
     // Set post type
     if (existingPost.post_type) {
       setPostType(existingPost.post_type)
@@ -426,6 +432,11 @@ export function SimpleEditor() {
     // Legacy single category_id (first selected)
     formData.append('category_id', selectedCategories[0].id)
     formData.append('status', status)
+
+    // Excerpt
+    if (excerpt.trim()) {
+      formData.append('excerpt', excerpt.trim())
+    }
 
     // Post type (only send opinion if user has permission)
     if (postType && postType !== 'standard') {
@@ -569,6 +580,17 @@ export function SimpleEditor() {
           <EditorContent editor={featuredImageEditor} role="presentation" />
           <EditorContent editor={titleEditor} role="presentation" />
 
+          <div className="mx-auto mt-4 max-w-screen-md sm:mt-6">
+            <textarea
+              value={excerpt}
+              onChange={(e) => setExcerpt(e.target.value)}
+              placeholder="Write a brief excerpt or summary of your post..."
+              rows={2}
+              maxLength={500}
+              className="w-full resize-none rounded-lg border border-neutral-200 bg-transparent px-4 py-3 text-base text-neutral-700 outline-none transition-colors placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-0 dark:border-neutral-700 dark:text-neutral-300 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500"
+            />
+          </div>
+
           <div className="mx-auto mt-5 max-w-screen-md sm:mt-8">
             <TagsInput
               value={selectedTags}
@@ -682,6 +704,12 @@ export function SimpleEditor() {
             <div className="flex flex-wrap gap-2.5">
               <div className="text-neutral-600 dark:text-neutral-400">Title:</div>
               <div className="font-medium">{getTitle() || 'No title'}</div>
+            </div>
+            <Divider />
+
+            <div className="flex flex-col gap-1">
+              <div className="text-neutral-600 dark:text-neutral-400">Excerpt:</div>
+              <div className="text-sm">{excerpt || <span className="italic text-neutral-400">No excerpt (will auto-generate from content)</span>}</div>
             </div>
             <Divider />
 

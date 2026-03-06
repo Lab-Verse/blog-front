@@ -456,6 +456,15 @@
     "disclaimer": {
       "title": "Descargo de responsabilidad",
       "text": "Las opiniones y el contenido expresados en este artículo son exclusivamente del autor y no reflejan necesariamente la política o posición oficial de The World Ambassador (TWA). TWA no asume ninguna responsabilidad por la precisión, integridad o autenticidad de la información presentada. Se recomienda a los lectores verificar los hechos de forma independiente."
+    },
+    "listen": {
+      "listen": "Escuchar este artículo",
+      "playing": "Reproduciendo...",
+      "paused": "En pausa",
+      "resume": "Reanudar",
+      "pause": "Pausar",
+      "stop": "Detener",
+      "speed": "Velocidad de reproducción"
     }
   },
   "category": {

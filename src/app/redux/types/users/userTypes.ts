@@ -21,10 +21,11 @@ export enum UserStatus {
 }
 
 export enum Role {
-  USER = "user",
-  ADMIN = "admin",
-  MODERATOR = "moderator",
   SUPER_ADMIN = "super_admin",
+  ADMIN = "admin",
+  AUTHOR = "author",
+  USER = "user",
+  MODERATOR = "moderator",
 }
 
 export interface User {

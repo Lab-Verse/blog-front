@@ -456,6 +456,15 @@
     "disclaimer": {
       "title": "免责声明",
       "text": "本文所表达的观点、意见和内容仅代表作者本人，不一定反映 The World Ambassador (TWA) 的官方政策或立场。TWA 不对所提供信息的准确性、完整性或真实性承担任何责任。鼓励读者独立核实事实。"
+    },
+    "listen": {
+      "listen": "收听本文",
+      "playing": "播放中...",
+      "paused": "已暂停",
+      "resume": "继续播放",
+      "pause": "暂停",
+      "stop": "停止",
+      "speed": "播放速度"
     }
   },
   "category": {
