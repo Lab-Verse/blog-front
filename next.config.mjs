@@ -88,15 +88,15 @@ const nextConfig = {
           destination:
             'https://pub-b3abd4448aa7438db921404307c0e985.r2.dev/:path*',
         },
-      ],
-      // Last resort: if middleware and all pages fail to match,
-      // prepend the default locale so the [locale] segment resolves.
-      fallback: [
+        // Prepend default locale for paths without a locale prefix.
+        // afterFiles runs AFTER static-file checks but BEFORE dynamic
+        // routes, so /login → /en/login before [locale] can capture it.
         {
-          source: '/:path((?!en|ur|ar|ko|zh|es|api|_next|_vercel).*)',
+          source: '/:path((?!en|ur|ar|ko|zh|es|api|_next|_vercel|r2-proxy).*)',
           destination: '/en/:path',
         },
       ],
+      fallback: [],
     }
   },
 }
