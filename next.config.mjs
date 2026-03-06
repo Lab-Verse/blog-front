@@ -80,13 +80,21 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    return [
-      {
-        source: '/r2-proxy/:path*',
-        destination:
-          'https://pub-b3abd4448aa7438db921404307c0e985.r2.dev/:path*',
-      },
-    ]
+    return {
+      beforeFiles: [
+        // Ensure the root URL always resolves to the default locale,
+        // even if Edge middleware fails to rewrite on Vercel.
+        { source: '/', destination: '/en' },
+      ],
+      afterFiles: [
+        {
+          source: '/r2-proxy/:path*',
+          destination:
+            'https://pub-b3abd4448aa7438db921404307c0e985.r2.dev/:path*',
+        },
+      ],
+      fallback: [],
+    }
   },
 }
 
