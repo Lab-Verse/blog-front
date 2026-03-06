@@ -9,6 +9,7 @@ import clsx from 'clsx'
 import PostCardLikeBtn from './PostCardLikeBtn'
 import PostCardCommentBtn from './PostCardCommentBtn'
 import PostCardSaveBtn from './PostCardSaveBtn'
+import LocalDate from './LocalDate'
 
 interface Props {
   posts: TPost[]
@@ -119,7 +120,7 @@ const HeroCarousel: FC<Props> = ({ posts, className }) => {
                         {post.date && (
                           <>
                             <span className="text-white/50">·</span>
-                            <time>{post.date}</time>
+                            <LocalDate date={post.date} options={{ month: 'short', day: 'numeric', year: 'numeric' }} />
                           </>
                         )}
                         {post.readingTime > 0 && (

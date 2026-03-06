@@ -5,6 +5,7 @@ import { FC } from 'react'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import clsx from 'clsx'
+import LocalDate from './LocalDate'
 
 interface Props {
   posts: TPost[]
@@ -102,7 +103,7 @@ const HeroEditorial: FC<Props> = ({ posts, className }) => {
               {hero.date && (
                 <>
                   <span>·</span>
-                  <time>{hero.date}</time>
+                  <LocalDate date={hero.date} options={{ month: 'long', day: 'numeric', year: 'numeric' }} />
                 </>
               )}
               {hero.readingTime > 0 && (
@@ -170,7 +171,7 @@ function SideStory({ post, isFirst }: { post: TPost; isFirst: boolean }) {
         {post.date && (
           <>
             <span>·</span>
-            <time>{post.date}</time>
+            <LocalDate date={post.date} options={{ month: 'short', day: 'numeric', year: 'numeric' }} />
           </>
         )}
       </div>

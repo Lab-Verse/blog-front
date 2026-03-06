@@ -57,9 +57,7 @@ const HeaderStyle1 = ({ className, post }: Omit<Props, 'defaultStyle'>) => {
         <Divider />
       </div>
       <header className={clsx('single-header-style-1 container mt-8 lg:mt-16', className)}>
-        <div className="mx-auto max-w-4xl">
-          <TitleAndMeta post={post} />
-        </div>
+        <TitleAndMeta post={post} />
 
         {featuredImage.src && (
           <div className="relative mt-8 aspect-square w-full sm:mt-12 sm:aspect-16/9">

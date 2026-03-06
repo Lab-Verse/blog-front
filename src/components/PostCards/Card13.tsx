@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
+import LocalDate from '@/components/LocalDate'
 
 interface Props {
   className?: string
@@ -25,7 +26,7 @@ const Card13: FC<Props> = ({ className, post }) => {
         <span className="my-3 hidden text-neutral-500 sm:block dark:text-neutral-400">
           <span className="line-clamp-2"> {excerpt}</span>
         </span>
-        <span className="mt-4 block text-xs text-neutral-500 sm:hidden">{post.date}</span>
+        <span className="mt-4 block text-xs text-neutral-500 sm:hidden"><LocalDate date={post.date} options={{ month: 'short', day: 'numeric', year: 'numeric' }} /></span>
         <div className="mt-auto hidden sm:block">
           <PostCardMeta meta={{ ...post }} />
         </div>

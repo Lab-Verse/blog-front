@@ -146,12 +146,16 @@ export function transformPostDetail(
     ...base,
     content: post.content || '',
     tags: tags && tags.length > 0
-      ? tags.map((t: any) => ({
-          id: t.id || String(t),
-          name: t.name || '',
-          handle: t.slug || t.handle || '',
-          color: getCategoryColor(t.name || ''),
-        }))
+      ? tags.map((t: any) => {
+          // Handle join-table entries (PostTag) where the real tag is nested under .tag
+          const tag = t.tag || t
+          return {
+            id: tag.id || String(t),
+            name: tag.name || '',
+            handle: tag.slug || tag.handle || '',
+            color: getCategoryColor(tag.name || ''),
+          }
+        })
       : extractTags(post),
     // Enrich author with description from profile
     author: {
@@ -279,7 +283,7 @@ export function transformAuthors(
   users: ApiUser[],
   profilesMap?: Map<string, ApiUserProfile>
 ) {
-  return users.map((u) => transformAuthor(u, profilesMap?.get(u.id)))
+  return users.map((u) => transformAuthor(u, profilesMap?.get(u.id) || u.profile))
 }
 
 // ========================
