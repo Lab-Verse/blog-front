@@ -81,11 +81,7 @@ const nextConfig = {
   },
   async rewrites() {
     return {
-      beforeFiles: [
-        // Ensure the root URL always resolves to the default locale,
-        // even if Edge middleware fails to rewrite on Vercel.
-        { source: '/', destination: '/en' },
-      ],
+      beforeFiles: [],
       afterFiles: [
         {
           source: '/r2-proxy/:path*',
@@ -93,7 +89,14 @@ const nextConfig = {
             'https://pub-b3abd4448aa7438db921404307c0e985.r2.dev/:path*',
         },
       ],
-      fallback: [],
+      // Last resort: if middleware and all pages fail to match,
+      // prepend the default locale so the [locale] segment resolves.
+      fallback: [
+        {
+          source: '/:path((?!en|ur|ar|ko|zh|es|api|_next|_vercel).*)',
+          destination: '/en/:path',
+        },
+      ],
     }
   },
 }
