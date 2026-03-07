@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation'
 import { routing, rtlLocales, type Locale } from '@/i18n/routing'
 import ThemeProvider from '../theme-provider'
 import WhatsAppButton from '@/components/WhatsAppButton'
+import SiteStructuredData from '@/components/SiteStructuredData'
 
 // ── Latin font (EN, ES) ────────────────────────────────
 const beVietnamPro = Be_Vietnam_Pro({
@@ -135,11 +136,13 @@ export async function generateMetadata({
     },
     icons: {
       icon: [
+        { url: '/images/twa-svg.png', sizes: '512x512', type: 'image/png' },
         { url: '/images/twa-logo.svg', type: 'image/svg+xml' },
-        { url: '/images/twa-svg.png', type: 'image/png' },
       ],
       apple: '/images/twa-svg.png',
+      shortcut: '/images/twa-svg.png',
     },
+    manifest: '/manifest.json',
     openGraph: {
       type: 'website',
       locale: ogLocale,
@@ -148,6 +151,14 @@ export async function generateMetadata({
       title: `${SITE_NAME} - News, Articles & Insights`,
       description:
         'Your go-to source for the latest news, in-depth articles, and expert insights.',
+      images: [
+        {
+          url: `${SITE_URL}/images/twa-svg.png`,
+          width: 512,
+          height: 512,
+          alt: SITE_NAME,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
@@ -198,6 +209,8 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={dir} className={`${allFontVars} ${fontVarClass}`} suppressHydrationWarning>
       <head>
+        <SiteStructuredData />
+        <link rel="manifest" href="/manifest.json" />
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script
             async

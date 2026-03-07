@@ -1,0 +1,22 @@
+{
+  "name": "The World Ambassador",
+  "short_name": "TWA",
+  "description": "Your go-to source for the latest news, in-depth articles, and expert insights on technology, travel, sports, finance, and more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#dc2626",
+  "icons": [
+    {
+      "src": "/images/twa-svg.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/twa-svg.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
