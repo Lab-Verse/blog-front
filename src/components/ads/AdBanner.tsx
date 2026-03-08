@@ -35,16 +35,29 @@ const AdBanner: React.FC<AdBannerProps> = ({
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID
   const minHeight = FORMAT_MIN_HEIGHT[format] ?? 90
 
+  // Only push the ad when it scrolls into view (reduces main-thread jank on load)
   useEffect(() => {
     if (!clientId || clientId === 'ca-pub-XXXXXXXXXXXXXXXX') return
     if (isAdPushed.current) return
+    const node = adRef.current
+    if (!node) return
 
-    try {
-      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-      isAdPushed.current = true
-    } catch (err) {
-      console.error('AdSense error:', err)
-    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isAdPushed.current) {
+          try {
+            ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+            isAdPushed.current = true
+          } catch (err) {
+            console.error('AdSense error:', err)
+          }
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '200px' }, // trigger 200px before visible
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
   }, [clientId])
 
   if (!clientId || clientId === 'ca-pub-XXXXXXXXXXXXXXXX') {

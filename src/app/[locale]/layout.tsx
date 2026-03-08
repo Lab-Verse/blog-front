@@ -196,15 +196,16 @@ export default async function LocaleLayout({
   const dir = rtlLocales.includes(locale as Locale) ? 'rtl' : 'ltr'
   const fontVarClass = getFontClassName(locale)
 
-  // All font variables for CSS custom properties
-  const allFontVars = [
-    beVietnamPro.variable,
-    playfairDisplay.variable,
-    notoNastaliqUrdu.variable,
-    notoNaskhArabic.variable,
-    notoSansSC.variable,
-    notoSansKR.variable,
-  ].join(' ')
+  // Only load fonts needed for the current locale (avoids downloading all 6 font families)
+  const fontVarsForLocale: string[] = [
+    beVietnamPro.variable,   // always needed (fallback + Latin locales)
+    playfairDisplay.variable, // always needed (headings)
+  ]
+  if (locale === 'ur') fontVarsForLocale.push(notoNastaliqUrdu.variable)
+  if (locale === 'ar') fontVarsForLocale.push(notoNaskhArabic.variable)
+  if (locale === 'zh') fontVarsForLocale.push(notoSansSC.variable)
+  if (locale === 'ko') fontVarsForLocale.push(notoSansKR.variable)
+  const allFontVars = fontVarsForLocale.join(' ')
 
   return (
     <html lang={locale} dir={dir} className={`${allFontVars} ${fontVarClass}`} suppressHydrationWarning>
@@ -216,16 +217,16 @@ export default async function LocaleLayout({
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
             crossOrigin="anonymous"
-            strategy="afterInteractive"
+            strategy="lazyOnload"
           />
         )}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-              strategy="afterInteractive"
+              strategy="lazyOnload"
             />
-            <Script id="google-analytics" strategy="afterInteractive">
+            <Script id="google-analytics" strategy="lazyOnload">
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
