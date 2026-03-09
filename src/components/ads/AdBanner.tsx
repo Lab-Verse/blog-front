@@ -17,11 +17,11 @@ declare global {
 
 /** Minimum heights per format to prevent Cumulative Layout Shift (CLS) */
 const FORMAT_MIN_HEIGHT: Record<string, number> = {
-  auto: 90,
+  auto: 250,
   fluid: 100,
   rectangle: 250,
   vertical: 600,
-  horizontal: 90,
+  horizontal: 250,
 }
 
 const AdBanner: React.FC<AdBannerProps> = ({

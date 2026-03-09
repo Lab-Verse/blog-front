@@ -52,7 +52,7 @@ const Card15Podcast: FC<Props> = ({ className, post }) => {
         <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
           <span>{author.name}</span>
           <span className="mx-1">·</span>
-          <time dateTime={date}>
+          <time dateTime={date} suppressHydrationWarning>
             {date ? new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}
           </time>
         </p>

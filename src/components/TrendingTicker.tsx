@@ -1,5 +1,3 @@
-'use client'
-
 import type { TPost } from '@/utils/dataTransformers'
 import { Link } from '@/i18n/navigation'
 import clsx from 'clsx'

@@ -17,7 +17,7 @@ const SectionAds: FC<Props> = ({ className, slot }) => {
         slot={slot}
         format="horizontal"
         responsive
-        className="min-h-[90px]"
+        className="min-h-[250px] sm:min-h-[90px]"
       />
     </div>
   )

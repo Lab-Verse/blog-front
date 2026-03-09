@@ -212,6 +212,11 @@ export default async function LocaleLayout({
       <head>
         <SiteStructuredData />
         <link rel="manifest" href="/manifest.json" />
+        {/* Preconnect to critical third-party origins */}
+        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://pub-b3abd4448aa7438db921404307c0e985.r2.dev" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script
             async

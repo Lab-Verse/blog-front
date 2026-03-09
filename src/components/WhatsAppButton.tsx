@@ -1,5 +1,3 @@
-'use client'
-
 const WHATSAPP_NUMBER = '923421910341'
 const PREFILLED_MESSAGE = 'Hello, I would like to get in touch with The World Ambassador.'
 

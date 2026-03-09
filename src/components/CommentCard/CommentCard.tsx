@@ -180,7 +180,7 @@ const CommentCard: FC<Props> = ({ className, comment, postId, onDeleted }) => {
             </Link>
             <span className="mx-2">·</span>
             <span className="line-clamp-1 text-xs text-neutral-600 sm:text-sm dark:text-neutral-400">
-              <time dateTime={date}>
+              <time dateTime={date} suppressHydrationWarning>
                 {new Date(date).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -237,7 +237,7 @@ const CommentCard: FC<Props> = ({ className, comment, postId, onDeleted }) => {
                       <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
                         {reply.user?.display_name || reply.user?.username || 'User'}
                       </span>
-                      <span className="text-xs text-neutral-400">
+                      <span className="text-xs text-neutral-400" suppressHydrationWarning>
                         {new Date(reply.created_at).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',

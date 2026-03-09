@@ -81,5 +81,12 @@
   "overrides": {
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.6"
-  }
+  },
+  "browserslist": [
+    "chrome 92",
+    "edge 92",
+    "firefox 91",
+    "opera 78",
+    "safari 15.4"
+  ]
 }

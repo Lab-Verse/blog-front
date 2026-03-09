@@ -47,7 +47,7 @@ const Card14: FC<Props> = ({ className, ratio = 'aspect-1/1', post }) => {
           </div>
           <span className="mx-1.5">·</span>
           <span className="font-normal">
-            <time dateTime={date}>
+            <time dateTime={date} suppressHydrationWarning>
               {date ? new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}
             </time>
           </span>

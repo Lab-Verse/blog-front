@@ -14,13 +14,8 @@ interface ThemeContextValue {
 export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Initialize from DOM state (set by inline FOUC-prevention script)
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    if (typeof document !== 'undefined') {
-      return document.documentElement.classList.contains('dark')
-    }
-    return false
-  })
+  // Always start with false; useEffect below syncs from DOM after mount
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false)
   const [themeDir, setThemeDir] = useState<'rtl' | 'ltr'>('ltr')
 
   // Sync React state with the inline script's DOM state on mount

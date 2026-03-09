@@ -1,5 +1,3 @@
-'use client'
-
 import type { TPost } from '@/utils/dataTransformers'
 import { FC } from 'react'
 import Image from 'next/image'

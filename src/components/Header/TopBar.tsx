@@ -1,6 +1,5 @@
 'use client'
 
-import 'flag-icons/css/flag-icons.min.css'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -8,13 +7,14 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useRouter, usePathname } from '@/i18n/navigation'
 import { locales, type Locale } from '@/i18n/routing'
 
+/** Emoji flags — zero CSS cost, renders natively on all modern OSes */
 const FLAG_MAP: Record<string, string> = {
-  en: 'gb',
-  ur: 'pk',
-  ar: 'sa',
-  ko: 'kr',
-  zh: 'cn',
-  es: 'es',
+  en: '\uD83C\uDDEC\uD83C\uDDE7',
+  ur: '\uD83C\uDDF5\uD83C\uDDF0',
+  ar: '\uD83C\uDDF8\uD83C\uDDE6',
+  ko: '\uD83C\uDDF0\uD83C\uDDF7',
+  zh: '\uD83C\uDDE8\uD83C\uDDF3',
+  es: '\uD83C\uDDEA\uD83C\uDDF8',
 }
 
 export default function TopBar() {
@@ -67,7 +67,7 @@ export default function TopBar() {
                 }`}
                 title={t(`languages.${code}`)}
               >
-                <span className={`fi fi-${FLAG_MAP[code]} fis rounded-sm text-base`} />
+                <span className="text-base leading-none" role="img" aria-hidden="true">{FLAG_MAP[code]}</span>
                 <span className="hidden lg:inline">{t(`languages.${code}`)}</span>
               </button>
             </li>

@@ -25,8 +25,8 @@ export default function PostLoading() {
 
         {/* Content skeleton */}
         <div className="space-y-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-4 w-full rounded bg-neutral-200 dark:bg-neutral-700" style={{ width: `${85 + Math.random() * 15}%` }} />
+          {[92, 88, 95, 85, 90, 87].map((w, i) => (
+            <div key={i} className="h-4 w-full rounded bg-neutral-200 dark:bg-neutral-700" style={{ width: `${w}%` }} />
           ))}
         </div>
       </div>
