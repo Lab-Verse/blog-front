@@ -67,7 +67,7 @@ const SectionPostsWithWidgets: FC<Props> = ({
     <div className={clsx('section-post-with-widgets relative', className)}>
       <div className="flex flex-col lg:flex-row">
         <div className="w-full lg:w-3/5 xl:w-2/3 xl:pe-14">
-          <HeadingWithSub subHeading={subHeading} dimHeading={dimHeading}>
+          <HeadingWithSub level={2} subHeading={subHeading} dimHeading={dimHeading}>
             {heading}
           </HeadingWithSub>
           <div className={clsx('grid gap-6 md:gap-7', gridClass)}>{posts.map(renderCard)}</div>

@@ -1,5 +1,6 @@
 'use client'
 
+import 'flag-icons/css/flag-icons.min.css'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -108,7 +109,7 @@ export default function TopBar() {
           <div className="hidden h-5 w-px bg-neutral-300 dark:bg-neutral-700 sm:block" />
 
           {/* Date & Time */}
-          <span className="hidden whitespace-nowrap sm:inline">{dateTime}</span>
+          <span className="hidden whitespace-nowrap sm:inline min-h-5">{dateTime || '\u00A0'}</span>
         </div>
       </div>
     </div>

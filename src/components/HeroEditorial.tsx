@@ -79,6 +79,7 @@ const HeroEditorial: FC<Props> = ({ posts, className }) => {
                   alt={hero.title}
                   fill
                   priority
+                  fetchPriority="high"
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                 />
@@ -177,18 +178,18 @@ function SideStory({ post, isFirst }: { post: TPost; isFirst: boolean }) {
       </div>
 
       {/* Title */}
-      <h3 className="mt-1.5 text-sm font-semibold leading-snug text-neutral-900 dark:text-neutral-100">
+      <h2 className="mt-1.5 text-sm font-semibold leading-snug text-neutral-900 dark:text-neutral-100">
         <Link
           href={`/post/${post.handle}`}
           className="line-clamp-3 hover:underline decoration-1 underline-offset-2"
         >
           {post.title}
         </Link>
-      </h3>
+      </h2>
 
       {/* Reading time */}
       {post.readingTime > 0 && (
-        <span className="mt-1 block text-xs text-neutral-400 dark:text-neutral-500">
+        <span className="mt-1 block text-xs text-neutral-500 dark:text-neutral-400">
           {post.readingTime} min read
         </span>
       )}

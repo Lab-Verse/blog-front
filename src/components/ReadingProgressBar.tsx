@@ -25,6 +25,7 @@ export default function ReadingProgressBar() {
     <div
       className="fixed inset-x-0 top-0 z-100 h-[3px] bg-transparent"
       role="progressbar"
+      aria-label="Reading progress"
       aria-valuenow={Math.round(progress)}
       aria-valuemin={0}
       aria-valuemax={100}

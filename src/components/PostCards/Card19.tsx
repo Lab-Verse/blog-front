@@ -46,7 +46,7 @@ const Card19: FC<Props> = ({
               wrapSize="size-7"
               iconSize="size-4"
             />
-            <Link href={`/post/${handle}`} className="absolute inset-0"></Link>
+            <Link href={`/post/${handle}`} className="absolute inset-0" aria-label={title} tabIndex={-1}></Link>
           </>
         )}
       </div>
@@ -54,6 +54,8 @@ const Card19: FC<Props> = ({
       <Link
         href={`/post/${handle}`}
         className="absolute inset-x-0 bottom-0 block h-1/2 bg-linear-to-t from-black opacity-80"
+        aria-hidden="true"
+        tabIndex={-1}
       />
 
       <div className="absolute inset-x-0 top-0 flex flex-wrap gap-x-2 gap-y-1 p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:px-7">
@@ -63,7 +65,7 @@ const Card19: FC<Props> = ({
       </div>
 
       <div className="absolute inset-x-0 bottom-0 flex grow flex-col p-5 sm:p-8">
-        <Link href={`/post/${handle}`} className="absolute inset-0" />
+        <Link href={`/post/${handle}`} className="absolute inset-0" aria-label={title} tabIndex={-1} />
         <CategoryBadgeList categories={categories} />
         <h2 className={clsx('mt-3 block font-semibold text-white', titleClass)}>{title}</h2>
       </div>

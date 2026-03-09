@@ -84,12 +84,14 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
         /* ── Editorial header: FT-style centered uppercase title + text nav tabs ── */
         <div className="mb-10">
           <div className="text-center">
-            <Link
-              href={`/category/${category.slug}`}
-              className="heading-serif inline-block text-xl font-bold tracking-widest text-neutral-900 uppercase hover:underline sm:text-2xl dark:text-neutral-100"
-            >
-              {category.name}
-            </Link>
+            <h2 className="heading-serif text-xl font-bold tracking-widest text-neutral-900 uppercase sm:text-2xl dark:text-neutral-100">
+              <Link
+                href={`/category/${category.slug}`}
+                className="hover:underline"
+              >
+                {category.name}
+              </Link>
+            </h2>
           </div>
 
           {/* Subcategory text links — FT style */}
@@ -116,12 +118,14 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
         /* ── Centered header: large title + centered tabs ── */
         <div className="mb-10">
           <div className="text-center">
-            <Link
-              href={`/category/${category.slug}`}
-              className="heading-serif inline-block text-3xl font-bold text-neutral-900 hover:underline sm:text-4xl lg:text-5xl dark:text-neutral-100"
-            >
-              {category.name}
-            </Link>
+            <h2 className="heading-serif text-3xl font-bold text-neutral-900 sm:text-4xl lg:text-5xl dark:text-neutral-100">
+              <Link
+                href={`/category/${category.slug}`}
+                className="hover:underline"
+              >
+                {category.name}
+              </Link>
+            </h2>
           </div>
 
           {/* Subcategory tabs — centered */}
@@ -162,12 +166,13 @@ const SectionCategoryBlock: FC<Props> = ({ category, variant = 'grid', sectionIn
                     {String(sectionIndex).padStart(2, '0')}
                   </span>
                 )}
-                <Link
-                  href={`/category/${category.slug}`}
-                  className={clsx('heading-serif text-2xl font-bold hover:underline lg:text-3xl text-neutral-900 dark:text-neutral-100')}
-                >
-                  {category.name}
-                </Link>
+                <h2 className={clsx('heading-serif text-2xl font-bold hover:underline lg:text-3xl text-neutral-900 dark:text-neutral-100')}>
+                  <Link
+                    href={`/category/${category.slug}`}
+                  >
+                    {category.name}
+                  </Link>
+                </h2>
               </div>
               <Link
                 href={`/category/${category.slug}`}

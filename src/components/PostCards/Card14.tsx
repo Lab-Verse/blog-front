@@ -43,7 +43,7 @@ const Card14: FC<Props> = ({ className, ratio = 'aspect-1/1', post }) => {
           <div className="relative flex gap-x-2">
             <Avatar className="size-6" src={author.avatar.src} alt={author.name} width={24} height={24} sizes="24px" />
             <span className="block text-white">{author.name}</span>
-            <Link href={`/author/${author.handle}`} className="absolute inset-0"></Link>
+            <Link href={`/author/${author.handle}`} className="absolute inset-0" aria-label={author.name} tabIndex={-1}></Link>
           </div>
           <span className="mx-1.5">·</span>
           <span className="font-normal">
@@ -56,7 +56,7 @@ const Card14: FC<Props> = ({ className, ratio = 'aspect-1/1', post }) => {
         </div>
       </div>
 
-      <Link href={`/post/${handle}`} className="absolute inset-0" />
+      <Link href={`/post/${handle}`} className="absolute inset-0" aria-label={title} tabIndex={-1} />
     </div>
   )
 }

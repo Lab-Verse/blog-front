@@ -47,7 +47,7 @@ const Card16Podcast: FC<Props> = ({ className, post, ratio = 'aspect-4/3' }) => 
       </div>
 
       {/* ABSOLUTE */}
-      <Link href={`/post/${handle}`} className="absolute inset-0"></Link>
+      <Link href={`/post/${handle}`} className="absolute inset-0" aria-label={title} tabIndex={-1}></Link>
 
       <CategoryBadgeList className="absolute inset-x-3 top-3" categories={categories} />
 

@@ -42,21 +42,20 @@ const TrendingTicker: FC<Props> = ({ posts, label = 'Trending', className }) => 
               href={`/post/${post.handle}`}
               className="flex shrink-0 items-center gap-2 text-sm text-neutral-700 transition-colors hover:text-primary-600 dark:text-neutral-300 dark:hover:text-primary-400"
             >
-              <span className="font-semibold text-primary-500">{String(i + 1).padStart(2, '0')}</span>
+              <span className="font-semibold text-primary-700 dark:text-primary-400">{String(i + 1).padStart(2, '0')}</span>
               <span className="max-w-[260px] truncate font-medium">{post.title}</span>
             </Link>
           ))}
           {/* Duplicate set for seamless loop */}
           {items.map((post, i) => (
-            <Link
+            <span
               key={`dup-${post.id}`}
-              href={`/post/${post.handle}`}
-              className="flex shrink-0 items-center gap-2 text-sm text-neutral-700 transition-colors hover:text-primary-600 dark:text-neutral-300 dark:hover:text-primary-400"
+              className="flex shrink-0 items-center gap-2 text-sm text-neutral-700 transition-colors dark:text-neutral-300"
               aria-hidden="true"
             >
-              <span className="font-semibold text-primary-500">{String(i + 1).padStart(2, '0')}</span>
+              <span className="font-semibold text-primary-700 dark:text-primary-400">{String(i + 1).padStart(2, '0')}</span>
               <span className="max-w-[260px] truncate font-medium">{post.title}</span>
-            </Link>
+            </span>
           ))}
         </div>
       </div>

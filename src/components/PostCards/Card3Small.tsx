@@ -35,7 +35,7 @@ const Card3Small: FC<Props> = ({ className, post }) => {
         />
       </div>
 
-      <Link href={`/post/${handle}`} className="absolute inset-0" title={title}></Link>
+      <Link href={`/post/${handle}`} className="absolute inset-0" aria-label={title} tabIndex={-1}></Link>
     </div>
   )
 }

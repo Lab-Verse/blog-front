@@ -44,7 +44,7 @@ const Card2: FC<Props> = ({ className, size = 'normal', post }) => {
             alt={title}
           />
         </div>
-        <Link href={`/post/${handle}`} className="absolute inset-0 z-0"></Link>
+        <Link href={`/post/${handle}`} className="absolute inset-0 z-0" aria-label={title} tabIndex={-1}></Link>
         <div className="absolute bottom-3 start-3 flex flex-wrap gap-1.5">
           <PostTypeFeaturedIcon
             postType={postType}

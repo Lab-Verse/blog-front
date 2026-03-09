@@ -39,6 +39,7 @@ const SectionSliderNewAuthors: FC<Props> = ({
     <div className={clsx('section-slider-new-authors relative', className)}>
       <HeadingWithArrowBtns
         hasNextPrev
+        level={2}
         prevBtnDisabled={prevBtnDisabled}
         nextBtnDisabled={nextBtnDisabled}
         onClickPrev={onPrevButtonClick}

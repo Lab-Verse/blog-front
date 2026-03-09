@@ -22,7 +22,7 @@ const Logo: React.FC<Props> = ({ className, size, inverted }) => {
     >
       <Image
         src="/images/twa-logo.svg"
-        alt="TWA - The World Ambassador"
+        alt="TWA"
         width={900}
         height={300}
         className={clsx('h-20 max-h-20 w-auto', inverted && 'brightness-0 invert')}

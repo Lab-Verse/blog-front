@@ -91,7 +91,7 @@ const Next: FC<NextProps> = ({
           btnClassName
         )}
         onClick={onClickNext}
-        title="Next"
+        aria-label="Next"
         disabled={disabled}
       >
         <ArrowRightIcon className={clsx(svgSize, 'rtl:rotate-180')} />
@@ -123,7 +123,7 @@ const Prev: FC<PrevProps> = ({
           btnClassName
         )}
         onClick={onClickPrev}
-        title="Prev"
+        aria-label="Previous"
         disabled={disabled}
       >
         <ArrowLeftIcon className={clsx(svgSize, 'rtl:rotate-180')} />
