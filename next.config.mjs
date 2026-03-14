@@ -100,6 +100,34 @@ const nextConfig = {
       fallback: [],
     }
   },
+  async headers() {
+    return [
+      {
+        source: '/post/:slug*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
+        ],
+      },
+      {
+        source: '/category/:slug*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
+        ],
+      },
+      {
+        source: '/tag/:slug*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=300, stale-while-revalidate=600' },
+        ],
+      },
+      {
+        source: '/sitemap.xml',
+        headers: [
+          { key: 'Cache-Control', value: 'public, s-maxage=3600, stale-while-revalidate=7200' },
+        ],
+      },
+    ]
+  },
 }
 
 export default withNextIntl(nextConfig)

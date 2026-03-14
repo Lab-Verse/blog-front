@@ -25,11 +25,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = []
 
   // Static pages — include all locales via alternates
+  // NOTE: /search, /login, /signup are excluded because they have noindex meta tags.
+  // Including noindex pages in the sitemap sends conflicting signals to crawlers.
   entries.push(
     { url: SITE_URL, lastModified: new Date(), changeFrequency: 'daily', priority: 1, alternates: buildAlternates('/') },
-    { url: `${SITE_URL}/search`, changeFrequency: 'weekly', priority: 0.5, alternates: buildAlternates('/search') },
-    { url: `${SITE_URL}/login`, changeFrequency: 'monthly', priority: 0.3, alternates: buildAlternates('/login') },
-    { url: `${SITE_URL}/signup`, changeFrequency: 'monthly', priority: 0.3, alternates: buildAlternates('/signup') },
     { url: `${SITE_URL}/about`, changeFrequency: 'monthly', priority: 0.5, alternates: buildAlternates('/about') },
     { url: `${SITE_URL}/contact`, changeFrequency: 'monthly', priority: 0.5, alternates: buildAlternates('/contact') },
     { url: `${SITE_URL}/privacy-policy`, changeFrequency: 'yearly', priority: 0.3, alternates: buildAlternates('/privacy-policy') },
@@ -37,6 +36,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/cookie-policy`, changeFrequency: 'yearly', priority: 0.3, alternates: buildAlternates('/cookie-policy') },
     { url: `${SITE_URL}/e-magazine`, changeFrequency: 'weekly', priority: 0.6, alternates: buildAlternates('/e-magazine') },
     { url: `${SITE_URL}/leadership`, changeFrequency: 'weekly', priority: 0.6, alternates: buildAlternates('/leadership') },
+    { url: `${SITE_URL}/columnists`, changeFrequency: 'weekly', priority: 0.6, alternates: buildAlternates('/columnists') },
+    { url: `${SITE_URL}/ai-policy`, changeFrequency: 'yearly', priority: 0.3, alternates: buildAlternates('/ai-policy') },
   )
 
   // Posts — paginate in batches of 100 (backend caps at 100 per request)
