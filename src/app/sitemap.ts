@@ -98,11 +98,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const authors = await fetchAuthors()
     for (const a of authors) {
+      const encodedUsername = encodeURIComponent(a.username)
       entries.push({
-        url: `${SITE_URL}/author/${a.username}`,
+        url: `${SITE_URL}/author/${encodedUsername}`,
         changeFrequency: 'weekly',
         priority: 0.6,
-        alternates: buildAlternates(`/author/${a.username}`),
+        alternates: buildAlternates(`/author/${encodedUsername}`),
       })
     }
   } catch {

@@ -39,20 +39,20 @@ const Layout = async ({ children, params }: Props) => {
 
   try {
     const apiCategories = await fetchCategories()
-    categories = apiCategories.slice(0, 10).map((cat: any, i: number) => ({
+    categories = apiCategories.slice(0, 10).map((cat: any) => ({
       id: cat.id,
       name: cat.name,
       handle: cat.slug,
       description: cat.description || '',
-      count: cat.post_count || 0,
+      count: cat.posts_count || cat.post_count || 0,
       thumbnail: {
-        src: cat.image || `https://images.unsplash.com/photo-${1639322537228 + i}?w=400&q=80`,
+        src: cat.image_url || '/images/placeholder.png',
         alt: cat.name,
         width: 400,
         height: 300,
       },
       listing_image: {
-        src: cat.image || `https://images.unsplash.com/photo-${1639322537228 + i}?w=1920&q=80`,
+        src: cat.image_url || '/images/placeholder.png',
         alt: cat.name,
         width: 1920,
         height: 1080,
@@ -68,9 +68,9 @@ const Layout = async ({ children, params }: Props) => {
       id: user.id,
       name: user.display_name || user.username || 'Author',
       handle: user.username || 'unknown',
-      career: user.profile?.bio || '',
+      career: user.profile?.job_title || user.profile?.company || '',
       description: user.profile?.bio || '',
-      count: 0,
+      count: user.profile?.posts_count || user.posts_count || 0,
       joinedDate: user.created_at || '',
       reviewCount: 0,
       rating: 0,

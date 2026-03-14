@@ -126,12 +126,12 @@ const Footer: React.FC = async () => {
   const renderWidgetMenuItem = (menu: WidgetFooterMenu, index: number) => {
     return (
       <div key={index} className="text-sm">
-        <h2 className="font-semibold text-white">{menu.title}</h2>
+        <h2 className="font-semibold text-neutral-900 dark:text-white">{menu.title}</h2>
         <ul className="mt-5 space-y-4">
           {menu.menus.map((item, i) => (
             <li key={i}>
               <Link
-                className="text-neutral-400 hover:text-white transition-colors"
+                className="text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors"
                 href={item.href}
               >
                 {item.label}
@@ -144,7 +144,7 @@ const Footer: React.FC = async () => {
   }
 
   return (
-    <footer className="nc-Footer relative border-t-0 bg-neutral-950 text-neutral-300">
+    <footer className="nc-Footer relative border-t-0 bg-neutral-200 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
       {/* Accent gradient top border */}
       <div className="h-1 bg-linear-to-r from-primary-500 via-secondary-400 to-primary-600" />
 
@@ -156,7 +156,7 @@ const Footer: React.FC = async () => {
               <Logo inverted />
             </div>
             <div className="col-span-2 md:col-span-3 lg:mt-2">
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
                 {t('tagline')}
               </p>
               <div className="mt-4">
@@ -171,16 +171,16 @@ const Footer: React.FC = async () => {
       </div>
 
       {/* Copyright bar */}
-      <div className="border-t border-neutral-800">
+      <div className="border-t border-neutral-300 dark:border-neutral-800">
         <div className="container flex flex-col items-center justify-between gap-4 py-6 sm:flex-row">
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-500">
             {t('copyright', { year: new Date().getFullYear() })}
           </p>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-neutral-500">
-            <Link href="/privacy-policy" className="hover:text-white transition-colors">{t('privacy')}</Link>
-            <Link href="/terms-of-service" className="hover:text-white transition-colors">{t('terms')}</Link>
-            <Link href="/ai-policy" className="hover:text-white transition-colors">{t('aiPolicy')}</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">{t('contact')}</Link>
+            <Link href="/privacy-policy" className="hover:text-neutral-900 dark:hover:text-white transition-colors">{t('privacy')}</Link>
+            <Link href="/terms-of-service" className="hover:text-neutral-900 dark:hover:text-white transition-colors">{t('terms')}</Link>
+            <Link href="/ai-policy" className="hover:text-neutral-900 dark:hover:text-white transition-colors">{t('aiPolicy')}</Link>
+            <Link href="/contact" className="hover:text-neutral-900 dark:hover:text-white transition-colors">{t('contact')}</Link>
           </div>
         </div>
       </div>

@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       title: name,
       description,
       type: 'profile',
-      url: `${SITE_URL}/author/${result.user.username}`,
+      url: `${SITE_URL}/author/${encodeURIComponent(result.user.username)}`,
       ...(avatar ? { images: [{ url: avatar, width: 200, height: 200, alt: name }] } : {}),
     },
     twitter: {
@@ -48,8 +48,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       ...(avatar ? { images: [avatar] } : {}),
     },
     alternates: {
-      canonical: `${SITE_URL}/author/${result.user.username}`,
-      languages: generateAlternateLanguages(`/author/${result.user.username}`),
+      canonical: `${SITE_URL}/author/${encodeURIComponent(result.user.username)}`,
+      languages: generateAlternateLanguages(`/author/${encodeURIComponent(result.user.username)}`),
     },
   }
   } catch {
