@@ -25,7 +25,7 @@ const CategoryHandleLayout = async ({ children, params }: Props) => {
 
   let authors: any[] = []
   try {
-    const apiAuthors = await fetchAuthors()
+    const apiAuthors = await fetchAuthors(locale)
     authors = apiAuthors.slice(0, 10).map((user: any) => ({
       id: user.id,
       name: user.display_name || user.username || 'Author',

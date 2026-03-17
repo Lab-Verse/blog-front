@@ -3,7 +3,7 @@ import { fetchCategories } from '@/utils/serverApi'
 import Logo from '@/shared/Logo'
 import SocialsList1 from '@/shared/SocialsList1'
 import { Link } from '@/i18n/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, getLocale } from 'next-intl/server'
 import React from 'react'
 
 export interface WidgetFooterMenu {
@@ -44,9 +44,10 @@ function buildCategoryTree(categories: any[]): CategoryWithChildren[] {
 
 const Footer: React.FC = async () => {
   const t = await getTranslations('footer')
+  const locale = await getLocale()
   let categoryTree: CategoryWithChildren[] = []
   try {
-    const categories = await fetchCategories()
+    const categories = await fetchCategories(locale)
     categoryTree = buildCategoryTree(categories)
   } catch {
     // Categories unavailable, skip

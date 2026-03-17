@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   try {
   const { locale, handle } = await params
   setRequestLocale(locale)
-  const apiPost = await fetchPostBySlug(handle)
+  const apiPost = await fetchPostBySlug(handle, locale)
   if (!apiPost) {
     const t = await getTranslations('post')
     return { title: t('postNotFound'), description: t('postNotFoundDescription') }
@@ -96,7 +96,7 @@ const Page = async ({ params }: { params: Promise<{ locale: string; handle: stri
 
   let _apiPost: Awaited<ReturnType<typeof fetchPostBySlug>> = null
   try {
-    _apiPost = await fetchPostBySlug(handle)
+    _apiPost = await fetchPostBySlug(handle, locale)
   } catch {
     // API unreachable — handled below
   }
@@ -108,11 +108,11 @@ const Page = async ({ params }: { params: Promise<{ locale: string; handle: stri
 
   // Wrap parallel fetches in individual .catch() to prevent cascade failures
   const [apiComments, allPosts, apiCategories, apiTags, apiAuthors] = await Promise.all([
-    fetchPostComments(apiPost.id).catch(() => []),
-    fetchPosts({ limit: 12, sortBy: 'created_at', sortOrder: 'DESC' }).catch(() => []),
-    fetchCategories().catch(() => []),
-    fetchTags().catch(() => []),
-    fetchAuthors().catch(() => []),
+    fetchPostComments(apiPost.id, locale).catch(() => []),
+    fetchPosts({ limit: 12, sortBy: 'created_at', sortOrder: 'DESC', locale }).catch(() => []),
+    fetchCategories(locale).catch(() => []),
+    fetchTags(locale).catch(() => []),
+    fetchAuthors(locale).catch(() => []),
   ])
 
   const post = transformPostDetail(apiPost, apiPost.tags)

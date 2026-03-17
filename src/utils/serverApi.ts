@@ -231,6 +231,7 @@ export async function fetchPosts(filters?: {
   sortOrder?: 'ASC' | 'DESC'
   search?: string
   postType?: string
+  locale?: string
 }): Promise<ApiPost[]> {
   const params = new URLSearchParams()
   if (filters?.category) params.append('category', filters.category)
@@ -247,6 +248,7 @@ export async function fetchPosts(filters?: {
     const result = await serverFetch<ApiPost[] | { data: ApiPost[]; total?: number }>(`/posts${query}`, {
       revalidate: 60,
       tags: ['posts'],
+      locale: filters?.locale,
     })
     // Handle both array and paginated { data, total } envelope formats
     let posts: ApiPost[]
@@ -277,6 +279,7 @@ export async function fetchPostsPaginated(filters?: {
   sortBy?: string
   sortOrder?: 'ASC' | 'DESC'
   search?: string
+  locale?: string
 }): Promise<{ posts: ApiPost[]; total: number }> {
   const params = new URLSearchParams()
   if (filters?.category) params.append('category', filters.category)
@@ -287,6 +290,7 @@ export async function fetchPostsPaginated(filters?: {
   if (filters?.sortBy) params.append('sortBy', filters.sortBy)
   if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder)
   if (filters?.search) params.append('search', filters.search)
+  if (filters?.locale && filters.locale !== 'en') params.append('locale', filters.locale)
   const query = params.toString() ? `?${params.toString()}` : ''
 
   try {
@@ -308,11 +312,12 @@ export async function fetchPostsPaginated(filters?: {
 }
 
 /** Fetch a single post by slug using the dedicated endpoint */
-export async function fetchPostBySlug(slug: string): Promise<ApiPost | null> {
+export async function fetchPostBySlug(slug: string, locale?: string): Promise<ApiPost | null> {
   try {
     return await serverFetch<ApiPost>(`/posts/slug/${encodeURIComponent(slug)}`, {
       revalidate: 60,
       tags: ['posts', `post-slug-${slug}`],
+      locale,
     })
   } catch {
     return null
@@ -320,11 +325,12 @@ export async function fetchPostBySlug(slug: string): Promise<ApiPost | null> {
 }
 
 /** Fetch a single post by ID */
-export async function fetchPostById(id: string): Promise<ApiPost | null> {
+export async function fetchPostById(id: string, locale?: string): Promise<ApiPost | null> {
   try {
     return await serverFetch<ApiPost>(`/posts/${id}`, {
       revalidate: 60,
       tags: ['posts', `post-${id}`],
+      locale,
     })
   } catch {
     return null
@@ -332,11 +338,12 @@ export async function fetchPostById(id: string): Promise<ApiPost | null> {
 }
 
 /** Fetch comments for a post (uses /comments?postId=X which loads user relations) */
-export async function fetchPostComments(postId: string): Promise<ApiComment[]> {
+export async function fetchPostComments(postId: string, locale?: string): Promise<ApiComment[]> {
   try {
     return await serverFetch<ApiComment[]>(`/comments?postId=${postId}`, {
       revalidate: 30,
       tags: ['comments', `post-comments-${postId}`],
+      locale,
     })
   } catch {
     return []
@@ -348,11 +355,12 @@ export async function fetchPostComments(postId: string): Promise<ApiComment[]> {
 // ========================
 
 /** Fetch all categories */
-export async function fetchCategories(): Promise<ApiCategory[]> {
+export async function fetchCategories(locale?: string): Promise<ApiCategory[]> {
   try {
     const result = await serverFetch<ApiCategory[] | { items: ApiCategory[] }>('/categories', {
       revalidate: 300, // 5 minutes
       tags: ['categories'],
+      locale,
     })
     if (Array.isArray(result)) return result
     if (result && typeof result === 'object' && 'items' in result) return result.items
@@ -363,11 +371,12 @@ export async function fetchCategories(): Promise<ApiCategory[]> {
 }
 
 /** Fetch a single category by ID */
-export async function fetchCategoryById(id: string): Promise<ApiCategory | null> {
+export async function fetchCategoryById(id: string, locale?: string): Promise<ApiCategory | null> {
   try {
     return await serverFetch<ApiCategory>(`/categories/${id}`, {
       revalidate: 300,
       tags: ['categories', `category-${id}`],
+      locale,
     })
   } catch {
     return null
@@ -375,9 +384,9 @@ export async function fetchCategoryById(id: string): Promise<ApiCategory | null>
 }
 
 /** Fetch a category by slug */
-export async function fetchCategoryBySlug(slug: string): Promise<ApiCategory | null> {
+export async function fetchCategoryBySlug(slug: string, locale?: string): Promise<ApiCategory | null> {
   try {
-    const categories = await fetchCategories()
+    const categories = await fetchCategories(locale)
     return categories.find((c) => c.slug === slug) || null
   } catch {
     return null
@@ -385,11 +394,12 @@ export async function fetchCategoryBySlug(slug: string): Promise<ApiCategory | n
 }
 
 /** Fetch posts for a specific category */
-export async function fetchCategoryPosts(categoryId: string): Promise<ApiPost[]> {
+export async function fetchCategoryPosts(categoryId: string, locale?: string): Promise<ApiPost[]> {
   try {
     const result = await serverFetch<ApiPost[] | { items: ApiPost[]; data: ApiPost[] }>(`/categories/${categoryId}/posts`, {
       revalidate: 60,
       tags: ['posts', `category-posts-${categoryId}`],
+      locale,
     })
     if (Array.isArray(result)) return result
     if (result && typeof result === 'object') {
@@ -416,11 +426,12 @@ export function buildCategoryTree(categories: ApiCategory[]): ApiCategory[] {
 // ========================
 
 /** Fetch all tags */
-export async function fetchTags(): Promise<ApiTag[]> {
+export async function fetchTags(locale?: string): Promise<ApiTag[]> {
   try {
     const result = await serverFetch<ApiTag[] | { items: ApiTag[] }>('/tags', {
       revalidate: 300,
       tags: ['tags'],
+      locale,
     })
     if (Array.isArray(result)) return result
     if (result && typeof result === 'object' && 'items' in result) return Array.isArray(result.items) ? result.items : []
@@ -431,9 +442,9 @@ export async function fetchTags(): Promise<ApiTag[]> {
 }
 
 /** Fetch a tag by slug */
-export async function fetchTagBySlug(slug: string): Promise<ApiTag | null> {
+export async function fetchTagBySlug(slug: string, locale?: string): Promise<ApiTag | null> {
   try {
-    const tags = await fetchTags()
+    const tags = await fetchTags(locale)
     return tags.find((t) => t.slug === slug) || null
   } catch {
     return null
@@ -441,11 +452,12 @@ export async function fetchTagBySlug(slug: string): Promise<ApiTag | null> {
 }
 
 /** Fetch posts for a tag */
-export async function fetchTagPosts(tagId: string): Promise<ApiPost[]> {
+export async function fetchTagPosts(tagId: string, locale?: string): Promise<ApiPost[]> {
   try {
     return await serverFetch<ApiPost[]>(`/tags/${tagId}/posts`, {
       revalidate: 60,
       tags: ['posts', `tag-posts-${tagId}`],
+      locale,
     })
   } catch {
     return []
@@ -457,9 +469,9 @@ export async function fetchTagPosts(tagId: string): Promise<ApiPost[]> {
 // ========================
 
 /** Fetch all users (for author listings) - now public endpoint */
-export async function fetchAuthors(): Promise<ApiUser[]> {
+export async function fetchAuthors(locale?: string): Promise<ApiUser[]> {
   try {
-    const data = await serverFetch<ApiUser[]>('/users?limit=100')
+    const data = await serverFetch<ApiUser[]>('/users?limit=100', { locale })
     const result = Array.isArray(data) ? data : (data as any)?.items || []
     return result
   } catch {
@@ -530,7 +542,7 @@ export async function fetchUserProfile(
 // ========================
 
 /** Find an author by username using the API */
-export async function fetchAuthorByUsername(username: string): Promise<{
+export async function fetchAuthorByUsername(username: string, locale?: string): Promise<{
   user: ApiUser | null
   profile: ApiUserProfile | null
   posts: ApiPost[]
@@ -546,10 +558,13 @@ export async function fetchAuthorByUsername(username: string): Promise<{
     const user = await res.json()
     if (!user || !user.id) return null
 
+    // Build locale query suffix for author posts
+    const localeParam = locale && locale !== 'en' ? `&locale=${locale}` : ''
+
     // Fetch profile and posts in parallel
     const [profile, postsRes] = await Promise.all([
       fetchUserProfile(user.id),
-      fetch(`${API_URL}/posts?user=${user.id}&limit=50`, {
+      fetch(`${API_URL}/posts?user=${user.id}&limit=50${localeParam}`, {
         headers: { 'Content-Type': 'application/json' },
         next: { revalidate: 60, tags: [`author-posts-${user.id}`] },
       }),
@@ -577,9 +592,10 @@ export interface SearchResults {
 /** Search across posts, categories, tags, and authors using backend search */
 export async function searchAll(
   query: string,
-  options?: { page?: number; limit?: number; sortBy?: string; sortOrder?: 'ASC' | 'DESC' }
+  options?: { page?: number; limit?: number; sortBy?: string; sortOrder?: 'ASC' | 'DESC'; locale?: string }
 ): Promise<SearchResults & { postTotal: number }> {
   try {
+    const locale = options?.locale
     const [{ posts: searchedPosts, total: postTotal }, allCategories, allTags] = await Promise.all([
       fetchPostsPaginated({
         search: query,
@@ -587,9 +603,10 @@ export async function searchAll(
         limit: options?.limit ?? 12,
         sortBy: options?.sortBy,
         sortOrder: options?.sortOrder,
+        locale,
       }),
-      fetchCategories(),
-      fetchTags(),
+      fetchCategories(locale),
+      fetchTags(locale),
     ])
 
     const q = query.toLowerCase()

@@ -186,7 +186,7 @@ export default function MagazineViewer({ pdfUrl }: MagazineViewerProps) {
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
             {t('loading')}
             {pages.length > 0 && totalPages > 0 && (
-              <span className="ml-1">
+              <span className="ms-1">
                 ({Math.round((pages.length / totalPages) * 100)}%)
               </span>
             )}

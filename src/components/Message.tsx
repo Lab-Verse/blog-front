@@ -30,7 +30,7 @@ const Message: React.FC<MessageProps> = ({
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="currentColor"
-        className="mr-2 mt-2px w-5 h-5"
+        className="me-2 mt-2px w-5 h-5"
       >
         <path
           fillRule="evenodd"

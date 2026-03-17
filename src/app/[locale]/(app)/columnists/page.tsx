@@ -46,6 +46,7 @@ const Page = async ({
     limit: 6,
     sortBy: 'published_at',
     sortOrder: 'DESC',
+    locale,
   })
   const recentOpinions = transformPosts(opinionPosts)
 

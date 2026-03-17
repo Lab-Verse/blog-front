@@ -103,6 +103,7 @@ const PageSearch = async ({
     limit: POSTS_PER_PAGE,
     sortBy,
     sortOrder,
+    locale,
   }).catch(() => ({
     posts: [] as any[],
     categories: [] as any[],

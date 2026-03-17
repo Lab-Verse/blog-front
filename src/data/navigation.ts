@@ -12,9 +12,9 @@ export type TNavigationItem = {
  * CNN-style navigation — returns only parent categories as flat links.
  * Used on the homepage header.
  */
-export async function getParentNavigation(): Promise<TNavigationItem[]> {
+export async function getParentNavigation(locale?: string): Promise<TNavigationItem[]> {
   try {
-    const categories = await fetchCategories()
+    const categories = await fetchCategories(locale)
     const tree = buildCategoryTree(categories)
     const categoryNav: TNavigationItem[] = tree.map((cat) => ({
       id: String(cat.id),
@@ -45,10 +45,11 @@ export async function getParentNavigation(): Promise<TNavigationItem[]> {
  * Used on category pages to show subcategory links in the nav bar.
  */
 export async function getSubNavigation(
-  parentSlug: string
+  parentSlug: string,
+  locale?: string,
 ): Promise<{ parent: TNavigationItem; children: TNavigationItem[] } | null> {
   try {
-    const categories = await fetchCategories()
+    const categories = await fetchCategories(locale)
     const tree = buildCategoryTree(categories)
 
     // Find the parent category that matches the slug (could be the parent itself or a child)
@@ -92,6 +93,3 @@ export async function getSubNavigation(
     return null
   }
 }
-
-
-

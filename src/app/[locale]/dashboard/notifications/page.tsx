@@ -144,7 +144,7 @@ const Page = () => {
           >
             {label}
             {key === 'unread' && unreadCount > 0 && (
-              <span className="ml-1.5 inline-flex size-5 items-center justify-center rounded-full bg-blue-500 text-xs text-white">
+              <span className="ms-1.5 inline-flex size-5 items-center justify-center rounded-full bg-blue-500 text-xs text-white">
                 {unreadCount}
               </span>
             )}

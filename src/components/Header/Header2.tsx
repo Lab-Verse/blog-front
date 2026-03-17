@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
+import { getLocale } from 'next-intl/server'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import HeaderAuthButtons from './HeaderAuthButtons'
 import ResponsiveNav from './ResponsiveNav'
@@ -15,14 +16,15 @@ interface Props {
 }
 
 const Header2: FC<Props> = async ({ bottomBorder, className, activeCategory }) => {
+  const locale = await getLocale()
   // If on a category page, load subcategories for that category
   let subNav: Awaited<ReturnType<typeof getSubNavigation>> = null
   let parentNav: TNavigationItem[] = []
 
   try {
     const [subNavResult, parentNavResult] = await Promise.all([
-      activeCategory ? getSubNavigation(activeCategory) : Promise.resolve(null),
-      getParentNavigation(),
+      activeCategory ? getSubNavigation(activeCategory, locale) : Promise.resolve(null),
+      getParentNavigation(locale),
     ])
     subNav = subNavResult
     parentNav = parentNavResult

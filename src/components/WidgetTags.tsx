@@ -15,7 +15,7 @@ const WidgetTags: FC<Props> = ({ className = 'bg-neutral-100 dark:bg-neutral-800
       <WidgetHeading title="Suggested tags" viewAll={{ label: 'View all', href: '/#' }} />
       <div className="flex flex-wrap p-4 xl:p-5">
         {tags?.map((tag) => (
-          <Tag className="mr-2 mb-2" key={tag.id} href={`/category/${tag.handle}`}>
+          <Tag className="me-2 mb-2" key={tag.id} href={`/category/${tag.handle}`}>
             {tag.name}
           </Tag>
         ))}

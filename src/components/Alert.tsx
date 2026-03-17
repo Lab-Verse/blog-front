@@ -31,7 +31,7 @@ export const Alert: React.FC<AlertProps> = ({ children = 'Alert Text', container
 
   return (
     <div className={`ttnc-alert text-paragraph-base relative flex items-center rounded-lg px-6 pt-4 pb-3 ${classes}`}>
-      <i className="pe-7s-info mr-2 text-2xl"></i>
+      <i className="pe-7s-info me-2 text-2xl"></i>
       {children}
       <ButtonClose className="absolute top-4 right-6" />
     </div>

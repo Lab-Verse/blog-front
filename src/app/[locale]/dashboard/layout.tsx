@@ -251,7 +251,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
           <h1 className="text-lg font-semibold tracking-tight sm:text-xl">{pageTitle}</h1>
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ms-auto flex items-center gap-3">
             <NotifyDropdown />
             <Dropdown>
               <DropdownButton as="button" className="rounded-full">

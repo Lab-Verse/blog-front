@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale, handle } = await params
   setRequestLocale(locale)
   const t = await getTranslations('authorProfile')
-  const result = await fetchAuthorByUsername(handle)
+  const result = await fetchAuthorByUsername(handle, locale)
   if (!result?.user) {
     return { title: t('notFoundTitle'), description: t('notFoundDescription') }
   }
@@ -71,7 +71,7 @@ const Page = async ({
   const ts = await getTranslations('search')
   let result: Awaited<ReturnType<typeof fetchAuthorByUsername>> = null
   try {
-    result = await fetchAuthorByUsername(handle)
+    result = await fetchAuthorByUsername(handle, locale)
   } catch {
     // API unreachable
   }
@@ -87,6 +87,7 @@ const Page = async ({
     limit: POSTS_PER_PAGE,
     sortBy,
     sortOrder,
+    locale,
   }).catch(() => ({ posts: [] as Awaited<ReturnType<typeof fetchPostsPaginated>>['posts'], total: 0 }))
 
   const totalPages = Math.ceil(total / POSTS_PER_PAGE)

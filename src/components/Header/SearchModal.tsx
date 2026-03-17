@@ -20,6 +20,7 @@ import { HugeiconsIcon, IconSvgElement } from '@hugeicons/react'
 import clsx from 'clsx'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import CategoryBadgeList from '../CategoryBadgeList'
 import LocalDate from '../LocalDate'
@@ -92,6 +93,7 @@ interface Props {
 
 const SearchModal: FC<Props> = ({ type = 'type1' }) => {
   const router = useRouter()
+  const locale = useLocale()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [posts, setPosts] = useState<TPost[]>([])
@@ -100,7 +102,8 @@ const SearchModal: FC<Props> = ({ type = 'type1' }) => {
     const fetchSearchPosts = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-        const res = await fetch(`${apiUrl}/posts?limit=4${query ? `&search=${encodeURIComponent(query)}` : ''}`)
+        const localeParam = locale && locale !== 'en' ? `&locale=${encodeURIComponent(locale)}` : ''
+        const res = await fetch(`${apiUrl}/posts?limit=4${query ? `&search=${encodeURIComponent(query)}` : ''}${localeParam}`)
         if (!res.ok) { setPosts([]); return }
         const data = await res.json()
         const items = Array.isArray(data) ? data : (data?.data || [])

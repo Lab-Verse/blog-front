@@ -75,8 +75,8 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
 
   // ── Step 1: Fetch hero/general posts + all categories in parallel ──
   const [apiPosts, apiCategories] = await Promise.all([
-    fetchPosts({ limit: 100 }).catch(() => []),
-    fetchCategories().catch(() => []),
+    fetchPosts({ limit: 100, locale }).catch(() => []),
+    fetchCategories(locale).catch(() => []),
   ])
 
   // Transform top-level data
@@ -121,7 +121,7 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
 
   // Fetch posts per parent category (limit 20 for lightweight payloads)
   const parentFetchTasks = categoryTree.map(
-    (parent) => () => fetchPosts({ category: parent.id, limit: 20 }),
+    (parent) => () => fetchPosts({ category: parent.id, limit: 20, locale }),
   )
 
   // Execute in controlled batches of CONCURRENCY_LIMIT

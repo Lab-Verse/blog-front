@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   try {
   const { locale, handle } = await params
   setRequestLocale(locale)
-  const apiTag = await fetchTagBySlug(handle)
+  const apiTag = await fetchTagBySlug(handle, locale)
   const tTag = await getTranslations('tag')
 
   if (!apiTag) {
@@ -87,7 +87,7 @@ const Page = async ({
   const { page: pageStr, 'sort-by': sortByParam } = await searchParams
   let apiTag: Awaited<ReturnType<typeof fetchTagBySlug>> = null
   try {
-    apiTag = await fetchTagBySlug(handle)
+    apiTag = await fetchTagBySlug(handle, locale)
   } catch {
     // API unreachable
   }
@@ -104,9 +104,10 @@ const Page = async ({
       limit: POSTS_PER_PAGE,
       sortBy,
       sortOrder,
+      locale,
     }).catch(() => ({ posts: [] as Awaited<ReturnType<typeof fetchPostsPaginated>>['posts'], total: 0 })),
-    fetchCategories().catch(() => []),
-    fetchTags().catch(() => []),
+    fetchCategories(locale).catch(() => []),
+    fetchTags(locale).catch(() => []),
   ])
 
   const { posts: apiPosts, total } = paginatedResult

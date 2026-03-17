@@ -1,4 +1,5 @@
 import { getParentNavigation } from '@/data/navigation'
+import { getLocale } from 'next-intl/server'
 import SidebarNavigation from './Header/Navigation/SidebarNavigation'
 import Aside from './aside'
 
@@ -7,7 +8,8 @@ interface Props {
 }
 
 const AsideSidebarNavigation = async ({ className }: Props) => {
-  const navigationMenu = await getParentNavigation()
+  const locale = await getLocale()
+  const navigationMenu = await getParentNavigation(locale)
 
   return (
     <Aside openFrom="right" type="sidebar-navigation" logoOnHeading contentMaxWidthClassName="max-w-md">
