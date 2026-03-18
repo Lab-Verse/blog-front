@@ -19,11 +19,11 @@ export async function getParentNavigation(locale?: string): Promise<TNavigationI
       const categoryNav: TNavigationItem[] = tree.map((cat) => ({
       id: String(cat.id),
       href: `/category/${cat.slug}`,
-        name: cat.name || cat.translations?.find((t: any) => t.locale === 'en')?.name || 'Category',
+        name: cat.name,
       children: (cat.children || []).map((sub) => ({
         id: String(sub.id),
         href: `/category/${sub.slug}`,
-          name: sub.name || sub.translations?.find((t: any) => t.locale === 'en')?.name || 'Category',
+          name: sub.name,
       })),
     }))
 
