@@ -16,14 +16,14 @@ export async function getParentNavigation(locale?: string): Promise<TNavigationI
   try {
     const categories = await fetchCategories(locale)
     const tree = buildCategoryTree(categories)
-    const categoryNav: TNavigationItem[] = tree.map((cat) => ({
+      const categoryNav: TNavigationItem[] = tree.map((cat) => ({
       id: String(cat.id),
       href: `/category/${cat.slug}`,
-      name: cat.name,
+        name: cat.name || cat.translations?.find((t: any) => t.locale === 'en')?.name || 'Category',
       children: (cat.children || []).map((sub) => ({
         id: String(sub.id),
         href: `/category/${sub.slug}`,
-        name: sub.name,
+          name: sub.name || sub.translations?.find((t: any) => t.locale === 'en')?.name || 'Category',
       })),
     }))
 
@@ -31,7 +31,7 @@ export async function getParentNavigation(locale?: string): Promise<TNavigationI
     const eMagazineItem: TNavigationItem = {
       id: 'e-magazine',
       href: '/e-magazine',
-      name: 'E-Magazine',
+        name: locale === 'ur' ? 'ای-میگزین' : 'E-Magazine',
     }
 
     return [...categoryNav, eMagazineItem]

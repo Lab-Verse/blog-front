@@ -62,12 +62,12 @@ const Footer: React.FC = async () => {
     for (const parent of parentsWithChildren) {
       categoryMenus.push({
         id: `cat-${parent.id}`,
-        title: parent.name,
+          title: parent.name || parent.translations?.find((t: any) => t.locale === 'en')?.name || 'Category',
         menus: [
           { href: `/category/${parent.slug}`, label: t('allCategory', { name: parent.name }) },
           ...parent.children.slice(0, 6).map(child => ({
             href: `/category/${child.slug}`,
-            label: child.name,
+              label: child.name || child.translations?.find((t: any) => t.locale === 'en')?.name || 'Category',
           })),
         ],
       })
