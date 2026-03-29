@@ -58,7 +58,7 @@ const HeroEditorial: FC<Props> = ({ posts, className }) => {
       {/* ── 3-column spread ── */}
       <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-6 lg:gap-8">
         {/* Left column — stacked side stories */}
-        <div className="md:col-span-3">
+        <div className="order-2 md:order-none md:col-span-3">
           <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
             {leftPosts.map((post, i) => (
               <SideStory key={post.id} post={post} isFirst={i === 0} />
@@ -66,8 +66,8 @@ const HeroEditorial: FC<Props> = ({ posts, className }) => {
           </div>
         </div>
 
-        {/* Center column — hero image + related links */}
-        <div className="md:col-span-6">
+        {/* Center column — hero image + related links (order-first on mobile for LCP) */}
+        <div className="order-1 md:order-none md:col-span-6">
           {/* Hero image */}
           <div className="group relative overflow-hidden rounded-lg">
             <Link href={`/post/${hero.handle}`} className="block">
@@ -125,7 +125,7 @@ const HeroEditorial: FC<Props> = ({ posts, className }) => {
         </div>
 
         {/* Right column — stacked side stories */}
-        <div className="md:col-span-3">
+        <div className="order-3 md:order-none md:col-span-3">
           <div className="divide-y divide-neutral-200 dark:divide-neutral-700">
             {rightPosts.map((post, i) => (
               <SideStory key={post.id} post={post} isFirst={i === 0} />

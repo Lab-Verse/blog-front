@@ -25,6 +25,7 @@ const nextConfig = {
   },
   serverExternalPackages: ['pdfjs-dist'],
   images: {
+    formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 2678400 * 6, // 3 months
     remotePatterns: [
       {
