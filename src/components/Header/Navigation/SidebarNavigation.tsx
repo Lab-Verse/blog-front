@@ -68,14 +68,17 @@ const SidebarNavigation: React.FC<Props> = ({ data }) => {
         className="flex-1 text-neutral-900 dark:text-neutral-200"
         onSubmit={(e) => {
           e.preventDefault()
+          const input = e.currentTarget.querySelector('input[type="search"]') as HTMLInputElement
+          const value = input?.value?.trim() || ''
           handleClose()
-          redirect('/search')
+          redirect(`/search?s=${encodeURIComponent(value)}`)
         }}
       >
         <div className="flex h-full items-center gap-x-2.5 rounded-xl bg-neutral-50 px-3 py-3 dark:bg-neutral-800">
           <HugeiconsIcon icon={Search01Icon} size={24} color="currentColor" strokeWidth={1.5} />
           <input
             type="search"
+            name="s"
             placeholder="Type and press enter"
             className="w-full border-none bg-transparent focus:ring-0 focus:outline-hidden sm:text-sm"
           />

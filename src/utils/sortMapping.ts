@@ -9,6 +9,7 @@ const SORT_MAP: Record<string, { sortBy: string; sortOrder: 'ASC' | 'DESC' }> = 
   'most-appreciated': { sortBy: 'likes_count', sortOrder: 'DESC' },
   'most-discussed': { sortBy: 'comments_count', sortOrder: 'DESC' },
   'most-viewed': { sortBy: 'views_count', sortOrder: 'DESC' },
+  'most-liked': { sortBy: 'likes_count', sortOrder: 'DESC' },
 }
 
 export function mapSortBy(frontendValue?: string): { sortBy?: string; sortOrder?: 'ASC' | 'DESC' } {

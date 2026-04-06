@@ -7,6 +7,7 @@ import { getLocale } from 'next-intl/server'
 import HamburgerBtnMenu from './HamburgerBtnMenu'
 import HeaderAuthButtons from './HeaderAuthButtons'
 import ResponsiveNav from './ResponsiveNav'
+import SearchModal from './SearchModal'
 
 interface Props {
   bottomBorder?: boolean
@@ -79,8 +80,9 @@ const Header2: FC<Props> = async ({ bottomBorder, className, activeCategory }) =
           <ResponsiveNav items={navItems} activeHref={activeHref} />
         </nav>
 
-        {/* Right: Auth buttons + Hamburger */}
+        {/* Right: Search + Auth buttons + Hamburger */}
         <div className="ms-auto flex items-center justify-end gap-x-1 lg:ms-0 shrink-0">
+          <SearchModal type="type1" />
           <HeaderAuthButtons />
           <div className="ms-2 flex lg:hidden">
             <HamburgerBtnMenu />

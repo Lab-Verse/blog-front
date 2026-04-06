@@ -29,12 +29,12 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 export async function generateMetadata({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: SearchParams }): Promise<Metadata> {
   const { locale } = await params
   setRequestLocale(locale)
-  const { query } = await searchParams
+  const { s } = await searchParams
   const t = await getTranslations('search')
 
   return {
-    title: t('searchResultsFor', { query: String(query || '') }),
-    description: t('searchResultsFor', { query: String(query || '') }),
+    title: t('searchResultsFor', { query: String(s || '') }),
+    description: t('searchResultsFor', { query: String(s || '') }),
     robots: { index: false, follow: true },
     alternates: {
       canonical: `${SITE_URL}/search`,
