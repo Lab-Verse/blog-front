@@ -382,7 +382,16 @@
     "topEliteAuthors": "Top elite authors",
     "discoverEliteWriters": "Discover our elite writers",
     "recommendedSearches": "Recommended searches:",
-    "searchResultsFor": "Search results for {query}"
+    "searchResultsFor": "Search results for {query}",
+    "noResults": "No results found",
+    "tryDifferentSearch": "Try adjusting your search terms or filters",
+    "filterByCategory": "Filter by category",
+    "filterByTag": "Filter by tag",
+    "filterByAuthor": "Filter by author",
+    "allCategories": "All categories",
+    "allTags": "All tags",
+    "clearFilters": "Clear filters",
+    "activeFilters": "Active filters:"
   },
   "home": {
     "metaTitle": "Home",

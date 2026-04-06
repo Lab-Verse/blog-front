@@ -4,7 +4,8 @@ import CardAuthorBox2 from '@/components/CardAuthorBoxs/CardAuthorBox2'
 import CardCategory2 from '@/components/CategoryCards/CardCategory2'
 import PaginationWrapper from '@/components/PaginationWrapper'
 import Card11 from '@/components/PostCards/Card11'
-import { searchAll } from '@/utils/serverApi'
+import SearchFilters from '@/components/SearchFilters'
+import { searchAll, fetchCategories, fetchTags } from '@/utils/serverApi'
 import { transformPosts, transformCategories, transformTags, transformAuthors } from '@/utils/dataTransformers'
 import { mapSortBy } from '@/utils/sortMapping'
 import { ButtonCircle } from '@/shared/Button'
@@ -80,6 +81,9 @@ const PageSearch = async ({
   let searchTab = (await searchParams)['tab']
   const pageStr = (await searchParams)['page']
   const sortByParam = (await searchParams)['sort-by']
+  const categoryParam = (await searchParams)['category']
+  const tagParam = (await searchParams)['tag']
+  const authorParam = (await searchParams)['author']
   // example: /search?s=text1&s=text2 => searchQuery = 'text1'
   if (Array.isArray(searchQuery)) {
     searchQuery = searchQuery[0]
@@ -97,6 +101,15 @@ const PageSearch = async ({
 
   const page = Math.max(Number(Array.isArray(pageStr) ? pageStr[0] : pageStr) || 1, 1)
   const { sortBy, sortOrder } = mapSortBy(Array.isArray(sortByParam) ? sortByParam[0] : sortByParam)
+  const selectedCategory = Array.isArray(categoryParam) ? categoryParam[0] : categoryParam || ''
+  const selectedTag = Array.isArray(tagParam) ? tagParam[0] : tagParam || ''
+  const selectedAuthor = Array.isArray(authorParam) ? authorParam[0] : authorParam || ''
+
+  // Fetch categories and tags for filter dropdowns
+  const [allCategories, allTags] = await Promise.all([
+    fetchCategories(locale),
+    fetchTags(locale),
+  ])
 
   const searchResults = await searchAll(searchQuery || '', {
     page,
@@ -104,6 +117,9 @@ const PageSearch = async ({
     sortBy,
     sortOrder,
     locale,
+    category: selectedCategory,
+    tag: selectedTag,
+    author: selectedAuthor,
   }).catch(() => ({
     posts: [] as any[],
     categories: [] as any[],
@@ -120,18 +136,24 @@ const PageSearch = async ({
   const totalResults = searchResults.totalResults
   const totalPostPages = Math.ceil(searchResults.postTotal / POSTS_PER_PAGE)
   const recommendedSearches = ['Technology', 'Travel', 'Food', 'Health', 'Science']
+  const hasActiveFilters = !!(selectedCategory || selectedTag || selectedAuthor)
 
   const renderLoopItems = () => {
     switch (searchTab) {
       case 'categories':
-        return (
+        return categories?.length > 0 ? (
           <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 md:gap-8 lg:mt-10 lg:grid-cols-4 xl:grid-cols-5">
             {categories?.map((category) => <CardCategory2 key={category.id} category={category} />)}
+          </div>
+        ) : (
+          <div className="mt-12 flex flex-col items-center justify-center py-16">
+            <HugeiconsIcon icon={Folder02Icon} size={48} className="text-neutral-300 dark:text-neutral-600" />
+            <p className="mt-4 text-lg font-medium text-neutral-500 dark:text-neutral-400">{t('noResults')}</p>
           </div>
         )
 
       case 'tags':
-        return (
+        return tags?.length > 0 ? (
           <div className="mt-12 flex flex-wrap gap-3">
             {tags?.map((tag) => (
               <Tag key={tag.id} href={`/tag/${tag.handle}`}>
@@ -139,19 +161,35 @@ const PageSearch = async ({
               </Tag>
             ))}
           </div>
+        ) : (
+          <div className="mt-12 flex flex-col items-center justify-center py-16">
+            <HugeiconsIcon icon={Tag02Icon} size={48} className="text-neutral-300 dark:text-neutral-600" />
+            <p className="mt-4 text-lg font-medium text-neutral-500 dark:text-neutral-400">{t('noResults')}</p>
+          </div>
         )
       case 'authors':
-        return (
+        return authors?.length > 0 ? (
           <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 md:gap-8 lg:mt-10 lg:grid-cols-4 xl:grid-cols-5">
             {authors?.map((author) => (
               <CardAuthorBox2 className="border border-dashed" key={author.id} author={author} />
             ))}
           </div>
+        ) : (
+          <div className="mt-12 flex flex-col items-center justify-center py-16">
+            <HugeiconsIcon icon={UserListIcon} size={48} className="text-neutral-300 dark:text-neutral-600" />
+            <p className="mt-4 text-lg font-medium text-neutral-500 dark:text-neutral-400">{t('noResults')}</p>
+          </div>
         )
       default:
-        return (
+        return posts?.length > 0 ? (
           <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 md:gap-8 lg:mt-10 lg:grid-cols-3 xl:grid-cols-4">
             {posts?.map((post) => <Card11 key={post.id} post={post} />)}
+          </div>
+        ) : (
+          <div className="mt-12 flex flex-col items-center justify-center py-16">
+            <HugeiconsIcon icon={Search01Icon} size={48} className="text-neutral-300 dark:text-neutral-600" />
+            <p className="mt-4 text-lg font-medium text-neutral-500 dark:text-neutral-400">{t('noResults')}</p>
+            <p className="mt-2 text-sm text-neutral-400 dark:text-neutral-500">{t('tryDifferentSearch')}</p>
           </div>
         )
     }
@@ -219,6 +257,17 @@ const PageSearch = async ({
           <ArchiveTabs tabs={filterTabs} />
           <ArchiveSortByListBox className="ms-auto shrink-0" filterOptions={sortByOptions} />
         </div>
+
+        {/* Advanced Filters */}
+        {searchTab === 'posts' && (
+          <SearchFilters
+            categories={allCategories.map((c) => ({ id: c.id, name: c.name, slug: c.slug }))}
+            tags={allTags.map((t) => ({ id: t.id, name: t.name, slug: t.slug }))}
+            selectedCategory={selectedCategory}
+            selectedTag={selectedTag}
+            selectedAuthor={selectedAuthor}
+          />
+        )}
 
         {/* LOOP ITEMS */}
         {renderLoopItems()}

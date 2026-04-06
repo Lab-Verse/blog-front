@@ -280,6 +280,7 @@ export async function fetchPostsPaginated(filters?: {
   sortOrder?: 'ASC' | 'DESC'
   search?: string
   locale?: string
+  author?: string
 }): Promise<{ posts: ApiPost[]; total: number }> {
   const params = new URLSearchParams()
   if (filters?.category) params.append('category', filters.category)
@@ -290,6 +291,7 @@ export async function fetchPostsPaginated(filters?: {
   if (filters?.sortBy) params.append('sortBy', filters.sortBy)
   if (filters?.sortOrder) params.append('sortOrder', filters.sortOrder)
   if (filters?.search) params.append('search', filters.search)
+  if (filters?.author) params.append('author', filters.author)
   if (filters?.locale && filters.locale !== 'en') params.append('locale', filters.locale)
   const query = params.toString() ? `?${params.toString()}` : ''
 
@@ -592,7 +594,16 @@ export interface SearchResults {
 /** Search across posts, categories, tags, and authors using backend search */
 export async function searchAll(
   query: string,
-  options?: { page?: number; limit?: number; sortBy?: string; sortOrder?: 'ASC' | 'DESC'; locale?: string }
+  options?: {
+    page?: number
+    limit?: number
+    sortBy?: string
+    sortOrder?: 'ASC' | 'DESC'
+    locale?: string
+    category?: string
+    tag?: string
+    author?: string
+  }
 ): Promise<SearchResults & { postTotal: number }> {
   try {
     const locale = options?.locale
@@ -604,6 +615,9 @@ export async function searchAll(
         sortBy: options?.sortBy,
         sortOrder: options?.sortOrder,
         locale,
+        category: options?.category,
+        tag: options?.tag,
+        author: options?.author,
       }),
       fetchCategories(locale),
       fetchTags(locale),
@@ -611,19 +625,42 @@ export async function searchAll(
 
     const q = query.toLowerCase()
 
-    const categories = allCategories.filter((c) =>
-      c.name.toLowerCase().includes(q)
-    )
+    const categories = q
+      ? allCategories.filter((c) => c.name.toLowerCase().includes(q))
+      : allCategories
 
-    const tags = allTags.filter((t) => t.name.toLowerCase().includes(q))
+    const tags = q
+      ? allTags.filter((t) => t.name.toLowerCase().includes(q))
+      : allTags
 
-    // Extract unique authors from searched posts
+    // Extract unique authors from searched posts + search users if query provided
     const authorMap = new Map<string, ApiUser>()
     for (const post of searchedPosts) {
       if (post.user) {
         authorMap.set(post.user.id, post.user)
       }
     }
+
+    // Also search users directly if query is provided
+    if (q) {
+      try {
+        const usersResult = await serverFetch<ApiUser[] | { items: ApiUser[] }>(
+          `/users?search=${encodeURIComponent(query)}&limit=20`,
+          { revalidate: 60, tags: ['users'], locale }
+        )
+        const usersList = Array.isArray(usersResult)
+          ? usersResult
+          : (usersResult as any)?.items || []
+        for (const user of usersList) {
+          if (!authorMap.has(user.id)) {
+            authorMap.set(user.id, user)
+          }
+        }
+      } catch {
+        // Users search is supplementary, not critical
+      }
+    }
+
     const authors = Array.from(authorMap.values())
 
     return {

@@ -378,7 +378,16 @@
     "topEliteAuthors": "اعلی درجے کے مصنفین",
     "discoverEliteWriters": "ہمارے اعلی درجے کے لکھاریوں سے ملیں",
     "recommendedSearches": ":تجویز کردہ تلاش",
-    "searchResultsFor": "\"{query}\" کے لیے تلاش کے نتائج"
+    "searchResultsFor": "\"{query}\" کے لیے تلاش کے نتائج",
+    "noResults": "کوئی نتائج نہیں ملے",
+    "tryDifferentSearch": "اپنی تلاش کی شرائط یا فلٹرز کو تبدیل کرنے کی کوشش کریں",
+    "filterByCategory": "زمرے کے مطابق فلٹر کریں",
+    "filterByTag": "ٹیگ کے مطابق فلٹر کریں",
+    "filterByAuthor": "مصنف کے مطابق فلٹر کریں",
+    "allCategories": "تمام زمرے",
+    "allTags": "تمام ٹیگز",
+    "clearFilters": "فلٹرز صاف کریں",
+    "activeFilters": "فعال فلٹرز:"
   },
   "home": {
     "metaTitle": "ہوم",
