@@ -13,7 +13,7 @@ import Input from '@/shared/Input'
 import Tag from '@/shared/Tag'
 import { Link } from '@/shared/link'
 import { ArrowRightIcon } from '@heroicons/react/24/solid'
-import { Folder02Icon, LicenseIcon, Search01Icon, Tag02Icon, UserListIcon } from '@hugeicons/core-free-icons'
+import { Folder02Icon, News01Icon, Search01Icon, Tag02Icon, UserListIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Metadata } from 'next'
 import Image from 'next/image'
@@ -63,7 +63,7 @@ const PageSearch = async ({
     { name: t('sortMostLiked'), value: 'most-liked' },
   ]
   const filterTabs = [
-    { name: t('articles'), value: 'posts', icon: LicenseIcon },
+    { name: t('news'), value: 'posts', icon: News01Icon },
     { name: t('categories'), value: 'categories', icon: Folder02Icon },
     { name: t('tags'), value: 'tags', icon: Tag02Icon },
     { name: t('authors'), value: 'authors', icon: UserListIcon },
@@ -135,7 +135,7 @@ const PageSearch = async ({
   const authors = transformAuthors(searchResults.authors)
   const totalResults = searchResults.totalResults
   const totalPostPages = Math.ceil(searchResults.postTotal / POSTS_PER_PAGE)
-  const recommendedSearches = ['Technology', 'Travel', 'Food', 'Health', 'Science']
+  const recommendedSearches = ['Pakistan', 'Technology', 'Sports', 'Travel', 'Business', 'Health']
   const hasActiveFilters = !!(selectedCategory || selectedTag || selectedAuthor)
 
   const renderLoopItems = () => {
@@ -258,16 +258,14 @@ const PageSearch = async ({
           <ArchiveSortByListBox className="ms-auto shrink-0" filterOptions={sortByOptions} />
         </div>
 
-        {/* Advanced Filters */}
-        {searchTab === 'posts' && (
-          <SearchFilters
-            categories={allCategories.map((c) => ({ id: c.id, name: c.name, slug: c.slug }))}
-            tags={allTags.map((t) => ({ id: t.id, name: t.name, slug: t.slug }))}
-            selectedCategory={selectedCategory}
-            selectedTag={selectedTag}
-            selectedAuthor={selectedAuthor}
-          />
-        )}
+        {/* Advanced Filters — visible on all tabs */}
+        <SearchFilters
+          categories={allCategories.map((c) => ({ id: c.id, name: c.name, slug: c.slug }))}
+          tags={allTags.map((t) => ({ id: t.id, name: t.name, slug: t.slug }))}
+          selectedCategory={selectedCategory}
+          selectedTag={selectedTag}
+          selectedAuthor={selectedAuthor}
+        />
 
         {/* LOOP ITEMS */}
         {renderLoopItems()}

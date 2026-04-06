@@ -70,7 +70,7 @@ const SearchFilters: FC<SearchFiltersProps> = ({
         >
           <option value="">{t('allCategories')}</option>
           {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
+            <option key={cat.id} value={cat.slug}>
               {cat.name}
             </option>
           ))}
@@ -84,7 +84,7 @@ const SearchFilters: FC<SearchFiltersProps> = ({
         >
           <option value="">{t('allTags')}</option>
           {tags.slice(0, 50).map((tag) => (
-            <option key={tag.id} value={tag.id}>
+            <option key={tag.id} value={tag.slug}>
               {tag.name}
             </option>
           ))}
@@ -125,7 +125,7 @@ const SearchFilters: FC<SearchFiltersProps> = ({
           <span className="text-xs text-neutral-400 dark:text-neutral-500">{t('activeFilters')}</span>
           {selectedCategory && (
             <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/20 dark:text-primary-400">
-              {categories.find((c) => c.id === selectedCategory)?.name || 'Category'}
+              {categories.find((c) => c.slug === selectedCategory)?.name || selectedCategory}
               <button
                 onClick={() => updateFilter('category', '')}
                 className="ms-0.5 hover:text-primary-900 dark:hover:text-primary-300"
@@ -136,7 +136,7 @@ const SearchFilters: FC<SearchFiltersProps> = ({
           )}
           {selectedTag && (
             <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
-              {tags.find((t) => t.id === selectedTag)?.name || 'Tag'}
+              {tags.find((t) => t.slug === selectedTag)?.name || selectedTag}
               <button
                 onClick={() => updateFilter('tag', '')}
                 className="ms-0.5 hover:text-blue-900 dark:hover:text-blue-300"
