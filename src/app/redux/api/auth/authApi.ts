@@ -15,7 +15,17 @@ import { setCredentials, logout } from "./../../slices/auth/authSlice";
 export const authApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
     register: b.mutation<ApiEnvelope<LoginData>, RegisterDto>({
-      query: (body) => ({ url: "/auth/register", method: "POST", body }),
+      query: (body) => {
+        const formData = new FormData();
+        formData.append('username', body.username);
+        formData.append('email', body.email);
+        formData.append('password', body.password);
+        formData.append('phone', body.phone);
+        if (body.cv) {
+          formData.append('cv', body.cv);
+        }
+        return { url: "/auth/register", method: "POST", body: formData };
+      },
     }),
 
     login: b.mutation<ApiEnvelope<LoginData>, LoginDto>({

@@ -17,6 +17,8 @@ export type RegisterDto = {
   username: string
   email: string
   password: string
+  phone: string
+  cv?: File
 }
 export type RefreshTokenDto = { refreshToken: string }
 export type ForgotPasswordDto = { email: string }
