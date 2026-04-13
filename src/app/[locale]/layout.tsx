@@ -8,7 +8,6 @@ import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing, rtlLocales, type Locale } from '@/i18n/routing'
 import ThemeProvider from '../theme-provider'
-import WhatsAppButton from '@/components/WhatsAppButton'
 import SiteStructuredData from '@/components/SiteStructuredData'
 
 // ── Latin font (EN, ES) ────────────────────────────────
@@ -260,7 +259,6 @@ export default async function LocaleLayout({
           <ThemeProvider>
             <Toaster richColors position={dir === 'rtl' ? 'top-left' : 'top-right'} closeButton />
             <div>{children}</div>
-            <WhatsAppButton />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
