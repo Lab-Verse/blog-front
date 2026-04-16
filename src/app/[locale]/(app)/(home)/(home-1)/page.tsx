@@ -16,6 +16,7 @@ import { generateAlternateLanguages } from '@/utils/seo'
 const SectionBecomeAnAuthor = nextDynamic(() => import('@/components/SectionBecomeAnAuthor'))
 const SectionPostsWithWidgets = nextDynamic(() => import('@/components/SectionPostsWithWidgets'))
 const SectionSliderNewAuthors = nextDynamic(() => import('@/components/SectionSliderNewAuthors'))
+const SectionVideoPosts = nextDynamic(() => import('@/components/SectionVideoPosts'))
 
 export const revalidate = 60 // ISR: revalidate every 60 seconds
 
@@ -73,10 +74,11 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
   setRequestLocale(locale)
   const t = await getTranslations('home')
 
-  // ── Step 1: Fetch hero/general posts + all categories in parallel ──
-  const [apiPosts, apiCategories] = await Promise.all([
+  // ── Step 1: Fetch hero/general posts + all categories + video posts in parallel ──
+  const [apiPosts, apiCategories, apiVideoPosts] = await Promise.all([
     fetchPosts({ limit: 100, locale }).catch(() => []),
     fetchCategories(locale).catch(() => []),
+    fetchPosts({ limit: 10, locale, postType: 'video' }).catch(() => []),
   ])
 
   // Transform top-level data
@@ -205,6 +207,15 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
 
       <SectionAds />
 
+      {/* ═══ Video Section ═══ */}
+      {apiVideoPosts.length > 0 && (
+        <SectionVideoPosts
+          posts={transformPosts(apiVideoPosts)}
+          heading={t('videoSectionHeading', { defaultValue: 'Video' })}
+          subHeading={t('videoSectionSubHeading', { defaultValue: 'Watch the latest video stories' })}
+        />
+      )}
+
       {/* ═══ Category Blocks with Subcategory Tabs ═══ */}
       {categoryBlocks.map((block, idx) => {
         // World category gets the magazine layout with centered header
@@ -213,14 +224,18 @@ const Page = async ({ params }: { params: Promise<{ locale: string }> }) => {
         const isEmbassy = block.slug === 'embassy-consulates'
         // Opinion gets the editorial layout with its own visual treatment
         const isOpinion = block.slug === 'opinion'
+        // Korea Explore gets the spotlight layout with centered header
+        const isKoreaExplore = block.slug === 'korea-explore'
         const blockVariant = isEmbassy || isOpinion
           ? 'editorial' as const
           : isWorld
             ? 'magazine' as const
-            : LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]
+            : isKoreaExplore
+              ? 'spotlight' as const
+              : LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length]
         const blockHeaderStyle = isEmbassy || isOpinion
           ? 'editorial' as const
-          : isWorld
+          : isWorld || isKoreaExplore
             ? 'centered' as const
             : 'default' as const
 

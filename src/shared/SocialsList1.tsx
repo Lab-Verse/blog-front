@@ -1,42 +1,41 @@
 import { Facebook01Icon, Mail01Icon, NewTwitterIcon, YoutubeIcon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import clsx from 'clsx'
-import { Link } from '@/i18n/navigation'
 import { FC } from 'react'
 
 interface Props {
   className?: string
-  socials?: typeof socialsDemo
+  socials?: typeof defaultSocials
 }
 
-const socialsDemo = [
+const defaultSocials = [
   {
     name: 'Facebook',
-    href: 'https://www.facebook.com/',
+    href: process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK || 'https://www.facebook.com/theworldambassador',
     icon: Facebook01Icon,
   },
   {
     name: 'Email',
-    href: 'mailto:example@example.com',
+    href: process.env.NEXT_PUBLIC_SOCIAL_EMAIL || 'mailto:editor@twa.com.pk',
     icon: Mail01Icon,
   },
   {
     name: 'Twitter',
-    href: 'https://x.com/example',
+    href: process.env.NEXT_PUBLIC_SOCIAL_TWITTER || 'https://x.com/theworldamb',
     icon: NewTwitterIcon,
   },
   {
     name: 'Youtube',
-    href: 'https://www.youtube.com/@example',
+    href: process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE || 'https://www.youtube.com/@theworldambassador',
     icon: YoutubeIcon,
   },
 ]
 
-const SocialsList1: FC<Props> = ({ className, socials = socialsDemo }) => {
+const SocialsList1: FC<Props> = ({ className, socials = defaultSocials }) => {
   return (
     <div className={clsx('flex flex-col gap-y-4', className)}>
       {socials.map((item, index) => (
-        <Link
+        <a
           href={item.href}
           className="group flex items-center gap-x-2.5 text-sm text-neutral-700 hover:text-black dark:text-neutral-300 dark:hover:text-white"
           key={index}
@@ -45,7 +44,7 @@ const SocialsList1: FC<Props> = ({ className, socials = socialsDemo }) => {
         >
           <HugeiconsIcon icon={item.icon} size={20} />
           {item.name}
-        </Link>
+        </a>
       ))}
     </div>
   )

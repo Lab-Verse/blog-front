@@ -123,9 +123,9 @@ export function transformPost(post: ApiPost) {
         },
     categories: extractCategories(post),
     // Audio/video specific fields
-    ...(postType === 'audio' && { audioUrl: '' }),
-    ...(postType === 'video' && { videoUrl: '' }),
-    ...(postType === 'gallery' && { galleryImgs: [] }),
+    ...(postType === 'audio' && { audioUrl: post.audio_url || '' }),
+    ...(postType === 'video' && { videoUrl: post.video_url || '' }),
+    ...(postType === 'gallery' && { galleryImgs: post.gallery_images || [] }),
   }
 }
 

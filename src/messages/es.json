@@ -65,7 +65,7 @@
     "search": "Buscar",
     "aboutUs": "Sobre nosotros",
     "contact": "Contacto",
-    "leadership": "Liderazgo",
+    "leadership": "Equipo",
     "account": "Cuenta",
     "login": "Iniciar sesión",
     "signUp": "Registrarse",
@@ -775,16 +775,16 @@
     "metaDescription": "Explora y lee nuestras ediciones de revista digital con un lector interactivo de revista."
   },
   "leadership": {
-    "title": "Nuestro Liderazgo",
+    "title": "Nuestro Equipo",
     "subtitle": "Conoce a las personas detrás de nuestra plataforma y visión editorial",
     "meetTheTeam": "Conoce a Nuestro Equipo",
-    "meetTheTeamDescription": "Nuestro equipo de liderazgo reúne experiencia diversa para guiar nuestra plataforma.",
+    "meetTheTeamDescription": "Nuestro equipo reúne experiencia diversa para guiar nuestra plataforma.",
     "viewFullTeam": "Ver Equipo Completo",
     "designation": "Cargo",
     "bio": "Biografía",
     "website": "Sitio Web",
     "noMembers": "Nuestra página de equipo se está actualizando. ¡Vuelve pronto!",
-    "metaTitle": "Nuestro Liderazgo | Blog TWA",
-    "metaDescription": "Conoce al equipo de liderazgo detrás del Blog TWA — nuestros editores, escritores y visionarios."
+    "metaTitle": "Nuestro Equipo | Blog TWA",
+    "metaDescription": "Conoce al equipo detrás del Blog TWA — nuestros editores, escritores y visionarios."
   }
 }

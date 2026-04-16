@@ -65,7 +65,7 @@
     "search": "Search",
     "aboutUs": "About Us",
     "contact": "Contact",
-    "leadership": "Leadership",
+    "leadership": "Team",
     "account": "Account",
     "login": "Login",
     "signUp": "Sign Up",
@@ -788,16 +788,16 @@
     "metaDescription": "Browse and read our digital magazine issues with an interactive flipbook reader."
   },
   "leadership": {
-    "title": "Our Leadership",
+    "title": "Our Team",
     "subtitle": "Meet the people behind our platform and editorial vision",
     "meetTheTeam": "Meet Our Team",
-    "meetTheTeamDescription": "Our leadership team brings together diverse experience and expertise to guide our platform.",
+    "meetTheTeamDescription": "Our team brings together diverse experience and expertise to guide our platform.",
     "viewFullTeam": "View Full Team",
     "designation": "Designation",
     "bio": "Bio",
     "website": "Website",
     "noMembers": "Our team page is being updated. Check back soon!",
-    "metaTitle": "Our Leadership | TWA Blog",
-    "metaDescription": "Meet the leadership team behind TWA Blog — our editors, writers, and visionaries shaping the platform."
+    "metaTitle": "Our Team | TWA Blog",
+    "metaDescription": "Meet the team behind TWA Blog — our editors, writers, and visionaries shaping the platform."
   }
 }

@@ -1,9 +1,9 @@
 import type { CustomLink } from '@/utils/dataTransformers'
 import { fetchCategories } from '@/utils/serverApi'
-import Logo from '@/shared/Logo'
 import SocialsList1 from '@/shared/SocialsList1'
 import { Link } from '@/i18n/navigation'
 import { getTranslations, getLocale } from 'next-intl/server'
+import Image from 'next/image'
 import React from 'react'
 
 export interface WidgetFooterMenu {
@@ -154,7 +154,15 @@ const Footer: React.FC = async () => {
           {/* Logo + tagline + socials */}
           <div className="col-span-2 grid grid-cols-4 gap-5 md:col-span-4 lg:flex lg:flex-col lg:md:col-span-1">
             <div className="col-span-2 md:col-span-1">
-              <Logo inverted />
+              <Link href="/" className="inline-flex shrink-0 items-center">
+                <Image
+                  src="/images/footer-logo.jpeg"
+                  alt="TWA"
+                  width={200}
+                  height={80}
+                  className="h-20 max-h-20 w-auto rounded"
+                />
+              </Link>
             </div>
             <div className="col-span-2 md:col-span-3 lg:mt-2">
               <p className="text-sm text-neutral-600 dark:text-neutral-400">

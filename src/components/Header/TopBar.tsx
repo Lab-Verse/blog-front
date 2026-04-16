@@ -14,7 +14,6 @@ const FLAG_MAP: Record<string, string> = {
   ar: '\uD83C\uDDF8\uD83C\uDDE6',
   ko: '\uD83C\uDDF0\uD83C\uDDF7',
   zh: '\uD83C\uDDE8\uD83C\uDDF3',
-  es: '\uD83C\uDDEA\uD83C\uDDF8',
 }
 
 export default function TopBar() {
